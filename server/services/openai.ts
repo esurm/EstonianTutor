@@ -217,26 +217,32 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     try {
       const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
       
+      const startTime = Date.now();
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
-            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} focused on ${category === 'vocabulary' ? 'VOCABULARY' : 'GRAMMAR'}.
+            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} EXCLUSIVELY focused on ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'}.
 
 ${category === 'vocabulary' ? `
-VOCABULARY FOCUS:
-- Questions about word meanings and definitions
-- Synonyms and antonyms
-- Words related to specific themes (family, colors, food, etc.)
-- Object and concept identification
-- 70% multiple-choice questions, 30% completion questions
+STRICT VOCABULARY FOCUS - NO GRAMMAR ALLOWED:
+- ONLY questions about word meanings, definitions, and vocabulary recognition
+- ONLY synonyms, antonyms, and word relationships
+- ONLY words related to specific themes (family, colors, food, animals, objects, etc.)
+- ONLY object and concept identification
+- NO grammar questions, NO verb conjugations, NO sentence structure
+- 70% multiple-choice questions, 30% completion questions (word completion, not sentence)
+- Example: "What does 'kass' mean?" or "Complete: The animal that says 'mjau' is a ____"
 ` : `
-GRAMMAR FOCUS:
-- Verb conjugations (present, past, future tenses)
-- Grammatical cases (nominative, genitive, partitive, etc.)
-- Sentence structure and prepositions
-- 30% multiple-choice questions, 70% completion questions
+STRICT GRAMMAR FOCUS - NO VOCABULARY ALLOWED:
+- ONLY verb conjugations (present, past, future tenses)
+- ONLY grammatical cases (nominative, genitive, partitive, etc.)
+- ONLY sentence structure, word order, and prepositions
+- ONLY grammatical rules and language mechanics
+- NO vocabulary meanings, NO word definitions, NO translation questions
+- 30% multiple-choice questions, 70% completion questions (grammar completion)
+- Example: "Complete the verb: Ma _____ (to go) kooli" or "Which case: Ma näen ____ (kass)"
 `}
 
 Create 5 varied questions APPROPRIATE for the specific CEFR level.
@@ -277,13 +283,15 @@ Respond in JSON format:
           },
           {
             role: "user",
-            content: `Generate quiz for CEFR level ${cefrLevel}${category ? ` category ${category}` : ""}`
+            content: `Generate ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'} quiz for CEFR level ${cefrLevel}. CRITICAL: Only create ${category} questions, no mixing allowed.`
           }
         ],
         temperature: 0.3,
         response_format: { type: "json_object" }
       });
 
+      const endTime = Date.now();
+      console.log(`Quiz generation took ${endTime - startTime}ms with gpt-4o-mini`);
       return JSON.parse(response.choices[0].message.content || "{}");
     } catch (error) {
       console.error("Quiz generation error:", error);
