@@ -183,7 +183,7 @@ export function ChatInterface() {
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-white">
+      <CardHeader className="bg-blue-600 text-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">

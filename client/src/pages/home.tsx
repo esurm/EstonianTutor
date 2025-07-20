@@ -49,7 +49,7 @@ export default function Home() {
   const renderMainContent = () => {
     switch (currentMode) {
       case "quiz":
-        return <QuizInterface onQuizComplete={handleQuizComplete} />;
+        return <QuizInterface onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
       case "chat":
       default:
         return (

@@ -16,11 +16,13 @@ import {
   Award,
   BarChart3,
   ArrowRight,
-  Volume2
+  Volume2,
+  X
 } from "lucide-react";
 
 interface QuizInterfaceProps {
   onQuizComplete: (results: any) => void;
+  onQuizClose: () => void;
   category?: string;
 }
 
@@ -35,7 +37,7 @@ interface QuizAnswer {
   responseTime: number;
 }
 
-export function QuizInterface({ onQuizComplete, category }: QuizInterfaceProps) {
+export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInterfaceProps) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
@@ -291,13 +293,22 @@ export function QuizInterface({ onQuizComplete, category }: QuizInterfaceProps) 
               Pregunta {currentQuestionIndex + 1} de {questions.length}
             </p>
           </div>
-          <div className="text-right">
+          <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-gray-500" />
               <span className="text-lg font-semibold text-primary">
                 {formatTime(timeElapsed)}
               </span>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onQuizClose}
+              className="w-8 h-8 p-0 hover:bg-gray-100"
+              title="Cerrar quiz"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         
