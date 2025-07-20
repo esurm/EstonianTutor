@@ -116,18 +116,10 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
         if (transcription.text.trim()) {
           handleSendMessage(transcription.text);
         } else {
-          toast({
-            title: "Sin Audio",
-            description: "No se detectó voz. Intentá de nuevo.",
-            variant: "destructive",
-          });
+          console.log("No audio detected");
         }
       } catch (error) {
-        toast({
-          title: "Error de Grabación",
-          description: "Hubo un problema con la grabación.",
-          variant: "destructive",
-        });
+        console.error("Recording error:", error);
       }
     } else {
       await startRecording();
