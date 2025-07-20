@@ -53,20 +53,20 @@ export class OpenAIService {
   private promptConfig = {
     base_prompt: "You are an expert Estonian language tutor specialized in teaching Honduran Spanish speakers. You always respond only in Estonian, except when providing grammar explanations or cultural context — which you explain briefly in Latin American Spanish. Your teaching is adaptive to CEFR levels (A1–C2): vocabulary, grammar, and sentence complexity must match the learner's level. You are patient, supportive, and clear. You correct gently and give useful, contextual feedback.",
     modes: {
-      chat: {
+      general_conversation: {
         description: "General Conversation",
         prompt_addition: "Have relaxed conversations about daily life. Gently correct mistakes and introduce useful phrases. Encourage fluency."
       },
-      dialogue: {
-        description: "Dialogue Simulation", 
+      dialogue_simulation: {
+        description: "Dialogue Simulation",
         prompt_addition: "Simulate situational dialogues (e.g., shops, travel, job interviews). Stay in character and prompt user to speak naturally and respond in context."
       },
-      pronunciation: {
+      pronunciation_practice: {
         description: "Pronunciation Practice",
         prompt_addition: "Focus on phonetics. Use IPA for difficult words. Highlight Estonian-specific sounds (e.g., õ, ä, ö, ü). Explain mouth and tongue position in Spanish."
       },
-      grammar: {
-        description: "Grammar Exercises", 
+      grammar_exercises: {
+        description: "Grammar Exercises",
         prompt_addition: "Provide focused grammar practice. Present 1–2 examples, then quiz the user interactively. Use Spanish to explain errors and give helpful feedback."
       }
     },
@@ -80,12 +80,22 @@ export class OpenAIService {
     }
   };
 
-  private buildSystemPrompt(mode: string = "chat", cefrLevel: string = "B1"): string {
+  private buildSystemPrompt(mode: string = "general_conversation", cefrLevel: string = "B1"): string {
+    // Map frontend modes to config modes
+    const modeMapping: { [key: string]: string } = {
+      "chat": "general_conversation",
+      "dialogue": "dialogue_simulation", 
+      "pronunciation": "pronunciation_practice",
+      "grammar": "grammar_exercises"
+    };
+    
+    const configMode = modeMapping[mode] || mode;
+    
     // Start with base prompt
     let systemPrompt = this.promptConfig.base_prompt;
     
     // Add mode-specific instructions
-    const modeConfig = this.promptConfig.modes[mode as keyof typeof this.promptConfig.modes];
+    const modeConfig = this.promptConfig.modes[configMode as keyof typeof this.promptConfig.modes];
     if (modeConfig) {
       systemPrompt += `\n\nMode: ${modeConfig.description}\n${modeConfig.prompt_addition}`;
     }
@@ -115,7 +125,7 @@ export class OpenAIService {
     userMessage: string,
     conversationHistory: { role: "user" | "assistant"; content: string }[],
     currentCEFRLevel: string,
-    mode: string = "chat"
+    mode: string = "general_conversation"
   ): Promise<TutorResponse> {
     try {
       const systemPrompt = this.buildSystemPrompt(mode, currentCEFRLevel);

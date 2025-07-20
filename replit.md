@@ -41,8 +41,9 @@ The application uses a comprehensive schema designed around language learning:
 
 **OpenAI Service**: 
 - GPT-4o powered conversational tutor with specialized Estonian teaching persona
-- **Dynamic JSON-based prompt system**: Assembles prompts at runtime based on user's CEFR level (A1-C2) and conversation mode
-- Mode-specific prompts for general conversation, dialogue simulation, pronunciation practice, and grammar exercises
+- **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
+- Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
+- CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
 - Grammar correction and Honduras-Estonia cultural comparisons
