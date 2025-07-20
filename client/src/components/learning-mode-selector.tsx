@@ -18,7 +18,6 @@ interface LearningModeProps {
 }
 
 export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
-  const [selectedMode, setSelectedMode] = useState<string | null>(null);
 
   const modes = [
     {
@@ -80,7 +79,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
   ];
 
   const handleModeClick = (modeId: string) => {
-    setSelectedMode(modeId);
+    // Directly trigger the mode selection without showing selection state
     onModeSelect(modeId as "quiz" | "dialogue" | "pronunciation" | "grammar");
   };
 
@@ -96,8 +95,6 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {modes.map((mode) => {
             const Icon = mode.icon;
-            const isSelected = selectedMode === mode.id;
-            
             return (
               <Button
                 key={mode.id}
@@ -105,12 +102,10 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 onClick={() => handleModeClick(mode.id)}
                 className={`
                   group p-4 h-auto flex-col items-start space-y-0 
-                  bg-gradient-to-br ${mode.gradientFrom} ${mode.gradientTo} 
-                  border ${mode.borderColor} 
-                  ${mode.hoverFrom} ${mode.hoverTo} 
+                  bg-gray-50 border border-gray-200
+                  hover:bg-gray-100 hover:border-gray-300
                   transition-all duration-200 
                   hover:shadow-md hover:scale-[1.02]
-                  ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}
                 `}
               >
                 <div className="w-full flex items-center justify-between mb-3">
@@ -130,21 +125,14 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                     {mode.description}
                   </p>
                 </div>
-                
-                {isSelected && (
-                  <div className="w-full flex items-center justify-center mt-2 pt-2 border-t border-gray-200">
-                    <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                    <span className="text-xs text-primary ml-1 font-medium">Seleccionado</span>
-                  </div>
-                )}
               </Button>
             );
           })}
         </div>
         
-        <div className="mt-6 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <div className="flex items-start space-x-3">
-            <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
+            <Lightbulb className="h-5 w-5 text-blue-600 mt-0.5" />
             <div>
               <h4 className="font-medium text-gray-900 mb-1">Sugerencia del Tutor</h4>
               <p className="text-sm text-gray-600">
