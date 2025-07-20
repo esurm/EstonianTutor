@@ -223,23 +223,28 @@ export class SpeechService {
   }
 
   private createMixedLanguageSSML(text: string): string {
-    // Simple approach: use Spanish (Carlos) as primary with Estonian parts marked
-    const processedText = text
-      .replace(/([a-zA-ZõäöüšžÕÄÖÜŠŽ]+(?:\s+[a-zA-ZõäöüšžÕÄÖÜŠŽ]+)*)/g, (match) => {
-        // If the match contains Estonian characters, wrap in Estonian voice
-        if (/[õäöüšž]/i.test(match)) {
-          return `<voice name="et-EE-AnuNeural">${match}</voice>`;
-        }
-        return match;
-      });
-
-    return `
-      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="es-HN">
-        <voice name="es-HN-CarlosNeural">
-          ${processedText}
-        </voice>
-      </speak>
-    `;
+    // Detect if text has Estonian content
+    const hasEstonian = /[õäöüšž]|mis|kes|kus|kuidas|on|ei|ja|või|ning/i.test(text);
+    
+    if (hasEstonian) {
+      // For mixed content, prioritize Estonian voice since it's the learning target
+      return `
+        <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="et-EE">
+          <voice name="et-EE-AnuNeural">
+            ${text.replace(/[""]/g, '"')}
+          </voice>
+        </speak>
+      `;
+    } else {
+      // Spanish-only content uses Carlos
+      return `
+        <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="es-HN">
+          <voice name="es-HN-CarlosNeural">
+            ${text.replace(/[""]/g, '"')}
+          </voice>
+        </speak>
+      `;
+    }
   }
 }
 
