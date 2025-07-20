@@ -117,23 +117,22 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   };
 
   const handleNextQuestion = () => {
-    if (!selectedAnswer && currentQuestion?.questionType !== "completion") {
+    const isCompletionQuestion = currentQuestion?.questionType === "completion" || currentQuestion?.type === "completion";
+    
+    if (!selectedAnswer || selectedAnswer.trim() === "") {
       toast({
-        title: "Selecciona una respuesta",
-        description: "Debés elegir una opción antes de continuar.",
+        title: isCompletionQuestion ? "Escribe tu respuesta" : "Selecciona una respuesta",
+        description: isCompletionQuestion ? "Debés escribir una respuesta antes de continuar." : "Debés elegir una opción antes de continuar.",
         variant: "destructive",
       });
       return;
     }
 
-    // For completion questions, use the user's text input
-    const answerToUse = currentQuestion?.questionType === "completion" ? selectedAnswer : selectedAnswer;
-
     const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
     
     const answerData: QuizAnswer = {
       question: currentQuestion.question,
-      type: currentQuestion.type,
+      type: currentQuestion.questionType || currentQuestion.type,
       options: currentQuestion.options,
       correctAnswer: currentQuestion.correctAnswer,
       userAnswer: selectedAnswer,
@@ -336,18 +335,22 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
         {/* Answer Options */}
         <div className="space-y-3">
-          {currentQuestion.questionType === "completion" ? (
+          {currentQuestion.questionType === "completion" || currentQuestion.type === "completion" ? (
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Escribe tu respuesta:
+                Completa la oración escribiendo la palabra en estonio:
               </label>
               <input
                 type="text"
                 value={selectedAnswer}
                 onChange={(e) => setSelectedAnswer(e.target.value)}
-                placeholder="Escribe la palabra o frase en estonio..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                placeholder="Escribe la palabra correcta en estonio..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                autoFocus
               />
+              <p className="text-xs text-gray-500 italic">
+                Pista: La respuesta debe estar en estonio y coincidir exactamente con la palabra correcta.
+              </p>
             </div>
           ) : (
             currentQuestion.options?.map((option, index) => {

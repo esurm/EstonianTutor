@@ -224,25 +224,27 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             role: "system",
             content: `Genera un quiz de estonio para nivel ${cefrLevel}${category ? ` en la categoría ${category}` : ""}.
 
-Crea 5 preguntas variadas (múltiple opción y completar espacios).
+Crea 5 preguntas variadas (múltiple opción y completar espacios) APROPIADAS para el nivel específico.
 Las explicaciones deben estar en español hondureño.
 
 NIVEL ${cefrLevel} - DIFICULTAD ESPECÍFICA:
 ${difficultyGuidance}
 
 Tipos de preguntas:
-- "multiple_choice": 4 opciones, una correcta
-- "completion": usuario escribe la respuesta
+- "multiple_choice": 4 opciones, una correcta (questionType: "multiple_choice")
+- "completion": usuario escribe la respuesta (questionType: "completion")
+
+IMPORTANTE: Para preguntas "completion", presenta la oración con un espacio en blanco usando _____ donde el usuario debe completar.
 
 Responde en JSON:
 {
   "questions": [
     {
-      "question": "pregunta en español hondureño",
-      "type": "multiple_choice" | "completion",
+      "question": "pregunta o frase con espacio en blanco (usa _____ para espacios a completar)",
+      "questionType": "multiple_choice" | "completion",
       "options": ["opción1", "opción2", "opción3", "opción4"] (solo para multiple_choice),
-      "correctAnswer": "respuesta correcta",
-      "explanation": "explicación en español hondureño",
+      "correctAnswer": "respuesta correcta en estonio",
+      "explanation": "explicación en español hondureño del por qué es correcta",
       "cefrLevel": "${cefrLevel}"
     }
   ]
@@ -266,12 +268,29 @@ Responde en JSON:
 
   private getDifficultyGuidance(cefrLevel: string): string {
     const guidance = {
-      A1: "Usa vocabulario básico (saludos, números, colores). Estructuras simples. Frases de 3-5 palabras.",
-      A2: "Vocabulario cotidiano (familia, trabajo, compras). Oraciones simples con presente y pasado básico.",
-      B1: "Temas familiares (viajes, hobbies, planes). Usa futuro, condicional básico. Expresiones de opinión simples.",
-      B2: "Temas abstractos (cultura, sociedad). Estructuras complejas, subjuntivo ocasional. Vocabulario especializado.",
-      C1: "Temas especializados (política, filosofía). Matices de significado. Expresiones idiomáticas estonias.",
-      C2: "Dominio casi nativo. Sutilezas culturales. Registro formal e informal. Literatura estonia."
+      A1: `Vocabulario básico (saludos, números 1-10, colores básicos, familia inmediata). 
+           Frases muy simples de 3-5 palabras. Presente simple solamente.
+           Ejemplos: "Tere!" (Hola), "Mul on..." (Yo tengo...), números, días de la semana.`,
+      
+      A2: `Vocabulario cotidiano (100-200 palabras: comida, ropa, transporte, trabajo básico). 
+           Oraciones simples, presente y pasado simple. Preguntas básicas con küsisõnad.
+           Ejemplos: compras, describir rutina diaria, experiencias pasadas simples.`,
+      
+      B1: `Vocabulario intermedio (500+ palabras). Temas familiares: viajes, hobbies, planes futuros.
+           Usa tiempo futuro, condicional básico. Conectores simples (ja, aga, või, sest).
+           Ejemplos: expresar opiniones, hablar de experiencias, hacer planes.`,
+      
+      B2: `Vocabulario expandido (1000+ palabras). Temas abstractos: cultura estonia, sociedad, trabajo.
+           Estructuras complejas, casos gramaticales avanzados. Subjuntivo ocasional.
+           Ejemplos: argumentar puntos de vista, discutir problemas sociales.`,
+      
+      C1: `Vocabulario especializado (2000+ palabras). Temas complejos: política, filosofía, historia estonia.
+           Matices de significado, expresiones idiomáticas estonias. Registro formal.
+           Ejemplos: literatura estonia, debates académicos, cultura profesional.`,
+      
+      C2: `Dominio casi nativo (3000+ palabras). Sutilezas culturales específicas de Estonia.
+           Registro formal e informal fluido. Referencias a literatura y cultura estonia.
+           Ejemplos: textos literarios, humor estonio, dialectos regionales.`
     };
     return guidance[cefrLevel as keyof typeof guidance] || guidance.B1;
   }
