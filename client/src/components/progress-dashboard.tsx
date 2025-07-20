@@ -58,8 +58,8 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
     );
   }
 
-  const levelInfo = getLevelInfo(user?.cefrLevel || "B1");
-  const progressInfo = getProgressToNextLevel(user?.cefrLevel || "B1");
+  const levelInfo = getLevelInfo((user as any)?.cefrLevel || "B1");
+  const progressInfo = getProgressToNextLevel((user as any)?.cefrLevel || "B1");
   
   const getSessionTypeIcon = (type: string) => {
     switch (type) {
@@ -110,7 +110,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-90">Nivel CEFR Actual</p>
-              <p className="text-2xl font-bold">{user?.cefrLevel}</p>
+              <p className="text-2xl font-bold">{(user as any)?.cefrLevel}</p>
               <p className="text-xs opacity-75">{levelInfo.name}</p>
             </div>
             <div className="text-right">
@@ -141,23 +141,23 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-gray-50 rounded-lg p-3 text-center">
             <BookOpen className="h-6 w-6 mx-auto mb-2 text-primary" />
-            <p className="text-2xl font-bold text-primary">{user?.wordsLearned || 0}</p>
+            <p className="text-2xl font-bold text-primary">{(user as any)?.wordsLearned || 0}</p>
             <p className="text-xs text-gray-600">Palabras Aprendidas</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
-            <p className="text-2xl font-bold text-green-500">{user?.accuracy || 0}%</p>
+            <p className="text-2xl font-bold text-green-500">{(user as any)?.accuracy || 0}%</p>
             <p className="text-xs text-gray-600">Precisión</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
             <Award className="h-6 w-6 mx-auto mb-2 text-purple-500" />
-            <p className="text-2xl font-bold text-purple-500">{user?.streak || 0}</p>
+            <p className="text-2xl font-bold text-purple-500">{(user as any)?.streak || 0}</p>
             <p className="text-xs text-gray-600">Días Seguidos</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
             <Clock className="h-6 w-6 mx-auto mb-2 text-orange-500" />
             <p className="text-2xl font-bold text-orange-500">
-              {formatDuration(user?.totalTime || 0)}
+              {formatDuration((user as any)?.totalTime || 0)}
             </p>
             <p className="text-xs text-gray-600">Tiempo Total</p>
           </div>
@@ -218,20 +218,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
           </div>
         </div>
 
-        {/* Achievement Badge */}
-        {user && user.streak >= 7 && (
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-3">
-            <div className="flex items-center space-x-2">
-              <Award className="h-5 w-5 text-yellow-600" />
-              <div>
-                <p className="font-medium text-yellow-800">¡Racha Increíble!</p>
-                <p className="text-sm text-yellow-700">
-                  {user.streak} días consecutivos practicando
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+
       </CardContent>
     </Card>
   );

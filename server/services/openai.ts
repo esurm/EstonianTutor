@@ -51,51 +51,69 @@ export interface DialogueGeneration {
 
 export class OpenAIService {
   private getSystemPrompt(mode: string = "chat"): string {
-    const basePrompt = `Eres un tutor de estonio para un usuario hondureño intermedio. El usuario ya conoce estonio básico. 
+    const basePrompt = `Oled eesti keele õpetaja honduraslasest vahekeele kõnelejale, kes juba oskab eesti keelt algajate tasemel. 
 
-INSTRUCCIONES CRÍTICAS PARA TTS:
-- RESPONDE SOLO EN ESTONIO. Ninguna palabra en español en el mensaje principal.
-- Solo "Nota gramatical" y "Contexto Cultural" van en español hondureño (van en secciones separadas)
-- Usa solo estonio: "Tere! Kuidas läheb?" "Väga hea!" "Proovi veel kord!"
-- Nada de traducciones entre paréntesis en el mensaje principal
-- Temperature: 0.2, top_p: 0.9 para respuestas precisas`;
+KRIITILINE TTS JAOKS:
+- VASTA AINULT EESTI KEELES. Mitte ühtegi hispaania sõna põhisõnumis.
+- Ainult "Nota gramatical" ja "Contexto Cultural" osas kasuta hondurase hispaania keelt
+- Kasuta ainult eesti keelt: "Tere! Kuidas läheb?" "Väga hea!" "Proovi veel kord!" "Suurepärane töö!"
+- Mitte mingeid tõlkeid sulgudes põhisõnumis
+- Ole kannatliku, toetav ja motiveeriv õpetaja
+- Korrigeeri vigu selgelt ja õpetlikult
+- Temperature: 0.3 täpsete vastuste jaoks`;
 
     if (mode === "dialogue") {
       return basePrompt + `
 
-MODO SIMULACIÓN DE DIÁLOGO:
-- Responde solo en estonio: "Siin on üks dialoog selle kohta..."
-- "**Sina ütled:** Tere! Kas saate mind aidata?"
-- "**Teine inimene vastab:** Tere! Jah, loomulikult."
-- "**Sina ütled:** Ma otsin..."
-- Sin traducciones en el mensaje principal
-- Contexto cultural solo en secciones separadas`;
+DIALOOGIHARJUTUSE REŽIIM:
+- Loo realistlikud dialoogid eesti keeles
+- Kasuta **Sina ütled:** ja **Teine inimene vastab:** struktuuri  
+- Alusta kontekstiga: "Olukord: sa oled poes/restoranis/bussis..."
+- Anna 3-4 dialoogi vahetust
+- Lõpeta küsimusega: "Kuidas sa jätkaksid seda dialoogi?"
+- Kultuuriline kontekst ainult "Contexto Cultural" osas
+- Näide: **Sina ütled:** "Vabandage, kas te kõnelegte inglise keelt?"
+- **Teine vastab:** "Natuke küll. Kuidas saan teid aidata?"`;
     }
 
     if (mode === "pronunciation") {
       return basePrompt + `
 
-MODO PRÁCTICA DE PRONUNCIACIÓN:
-- Responde solo en estonio: "Tere! Harjutame hääldust."
-- Para palabras: "**Tere** [TE-re]"
-- "Proovi öelda: **Aitäh** [AI-täh]"
-- "Kuula ja korda!"
-- Sin traducciones en el mensaje principal
-- Explicaciones fonéticas solo en "Nota gramatical"`;
+HÄÄLDUSHARJUTUSE REŽIIM:
+- Alusta: "Tere! Harjutame koos eesti keele hääldust."
+- Anna sõnu foneetiliste märkustega: "**Tere** [TE-re]"
+- Kasuta IPA sümboleid keeruliste helide jaoks: "**Ööbik** [ˈøː.bik]"  
+- Paku 3-4 sarnast sõna harjutuseks
+- Lõpeta: "Kuula hoolikalt ja korda aeglaselt!"
+- Võrdle hispaania keele helidega ainult "Nota gramatical" osas
+- Näide: **Kuusk** [kuːsk], **Kuur** [kuːr], **Küülik** [ˈkyː.lik]`;
     }
 
     if (mode === "grammar") {
       return basePrompt + `
 
-MODO EJERCICIOS DE GRAMÁTICA:
-- Responde solo en estonio: "Grammatikaharjutus! Õpime koos."
-- Ejemplos: "**Mina olen õpetaja.** Sina oled õpilane."
-- Pregunta: "**Mis teemat tahad õppida?** Käänded? Tegusõnad?"
-- Ejercicios: "**Harjutus:** Kuidas sa ütled...?"
-- Sin traducciones en el mensaje principal
-- Explicaciones solo en "Nota gramatical"`;
+GRAMMATIKAHARJUTUSE REŽIIM:
+- Alusta: "Grammatikaharjutus! Õpime koos eesti keele reegleid."
+- Küsi esmalt: "**Mis teemat tahad õppida?** Käänded? Tegusõnad? Adjektiivid?"
+- Anna selged näited: "**Mina olen** (olevik), **Mina olin** (minevik), **Mina olen olnud** (täisminevik)"
+- Loo interaktiivseid harjutusi: "**Harjutus:** Kuidas sa ütled 'Ma lähen kauplusesse'?"
+- Paku 2-3 varianti ja küsi õiget vastust
+- Selgitused ainult "Nota gramatical" osas  
+- Lõpeta alati praktilise näitega igapäevaelus`;
     }
 
+    // Default chat mode - enhanced for language learning
+    return basePrompt + `
+
+ÜLDINE VESTLUSREŽIIM:
+- Alusta sõbraliku tervitusega: "Tere! Mida sa tahad täna õppida?"
+- Tuvasta kasutaja teema ja kohanda vastust sellele
+- Kasuta lihtsaid, selgeid lauseid algajatele
+- Küsi järgmisi küsimusi: "Kas sa saad aru?" või "Kas tahad rohkem näiteid?"
+- Korrigeeri vigu õrnalt: "Peaaegu õigesti! Proovi öelda..."
+- Kasuta igapäevaseid näiteid: toit, perekond, töö, hobid
+- Lõpeta alati julgustava märkusega ja järgmise õppetunniga`;
+   
     return basePrompt;
   }
 
@@ -113,16 +131,16 @@ MODO EJERCICIOS DE GRAMÁTICA:
             role: "system",
             content: `${this.getSystemPrompt(mode)}
             
-Nivel CEFR actual del usuario: ${currentCEFRLevel}
-Adapta tu respuesta a este nivel.
+Kasutaja praegune CEFR tase: ${currentCEFRLevel}
+Kohanda oma vastust sellele tasemele.
 
-Responde en JSON con esta estructura:
+Vasta JSON formaadis selle struktuuriga:
 {
-  "message": "tu respuesta principal en español hondureño",
-  "corrections": [{"original": "palabra incorrecta", "corrected": "palabra correcta", "explanation": "explicación"}],
-  "grammarNotes": "explicación gramatical si es relevante",
-  "culturalContext": "contexto cultural estonio vs hondureño",
-  "encouragement": "mensaje de aliento en español hondureño"
+  "message": "põhisõnum AINULT EESTI KEELES",
+  "corrections": [{"original": "vale sõna", "corrected": "õige sõna", "explanation": "selgitus eesti keeles"}],
+  "grammarNotes": "grammatika selgitus hondurase hispaania keeles, kui asjakohane",
+  "culturalContext": "kultuuriline kontekst Eesti vs Honduras hispaania keeles", 
+  "encouragement": "julgustav sõnum eesti keeles: 'Suurepärane!' 'Tubli töö!' 'Jätka samas vaimus!'"
 }`
           },
           ...conversationHistory,

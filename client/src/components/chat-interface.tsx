@@ -235,7 +235,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 'calc(100vh - 280px)', maxHeight: 'calc(100vh - 280px)' }}>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ height: 'calc(100vh - 320px)' }}>
           {messages.map((message) => (
             <div key={message.id}>
               {message.source === "assistant" ? (
