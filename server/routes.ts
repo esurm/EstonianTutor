@@ -47,18 +47,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to get current user (authenticated or demo)
+  const getCurrentUserForRequest = async (req: any) => {
+    if (req.isAuthenticated()) {
+      return req.user;
+    } else {
+      return await getDemoUser();
+    }
+  };
+
   app.patch("/api/user", async (req, res) => {
     try {
       const updates = req.body;
-      let updatedUser;
-      
-      if (req.isAuthenticated()) {
-        updatedUser = await storage.updateUser((req.user as any).id, updates);
-      } else {
-        // Fallback to demo user for development
-        const demoUser = await getDemoUser();
-        updatedUser = await storage.updateUser(demoUser.id, updates);
-      }
+      const currentUser = await getCurrentUserForRequest(req);
+      const updatedUser = await storage.updateUser(currentUser.id, updates);
       res.json(updatedUser);
     } catch (error) {
       res.status(500).json({ error: "Failed to update user" });
@@ -69,15 +71,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, sessionId } = req.body;
+      const currentUser = await getCurrentUserForRequest(req);
       
       let session;
       if (sessionId) {
         session = await storage.getSession(sessionId);
       } else {
         session = await storage.createSession({
-          userId: defaultUser!.id,
+          userId: currentUser.id,
           sessionType: "chat",
-          cefrLevelAtStart: defaultUser!.cefrLevel,
+          cefrLevelAtStart: currentUser.cefrLevel,
           endTime: null,
           score: null,
           wordsUsed: 0,
@@ -112,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tutorResponse = await openaiService.getChatResponse(
         message,
         conversationHistory,
-        defaultUser!.cefrLevel
+        currentUser.cefrLevel
       );
 
       // Generate TTS for response
@@ -189,13 +192,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quiz/generate", async (req, res) => {
     try {
       const { cefrLevel, category } = req.body;
-      const quiz = await openaiService.generateQuiz(cefrLevel || defaultUser!.cefrLevel, category);
+      const currentUser = await getCurrentUserForRequest(req);
+      const quiz = await openaiService.generateQuiz(cefrLevel || currentUser.cefrLevel, category);
       
       // Create session for quiz
       const session = await storage.createSession({
-        userId: defaultUser!.id,
+        userId: currentUser.id,
         sessionType: "quiz",
-        cefrLevelAtStart: defaultUser!.cefrLevel,
+        cefrLevelAtStart: currentUser.cefrLevel,
         endTime: null,
         score: null,
         wordsUsed: 0,
@@ -216,6 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/quiz/submit", async (req, res) => {
     try {
       const { sessionId, answers, responseTime } = req.body;
+      const currentUser = await getCurrentUserForRequest(req);
       
       const session = await storage.getSession(sessionId);
       if (!session) {
@@ -258,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const responseTimes = responseTime;
       
       const assessment = await cefrAssessmentService.assessAndUpdateUserLevel(
-        defaultUser!.id,
+        currentUser.id,
         userResponses,
         responseTimes,
         score
@@ -280,9 +285,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/dialogue/generate", async (req, res) => {
     try {
       const { scenario, cefrLevel } = req.body;
+      const currentUser = await getCurrentUserForRequest(req);
       const dialogue = await openaiService.generateDialogue(
         scenario,
-        cefrLevel || defaultUser!.cefrLevel
+        cefrLevel || currentUser.cefrLevel
       );
       res.json(dialogue);
     } catch (error) {
@@ -295,13 +301,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/cefr/adjust", async (req, res) => {
     try {
       const { direction } = req.body;
+      const currentUser = await getCurrentUserForRequest(req);
       const newLevel = await cefrAssessmentService.manualLevelAdjustment(
-        defaultUser!.id,
+        currentUser.id,
         direction
       );
-      
-      // Update our cached user
-      defaultUser = await storage.getUser(defaultUser!.id);
       
       res.json({ newLevel });
     } catch (error) {
@@ -312,7 +316,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/cefr/recommendations", async (req, res) => {
     try {
-      const recommendations = await cefrAssessmentService.getAdaptiveDifficultyContent(defaultUser!.id);
+      const currentUser = await getCurrentUserForRequest(req);
+      const recommendations = await cefrAssessmentService.getAdaptiveDifficultyContent(currentUser.id);
       res.json(recommendations);
     } catch (error) {
       console.error("CEFR recommendations error:", error);
@@ -323,7 +328,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Progress routes
   app.get("/api/progress", async (req, res) => {
     try {
-      const sessions = await storage.getUserSessions(defaultUser!.id);
+      const currentUser = await getCurrentUserForRequest(req);
+      const sessions = await storage.getUserSessions(currentUser.id);
       const recentSessions = sessions.slice(0, 10).map(session => ({
         id: session.id,
         type: session.sessionType,
@@ -335,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }));
 
       res.json({
-        user: defaultUser,
+        user: currentUser,
         recentSessions
       });
     } catch (error) {

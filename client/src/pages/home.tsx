@@ -71,12 +71,14 @@ export default function Home() {
         });
         break;
       case "reviewMistakes":
+        setCurrentMode("chat");
         toast({
           title: "Revisar Errores",
           description: "Esta función estará disponible pronto.",
         });
         break;
       case "practiceWeakAreas":
+        setCurrentMode("chat");
         toast({
           title: "Áreas Débiles",
           description: "Generando ejercicios personalizados...",

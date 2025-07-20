@@ -21,10 +21,10 @@ export function Navigation() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">ET</span>
+                <span className="text-white font-bold text-lg">AE</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Estonian Tutor</h1>
+                <h1 className="text-xl font-bold text-gray-900">Aprende Estonio</h1>
                 <p className="text-xs text-gray-500">Cargando...</p>
               </div>
             </div>
@@ -42,11 +42,11 @@ export function Navigation() {
         <div className="flex justify-between items-center h-16">
           <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">ET</span>
+              <span className="text-white font-bold text-lg">AE</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Estonian Tutor</h1>
-              <p className="text-xs text-gray-500">Aprende Estonio Fácilmente</p>
+              <h1 className="text-xl font-bold text-gray-900">Aprende Estonio</h1>
+              <p className="text-xs text-gray-500">Tutor Inteligente de Idiomas</p>
             </div>
           </Link>
           
