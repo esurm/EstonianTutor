@@ -14,25 +14,39 @@ import {
 } from "lucide-react";
 
 interface LearningModeProps {
-  onModeSelect: (mode: "quiz" | "dialogue" | "pronunciation" | "grammar") => void;
+  onModeSelect: (mode: "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar") => void;
 }
 
 export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
 
   const modes = [
     {
-      id: "quiz",
+      id: "quiz-vocabulary",
       title: "Quiz de Vocabulario",
-      description: "Preguntas adaptadas a tu nivel",
+      description: "Preguntas de palabras y significados",
       icon: HelpCircle,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-blue-500",
-      gradientFrom: "from-blue-50",
-      gradientTo: "to-blue-100",
-      borderColor: "border-blue-200",
-      hoverFrom: "hover:from-blue-100",
-      hoverTo: "hover:to-blue-200",
-      iconColor: "bg-blue-500"
+      badgeColor: "bg-green-500",
+      gradientFrom: "from-green-50",
+      gradientTo: "to-green-100",
+      borderColor: "border-green-200",
+      hoverFrom: "hover:from-green-100",
+      hoverTo: "hover:to-green-200",
+      iconColor: "bg-green-500"
+    },
+    {
+      id: "quiz-grammar",
+      title: "Ejercicios de Gramática",
+      description: "Conjugaciones, casos y estructuras",
+      icon: BookOpen,
+      badge: "AUTO-GENERADO",
+      badgeColor: "bg-purple-500",
+      gradientFrom: "from-purple-50",
+      gradientTo: "to-purple-100",
+      borderColor: "border-purple-200",
+      hoverFrom: "hover:from-purple-100",
+      hoverTo: "hover:to-purple-200",
+      iconColor: "bg-purple-500"
     },
     {
       id: "dialogue",
@@ -80,7 +94,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
 
   const handleModeClick = (modeId: string) => {
     // Directly trigger the mode selection without showing selection state
-    onModeSelect(modeId as "quiz" | "dialogue" | "pronunciation" | "grammar");
+    onModeSelect(modeId as "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar");
   };
 
   return (

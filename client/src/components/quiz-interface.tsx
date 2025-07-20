@@ -23,7 +23,7 @@ import {
 interface QuizInterfaceProps {
   onQuizComplete: (results: any) => void;
   onQuizClose: () => void;
-  category?: string;
+  category: "vocabulary" | "grammar";
 }
 
 interface QuizAnswer {
@@ -390,13 +390,16 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     );
   }
 
+  const cardBgColor = category === "vocabulary" ? "bg-green-50" : "bg-purple-50";
+  const headerBgColor = category === "vocabulary" ? "bg-green-100" : "bg-purple-100";
+  
   return (
-    <Card>
-      <CardHeader>
+    <Card className={cardBgColor}>
+      <CardHeader className={headerBgColor}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <CardTitle className="text-lg">
-              Quiz de Vocabulario - Nivel {user?.cefrLevel || "B1"}
+              {category === "vocabulary" ? "Quiz de Vocabulario" : "Ejercicios de Gramática"} - Nivel {user?.cefrLevel || "B1"}
             </CardTitle>
             <p className="text-sm text-gray-600">
               Pregunta {currentQuestionIndex + 1} de {questions.length}

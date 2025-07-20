@@ -44,7 +44,11 @@ The application uses a comprehensive schema designed around language learning:
 - **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
 - Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
-- **Enhanced Quiz Generation**: Creates level-appropriate quizzes with both multiple-choice and fill-in-the-blank questions
+- **Dual Quiz Generation System**: 
+  - **Vocabulary Quizzes**: Focus on word meanings, synonyms, themed vocabulary (70% multiple-choice, 30% completion)
+  - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
+  - Questions in Estonian with Spanish translations for comprehension
+  - Color-coded interface: Green for vocabulary, Purple for grammar
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
 - Grammar correction and Honduras-Estonia cultural comparisons

@@ -222,9 +222,24 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Genera un quiz de estonio para nivel ${cefrLevel}${category ? ` en la categoría ${category}` : ""}.
+            content: `Genera un quiz de estonio para nivel ${cefrLevel} enfocado en ${category === 'vocabulary' ? 'VOCABULARIO' : 'GRAMÁTICA'}.
 
-Crea 5 preguntas variadas (múltiple opción y completar espacios) APROPIADAS para el nivel específico.
+${category === 'vocabulary' ? `
+ENFOQUE EN VOCABULARIO:
+- Preguntas sobre significados de palabras
+- Sinónimos y antónimos  
+- Palabras relacionadas con temas específicos
+- Identificación de objetos y conceptos
+- 70% preguntas de opción múltiple, 30% completar
+` : `
+ENFOQUE EN GRAMÁTICA:
+- Conjugaciones verbales (presente, pasado, futuro)
+- Casos gramaticales (nominativo, genitivo, partitivo)
+- Estructura de oraciones y preposiciones
+- 30% preguntas de opción múltiple, 70% completar
+`}
+
+Crea 5 preguntas variadas APROPIADAS para el nivel específico.
 CRUCIAL: TODAS las preguntas y opciones deben estar COMPLETAMENTE EN ESTONIO. Solo las explicaciones en español hondureño.
 
 NIVEL ${cefrLevel} - DIFICULTAD ESPECÍFICA:

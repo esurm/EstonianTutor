@@ -7,11 +7,11 @@ import { QuizInterface } from "@/components/quiz-interface";
 import { ProgressDashboard } from "@/components/progress-dashboard";
 
 export default function Home() {
-  const [currentMode, setCurrentMode] = useState<"chat" | "quiz" | "dialogue" | "pronunciation" | "grammar">("chat");
+  const [currentMode, setCurrentMode] = useState<"chat" | "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar">("chat");
 
 
   const handleModeSelect = (mode: string) => {
-    setCurrentMode(mode as "quiz" | "dialogue" | "pronunciation" | "grammar");
+    setCurrentMode(mode as "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar");
   };
 
   const handleQuizComplete = (score: number) => {
@@ -21,8 +21,10 @@ export default function Home() {
 
   const renderMainContent = () => {
     switch (currentMode) {
-      case "quiz":
-        return <QuizInterface onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "quiz-vocabulary":
+        return <QuizInterface category="vocabulary" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "quiz-grammar":
+        return <QuizInterface category="grammar" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
       case "dialogue":
         return (
           <div className="space-y-6">
