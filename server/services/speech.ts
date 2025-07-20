@@ -99,6 +99,7 @@ export class SpeechService {
       // Use CEFR-aware SSML for Estonian content
       if (language === "et-EE" && cefrLevel) {
         ssml = this.generateSSML(text, cefrLevel);
+        console.log(`Generated SSML for CEFR ${cefrLevel}:`, ssml);
       } else {
         // Fallback to old method for Spanish and other languages
         const voiceName = this.getVoiceForLanguage(language, text);

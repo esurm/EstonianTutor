@@ -135,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         useEstonian = /[õäöüšž]|tere|tänan|palun|kuidas|mina|sina|olen/i.test(cleanMessageForTTS);
       }
       
-      console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode);
+      console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode, 'CEFR Level:', currentUser.cefrLevel);
       
       const tts = useEstonian 
         ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE", currentUser.cefrLevel)
