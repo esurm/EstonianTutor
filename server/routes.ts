@@ -119,8 +119,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mode
       );
 
-      // Generate TTS for response
-      const tts = await speechService.synthesizeSpeech(tutorResponse.message, "et-EE");
+      // Generate TTS for response using mixed language support
+      const tts = await speechService.synthesizeMixedLanguageSpeech(tutorResponse.message);
 
       // Save assistant message
       const assistantMessage = await storage.createMessage({

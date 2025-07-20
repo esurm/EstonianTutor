@@ -41,13 +41,18 @@ The application uses a comprehensive schema designed around language learning:
 
 **OpenAI Service**: 
 - GPT-4 powered conversational tutor with specialized Estonian teaching persona
+- Mode-specific prompts for dialogue simulation, pronunciation practice, and grammar exercises
 - Automatic CEFR level assessment based on user performance
-- Dynamic quiz and dialogue generation
-- Grammar correction and cultural context provision
+- Dynamic quiz and dialogue generation with cultural context
+- Grammar correction and Honduras-Estonia cultural comparisons
 
 **Speech Service**:
 - Whisper API integration for Spanish speech-to-text transcription
-- Azure Speech API for Estonian text-to-speech synthesis
+- Azure Speech API with dual-voice support:
+  - Anu (Estonian) voice for Estonian content
+  - Carlos (Honduras) voice for Spanish content
+- Mixed-language SSML generation for seamless audio transitions
+- Manual audio playback (auto-play disabled per user preference)
 - Real-time audio processing and playback management
 
 #### CEFR Assessment System

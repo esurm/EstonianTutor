@@ -79,10 +79,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       
       setMessages(prev => [...prev, assistantMessage]);
       
-      // Auto-play TTS audio
-      if (data.audioUrl) {
-        handlePlayAudio(data.audioUrl, `assistant-${data.messageId}`);
-      }
+      // Audio is available but not auto-played - user can click play button
       
       // Invalidate user data to update progress
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });

@@ -45,13 +45,16 @@ export class SpeechService {
 
   async synthesizeSpeech(text: string, language: string = "et-EE"): Promise<TextToSpeechResult> {
     try {
-      // Using Azure Speech API for Estonian TTS
+      // Using Azure Speech API for multi-language TTS
       const azureKey = process.env.AZURE_SPEECH_KEY || process.env.AZURE_SPEECH_KEY_ENV_VAR || "default_key";
       const azureRegion = process.env.AZURE_SPEECH_REGION || "eastus";
       
+      // Determine voice based on detected language content
+      const voiceName = this.getVoiceForLanguage(language, text);
+      
       const ssml = `
         <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${language}">
-          <voice name="et-EE-AnuNeural">
+          <voice name="${voiceName}">
             ${text}
           </voice>
         </speak>
@@ -163,6 +166,80 @@ export class SpeechService {
     }
     
     return matrix[str2.length][str1.length];
+  }
+
+  private getVoiceForLanguage(language: string, text: string): string {
+    // Detect if text contains Estonian content (check for Estonian characteristics)
+    const estonianIndicators = /[õäöüšž]|mis|kes|kus|kuidas|on|ei|ja|või|ning/i;
+    
+    // If text contains Estonian indicators or language is explicitly Estonian
+    if (language.startsWith("et") || estonianIndicators.test(text)) {
+      return "et-EE-AnuNeural"; // Anu voice for Estonian
+    }
+    
+    // For Spanish content, use Carlos from Honduras
+    if (language.startsWith("es") || language.includes("HN")) {
+      return "es-HN-CarlosNeural"; // Carlos voice for Spanish (Honduras)
+    }
+    
+    // Default to Spanish Honduras for mixed content
+    return "es-HN-CarlosNeural";
+  }
+
+  async synthesizeMixedLanguageSpeech(text: string): Promise<TextToSpeechResult> {
+    try {
+      const azureKey = process.env.AZURE_SPEECH_KEY || process.env.AZURE_SPEECH_KEY_ENV_VAR || "default_key";
+      const azureRegion = process.env.AZURE_SPEECH_REGION || "eastus";
+      
+      // Create mixed SSML for content with both languages
+      const mixedSsml = this.createMixedLanguageSSML(text);
+      
+      const response = await fetch(`https://${azureRegion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+        method: "POST",
+        headers: {
+          "Ocp-Apim-Subscription-Key": azureKey,
+          "Content-Type": "application/ssml+xml",
+          "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3"
+        },
+        body: mixedSsml
+      });
+
+      if (!response.ok) {
+        throw new Error(`Azure TTS error: ${response.statusText}`);
+      }
+
+      const audioBuffer = await response.arrayBuffer();
+      const base64Audio = Buffer.from(audioBuffer).toString('base64');
+      const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
+      
+      return {
+        audioUrl,
+        duration: Math.floor(text.length / 10)
+      };
+    } catch (error) {
+      console.error("Mixed language TTS error:", error);
+      throw new Error("Failed to synthesize mixed language speech");
+    }
+  }
+
+  private createMixedLanguageSSML(text: string): string {
+    // Simple approach: use Spanish (Carlos) as primary with Estonian parts marked
+    const processedText = text
+      .replace(/([a-zA-ZõäöüšžÕÄÖÜŠŽ]+(?:\s+[a-zA-ZõäöüšžÕÄÖÜŠŽ]+)*)/g, (match) => {
+        // If the match contains Estonian characters, wrap in Estonian voice
+        if (/[õäöüšž]/i.test(match)) {
+          return `<voice name="et-EE-AnuNeural">${match}</voice>`;
+        }
+        return match;
+      });
+
+    return `
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="es-HN">
+        <voice name="es-HN-CarlosNeural">
+          ${processedText}
+        </voice>
+      </speak>
+    `;
   }
 }
 
