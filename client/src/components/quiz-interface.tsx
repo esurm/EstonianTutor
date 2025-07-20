@@ -430,8 +430,15 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
                 value={selectedAnswer}
                 onChange={(e) => setSelectedAnswer(e.target.value)}
                 placeholder="Escribe la palabra correcta en estonio..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent text-lg ${
+                  showAnswerFeedback 
+                    ? (isAnswerCorrect 
+                        ? "border-green-500 bg-green-50 text-green-800 focus:ring-green-500" 
+                        : "border-red-500 bg-red-50 text-red-800 focus:ring-red-500")
+                    : "border-gray-300 focus:ring-primary"
+                }`}
                 autoFocus
+                disabled={showAnswerFeedback}
               />
               <p className="text-xs text-gray-500 italic">
                 Pista: La respuesta debe estar en estonio y coincidir exactamente con la palabra correcta.
@@ -441,29 +448,51 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             currentQuestion.options?.map((option, index) => {
               const optionLabel = String.fromCharCode(65 + index); // A, B, C, D
               const isSelected = selectedAnswer === option;
+              const isCorrect = option === currentQuestion.correctAnswer;
+              
+              // Color logic for feedback state
+              let buttonClass = "";
+              let circleClass = "";
+              let iconElement = null;
+              
+              if (showAnswerFeedback) {
+                if (isCorrect) {
+                  buttonClass = "border-green-500 bg-green-50 text-green-800 hover:bg-green-50";
+                  circleClass = "border-green-500 bg-green-500";
+                  iconElement = <CheckCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />;
+                } else if (isSelected && !isCorrect) {
+                  buttonClass = "border-red-500 bg-red-50 text-red-800 hover:bg-red-50";
+                  circleClass = "border-red-500 bg-red-500";
+                  iconElement = <XCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />;
+                } else {
+                  buttonClass = "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-50";
+                  circleClass = "border-gray-300";
+                }
+              } else {
+                buttonClass = isSelected 
+                  ? "border-primary bg-blue-50 hover:bg-blue-50" 
+                  : "hover:border-primary hover:bg-blue-50";
+                circleClass = isSelected 
+                  ? "border-primary bg-primary" 
+                  : "border-gray-300";
+                iconElement = isSelected ? (
+                  <CheckCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />
+                ) : null;
+              }
               
               return (
                 <Button
                   key={index}
                   variant="outline"
-                  onClick={() => handleAnswerSelect(option)}
-                  className={`w-full p-4 text-left justify-between h-auto ${
-                    isSelected 
-                      ? "border-primary bg-blue-50 hover:bg-blue-50" 
-                      : "hover:border-primary hover:bg-blue-50"
-                  }`}
+                  onClick={() => !showAnswerFeedback && handleAnswerSelect(option)}
+                  disabled={showAnswerFeedback}
+                  className={`w-full p-4 text-left justify-between h-auto ${buttonClass}`}
                 >
                   <span className="font-medium text-gray-900">
                     {optionLabel}) {option}
                   </span>
-                  <div className={`w-6 h-6 border-2 rounded-full transition-all ${
-                    isSelected 
-                      ? "border-primary bg-primary" 
-                      : "border-gray-300"
-                  }`}>
-                    {isSelected && (
-                      <CheckCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />
-                    )}
+                  <div className={`w-6 h-6 border-2 rounded-full transition-all ${circleClass}`}>
+                    {iconElement}
                   </div>
                 </Button>
               );
