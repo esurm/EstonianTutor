@@ -119,28 +119,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mode
       );
 
-      // Process message for TTS with bracket-based language detection
-      const messageForTTS = tutorResponse.message
+      // Clean message for TTS (remove markdown formatting)
+      const cleanMessageForTTS = tutorResponse.message
         .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold** formatting
         .replace(/\*(.*?)\*/g, '$1')      // Remove *italic* formatting
         .replace(/`([^`]+)`/g, '$1');     // Remove `code` formatting
       
-      // Check for Estonian brackets [et]...[/et] 
-      const hasEstonianBrackets = /\[et\].*?\[\/et\]/i.test(messageForTTS);
-      console.log('Language detection - Brackets found:', hasEstonianBrackets, 'Text sample:', messageForTTS.substring(0, 100));
-      
-      let tts;
-      if (hasEstonianBrackets) {
-        // Extract Estonian parts and create mixed TTS
-        const estonianParts = messageForTTS.match(/\[et\](.*?)\[\/et\]/gi) || [];
-        const cleanedForTTS = messageForTTS.replace(/\[et\](.*?)\[\/et\]/gi, '$1');
-        
-        console.log('Estonian parts found:', estonianParts);
-        tts = await speechService.synthesizeSpeech(cleanedForTTS, "et-EE");
+      // For special modes, use Estonian TTS since responses are mainly in Estonian
+      // For chat mode, detect language based on content
+      let useEstonian = false;
+      if (mode === "pronunciation" || mode === "grammar" || mode === "dialogue") {
+        useEstonian = true;
       } else {
-        // Pure Spanish content
-        tts = await speechService.synthesizeSpeech(messageForTTS, "es-HN");
+        // Regular chat mode - detect Estonian content
+        useEstonian = /[õäöüšž]|tere|tänan|palun|kuidas|mina|sina|olen/i.test(cleanMessageForTTS);
       }
+      
+      console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode);
+      
+      const tts = useEstonian 
+        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE")
+        : await speechService.synthesizeSpeech(cleanMessageForTTS, "es-HN");
 
       // Save assistant message
       const assistantMessage = await storage.createMessage({

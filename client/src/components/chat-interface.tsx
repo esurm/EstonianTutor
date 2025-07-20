@@ -143,19 +143,19 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
   const handlePlayAudio = async (audioUrl: string, messageId: string) => {
     try {
       // If this message is currently playing, pause it
-      if (playingAudioId === messageId && currentAudio) {
+      if (playingAudioId === messageId && currentAudio && !currentAudio.paused) {
         currentAudio.pause();
         setPlayingAudioId(null);
-        setCurrentAudio(null);
         return;
       }
 
-      // Stop any other audio
-      if (currentAudio) {
+      // Stop any other audio first
+      if (currentAudio && !currentAudio.paused) {
         currentAudio.pause();
+        currentAudio.currentTime = 0;
       }
 
-      // Play new audio
+      // Create and play new audio (only once)
       const audio = new Audio(audioUrl);
       setCurrentAudio(audio);
       setPlayingAudioId(messageId);
@@ -166,8 +166,17 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       };
       
       audio.onerror = () => {
+        console.error('Audio playback error');
         setPlayingAudioId(null);
         setCurrentAudio(null);
+      };
+      
+      audio.onpause = () => {
+        setPlayingAudioId(null);
+      };
+      
+      audio.onplay = () => {
+        setPlayingAudioId(messageId);
       };
       
       await audio.play();
@@ -213,15 +222,15 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className={`${headerColor} text-white`}>
+      <CardHeader className={`${headerColor} text-black`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-              <Bot className="h-5 w-5 text-white" />
+            <div className="w-10 h-10 bg-black bg-opacity-20 rounded-full flex items-center justify-center">
+              <Bot className="h-5 w-5 text-black" />
             </div>
             <div>
-              <h2 className="text-white font-semibold">{title}</h2>
-              <p className="text-white text-opacity-80 text-sm">¡Listo para ayudarte!</p>
+              <h2 className="text-black font-semibold">{title}</h2>
+              <p className="text-black text-opacity-80 text-sm">¡Listo para ayudarte!</p>
             </div>
           </div>
           
@@ -248,7 +257,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                         className="text-gray-900 text-sm mb-2"
                         dangerouslySetInnerHTML={{
                           __html: message.text
-                            .replace(/\[et\](.*?)\[\/et\]/g, '<strong class="text-blue-600">$1</strong>') // Estonian text in blue bold
+                            // Remove Estonian brackets since they're no longer used
                             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                             .replace(/\*(.*?)\*/g, '<em>$1</em>')
                             .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>')

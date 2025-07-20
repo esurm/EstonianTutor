@@ -101,7 +101,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 variant="ghost"
                 onClick={() => handleModeClick(mode.id)}
                 className={`
-                  group p-4 h-auto flex-col items-start space-y-0 
+                  group p-3 h-auto flex-col items-start space-y-0 
                   ${mode.id === 'quiz' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300' : 
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
@@ -110,19 +110,15 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                   hover:shadow-md hover:scale-[1.02]
                 `}
               >
-                <div className="w-full flex items-center justify-between mb-3">
-                  <div className={`w-10 h-10 ${mode.iconColor} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    <Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <Badge className={`text-xs text-white ${mode.badgeColor}`}>
-                    {mode.badge}
-                  </Badge>
-                </div>
-                
                 <div className="w-full text-left">
-                  <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-gray-800">
-                    {mode.title}
-                  </h4>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <h4 className="font-semibold text-gray-900 group-hover:text-gray-800">
+                      {mode.title}
+                    </h4>
+                    <Badge className={`text-xs text-white ${mode.badgeColor}`}>
+                      {mode.badge}
+                    </Badge>
+                  </div>
                   <p className="text-sm text-gray-600 group-hover:text-gray-700">
                     {mode.description}
                   </p>

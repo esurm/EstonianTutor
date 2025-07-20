@@ -58,7 +58,7 @@ export default function Home() {
               placeholder="Describí una situación: '¿Cómo pido ayuda en una tienda en Estonia?'" 
               mode="dialogue" 
               title="Simulación de Diálogo"
-              headerColor="bg-purple-500"
+              headerColor="bg-purple-100"
             />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
@@ -71,7 +71,7 @@ export default function Home() {
               placeholder="Escribí una palabra o frase en estonio para practicar pronunciación..." 
               mode="pronunciation"
               title="Práctica de Pronunciación"
-              headerColor="bg-green-500"
+              headerColor="bg-green-100"
             />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
@@ -84,7 +84,7 @@ export default function Home() {
               placeholder="Preguntá sobre gramática: '¿Cómo funcionan los casos en estonio?'" 
               mode="grammar"
               title="Ejercicios de Gramática"
-              headerColor="bg-orange-500"
+              headerColor="bg-orange-100"
             />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
