@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         session = await storage.createSession({
           userId: currentUser.id,
-          sessionType: mode === "dialogue" ? "dialogue" : mode === "pronunciation" ? "pronunciation" : mode === "grammar" ? "chat" : "chat",
+          sessionType: mode === "dialogue" ? "dialogue" : mode === "pronunciation" ? "pronunciation" : mode === "grammar" ? "grammar" : "chat",
           cefrLevelAtStart: currentUser.cefrLevel,
           endTime: null,
           score: null,

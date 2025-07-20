@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSpeech } from "@/hooks/use-speech";
 import { useCEFRTracking } from "@/hooks/use-cefr-tracking";
 import { api } from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
+
 import { 
   Mic, 
   MicOff, 
@@ -45,7 +45,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+
   const queryClient = useQueryClient();
   
   const { 
@@ -85,11 +85,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "No se pudo enviar el mensaje. Intentá de nuevo.",
-        variant: "destructive",
-      });
+      console.error("Failed to send message");
     }
   });
 
