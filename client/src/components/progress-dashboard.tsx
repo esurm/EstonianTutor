@@ -142,12 +142,12 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
           <div className="bg-gray-50 rounded-lg p-3 text-center min-h-[80px]">
             <BookOpen className="h-6 w-6 mx-auto mb-2 text-primary" />
             <p className="text-2xl font-bold text-primary">{(user as any)?.wordsLearned || 0}</p>
-            <p className="text-xs text-gray-600">Palabras Aprendidas</p>
+            <p className="text-xs text-gray-600">Palabras Nuevas</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center min-h-[80px]">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
             <p className="text-2xl font-bold text-green-500">{(user as any)?.accuracy || 0}%</p>
-            <p className="text-xs text-gray-600"><br />Precisión</p>
+            <p className="text-xs text-gray-600">Precisión</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center min-h-[80px]">
             <Award className="h-6 w-6 mx-auto mb-2 text-purple-500" />
