@@ -4,27 +4,44 @@ import { storage } from "./storage";
 import { openaiService } from "./services/openai";
 import { speechService } from "./services/speech";
 import { cefrAssessmentService } from "./services/cefr-assessment";
+import { setupAuth, requireAuth, getCurrentUser, type AuthUser } from "./auth";
 import { insertUserSchema, insertSessionSchema, insertMessageSchema, insertQuizSchema, type CEFRLevel } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Create default user for demo
-  let defaultUser = await storage.getUserByUsername("demo_user");
-  if (!defaultUser) {
-    defaultUser = await storage.createUser({
-      username: "demo_user",
-      cefrLevel: "B1",
-      wordsLearned: 247,
-      accuracy: 87,
-      streak: 12,
-      totalTime: 1680 // 28 hours in minutes
-    });
-  }
+  // Setup authentication
+  setupAuth(app);
 
-  // User routes
+  // Authentication routes
+  app.get("/api/auth/user", getCurrentUser);
+
+  // For development - fallback to demo user if not authenticated
+  const getDemoUser = async () => {
+    let defaultUser = await storage.getUserByEmail("demo@example.com");
+    if (!defaultUser) {
+      defaultUser = await storage.createUser({
+        email: "demo@example.com",
+        name: "Demo User",
+        cefrLevel: "B1",
+        wordsLearned: 247,
+        accuracy: 87,
+        streak: 12,
+        totalTime: 1680 // 28 hours in minutes
+      });
+    }
+    return defaultUser;
+  };
+
+  // User routes - support both authenticated users and demo mode
   app.get("/api/user", async (req, res) => {
     try {
-      res.json(defaultUser);
+      if (req.isAuthenticated()) {
+        res.json(req.user);
+      } else {
+        // Fallback to demo user for development
+        const demoUser = await getDemoUser();
+        res.json(demoUser);
+      }
     } catch (error) {
       res.status(500).json({ error: "Failed to get user" });
     }
@@ -33,7 +50,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/user", async (req, res) => {
     try {
       const updates = req.body;
-      const updatedUser = await storage.updateUser(defaultUser!.id, updates);
+      let updatedUser;
+      
+      if (req.isAuthenticated()) {
+        updatedUser = await storage.updateUser((req.user as any).id, updates);
+      } else {
+        // Fallback to demo user for development
+        const demoUser = await getDemoUser();
+        updatedUser = await storage.updateUser(demoUser.id, updates);
+      }
       res.json(updatedUser);
     } catch (error) {
       res.status(500).json({ error: "Failed to update user" });

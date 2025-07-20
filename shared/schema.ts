@@ -4,13 +4,17 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  cefrLevel: text("cefr_level").notNull().default("A1"), // A1, A2, B1, B2, C1, C2
+  googleId: text("google_id").unique(),
+  email: text("email").notNull().unique(),
+  name: text("name").notNull(),
+  profileImage: text("profile_image"),
+  cefrLevel: text("cefr_level").notNull().default("B1"), // A1, A2, B1, B2, C1, C2
   wordsLearned: integer("words_learned").notNull().default(0),
   accuracy: integer("accuracy").notNull().default(0), // percentage
   streak: integer("streak").notNull().default(0),
   totalTime: integer("total_time").notNull().default(0), // minutes
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const sessions = pgTable("sessions", {

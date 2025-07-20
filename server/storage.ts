@@ -1,3 +1,4 @@
+import { db } from "./db";
 import {
   users,
   sessions,
@@ -19,11 +20,13 @@ import {
   type InsertUserProgress,
   type CEFRLevel,
 } from "@shared/schema";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 
 export interface IStorage {
   // Users
   getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User>;
 
@@ -51,6 +54,124 @@ export interface IStorage {
   updateUserProgress(userId: number, vocabularyId: number, updates: Partial<UserProgress>): Promise<UserProgress>;
 }
 
+export class DatabaseStorage implements IStorage {
+  constructor() {}
+
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+
+  // Sessions
+  async createSession(session: InsertSession): Promise<Session> {
+    const [newSession] = await db.insert(sessions).values(session).returning();
+    return newSession;
+  }
+
+  async getSession(id: number): Promise<Session | undefined> {
+    const [session] = await db.select().from(sessions).where(eq(sessions.id, id));
+    return session;
+  }
+
+  async getUserSessions(userId: number): Promise<Session[]> {
+    return await db.select().from(sessions).where(eq(sessions.userId, userId)).orderBy(desc(sessions.startTime));
+  }
+
+  async updateSession(id: number, updates: Partial<Session>): Promise<Session> {
+    const [updatedSession] = await db
+      .update(sessions)
+      .set(updates)
+      .where(eq(sessions.id, id))
+      .returning();
+    return updatedSession;
+  }
+
+  // Messages
+  async createMessage(message: InsertMessage): Promise<Message> {
+    const [newMessage] = await db.insert(messages).values(message).returning();
+    return newMessage;
+  }
+
+  async getSessionMessages(sessionId: number): Promise<Message[]> {
+    return await db.select().from(messages).where(eq(messages.sessionId, sessionId)).orderBy(messages.timestamp);
+  }
+
+  // Quizzes
+  async createQuiz(quiz: InsertQuiz): Promise<Quiz> {
+    const [newQuiz] = await db.insert(quizzes).values(quiz).returning();
+    return newQuiz;
+  }
+
+  async getSessionQuizzes(sessionId: number): Promise<Quiz[]> {
+    return await db.select().from(quizzes).where(eq(quizzes.sessionId, sessionId));
+  }
+
+  // Vocabulary
+  async getVocabularyByLevel(cefrLevel: CEFRLevel): Promise<Vocabulary[]> {
+    return await db.select().from(vocabulary).where(eq(vocabulary.cefrLevel, cefrLevel));
+  }
+
+  async getVocabularyByCategory(category: string): Promise<Vocabulary[]> {
+    return await db.select().from(vocabulary).where(eq(vocabulary.category, category));
+  }
+
+  async getAllVocabulary(): Promise<Vocabulary[]> {
+    return await db.select().from(vocabulary);
+  }
+
+  // User Progress
+  async getUserProgress(userId: number): Promise<UserProgress[]> {
+    return await db.select().from(userProgress).where(eq(userProgress.userId, userId));
+  }
+
+  async updateUserProgress(userId: number, vocabularyId: number, updates: Partial<UserProgress>): Promise<UserProgress> {
+    const [existingProgress] = await db
+      .select()
+      .from(userProgress)
+      .where(and(eq(userProgress.userId, userId), eq(userProgress.vocabularyId, vocabularyId)));
+
+    if (existingProgress) {
+      const [updatedProgress] = await db
+        .update(userProgress)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(and(eq(userProgress.userId, userId), eq(userProgress.vocabularyId, vocabularyId)))
+        .returning();
+      return updatedProgress;
+    } else {
+      const [newProgress] = await db
+        .insert(userProgress)
+        .values({ userId, vocabularyId, ...updates })
+        .returning();
+      return newProgress;
+    }
+  }
+}
+
 export class MemStorage implements IStorage {
   private users: Map<number, User> = new Map();
   private sessions: Map<number, Session> = new Map();
@@ -75,8 +196,12 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.googleId === googleId);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -263,4 +388,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
