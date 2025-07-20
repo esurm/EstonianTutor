@@ -133,7 +133,7 @@ export class OpenAIService {
       console.log(`📝 System prompt built for ${currentCEFRLevel} level in ${mode} mode`);
       
       const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo", // Updated to gpt-4-turbo (4.1) as requested by the user
+        model: "gpt-4.1", // Using the new GPT-4.1 model as requested by the user
         messages: [
           {
             role: "system",
@@ -170,7 +170,7 @@ Respond in JSON format with this structure:
   ): Promise<CEFRAssessment> {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
           {
             role: "system",
@@ -218,7 +218,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
       
       const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
           {
             role: "system",
@@ -323,7 +323,7 @@ Respond in JSON format:
   async generateDialogue(scenario: string, cefrLevel: string): Promise<DialogueGeneration> {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
           {
             role: "system",

@@ -40,7 +40,7 @@ The application uses a comprehensive schema designed around language learning:
 #### AI Integration Services
 
 **OpenAI Service**: 
-- GPT-4-turbo (4.1) powered conversational tutor with specialized Estonian teaching persona
+- GPT-4.1 powered conversational tutor with specialized Estonian teaching persona
 - **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
 - Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
