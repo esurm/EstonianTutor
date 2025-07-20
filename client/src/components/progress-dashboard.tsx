@@ -117,7 +117,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
               {progressInfo.nextLevel ? (
                 <>
                   <p className="text-sm opacity-90">Progreso a {progressInfo.nextLevel}</p>
-                  <p className="text-lg font-semibold">{progressInfo.progress}%</p>
+                  <p className="text-2xl font-bold">{progressInfo.progress}%</p>
                 </>
               ) : (
                 <>
@@ -147,7 +147,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
           <div className="bg-gray-50 rounded-lg p-3 text-center min-h-[80px]">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
             <p className="text-2xl font-bold text-green-500">{(user as any)?.accuracy || 0}%</p>
-            <p className="text-xs text-gray-600">Precisión</p>
+            <p className="text-xs text-gray-600"><br />Precisión</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center min-h-[80px]">
             <Award className="h-6 w-6 mx-auto mb-2 text-purple-500" />
