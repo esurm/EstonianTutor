@@ -110,9 +110,9 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     onClick={() => handleQuickAction("createDialogue")}
-                    className="w-full flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
+                    className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
                   >
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Sparkles className="h-5 w-5 text-purple-600" />
                     </div>
                     <div className="text-left">
@@ -124,9 +124,9 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     onClick={() => handleQuickAction("reviewMistakes")}
-                    className="w-full flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
+                    className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
                   >
-                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <TriangleAlert className="h-5 w-5 text-red-600" />
                     </div>
                     <div className="text-left">
@@ -138,9 +138,9 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     onClick={() => handleQuickAction("practiceWeakAreas")}
-                    className="w-full flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
+                    className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
                   >
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Target className="h-5 w-5 text-yellow-600" />
                     </div>
                     <div className="text-left">

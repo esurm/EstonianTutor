@@ -115,7 +115,7 @@ export function QuizInterface({ onQuizComplete, category }: QuizInterfaceProps) 
   };
 
   const handleNextQuestion = () => {
-    if (!selectedAnswer) {
+    if (!selectedAnswer && currentQuestion?.questionType !== "completion") {
       toast({
         title: "Selecciona una respuesta",
         description: "Debés elegir una opción antes de continuar.",
@@ -123,6 +123,9 @@ export function QuizInterface({ onQuizComplete, category }: QuizInterfaceProps) 
       });
       return;
     }
+
+    // For completion questions, use the user's text input
+    const answerToUse = currentQuestion?.questionType === "completion" ? selectedAnswer : selectedAnswer;
 
     const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
     
@@ -322,42 +325,57 @@ export function QuizInterface({ onQuizComplete, category }: QuizInterfaceProps) 
 
         {/* Answer Options */}
         <div className="space-y-3">
-          {currentQuestion.options?.map((option, index) => {
-            const optionLabel = String.fromCharCode(65 + index); // A, B, C, D
-            const isSelected = selectedAnswer === option;
-            
-            return (
-              <Button
-                key={index}
-                variant="outline"
-                onClick={() => handleAnswerSelect(option)}
-                className={`w-full p-4 text-left justify-between h-auto ${
-                  isSelected 
-                    ? "border-primary bg-blue-50 hover:bg-blue-50" 
-                    : "hover:border-primary hover:bg-blue-50"
-                }`}
-              >
-                <span className="font-medium text-gray-900">
-                  {optionLabel}) {option}
-                </span>
-                <div className={`w-6 h-6 border-2 rounded-full transition-all ${
-                  isSelected 
-                    ? "border-primary bg-primary" 
-                    : "border-gray-300"
-                }`}>
-                  {isSelected && (
-                    <CheckCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />
-                  )}
-                </div>
-              </Button>
-            );
-          })}
+          {currentQuestion.questionType === "completion" ? (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Escribe tu respuesta:
+              </label>
+              <input
+                type="text"
+                value={selectedAnswer}
+                onChange={(e) => setSelectedAnswer(e.target.value)}
+                placeholder="Escribe la palabra o frase en estonio..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
+          ) : (
+            currentQuestion.options?.map((option, index) => {
+              const optionLabel = String.fromCharCode(65 + index); // A, B, C, D
+              const isSelected = selectedAnswer === option;
+              
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  onClick={() => handleAnswerSelect(option)}
+                  className={`w-full p-4 text-left justify-between h-auto ${
+                    isSelected 
+                      ? "border-primary bg-blue-50 hover:bg-blue-50" 
+                      : "hover:border-primary hover:bg-blue-50"
+                  }`}
+                >
+                  <span className="font-medium text-gray-900">
+                    {optionLabel}) {option}
+                  </span>
+                  <div className={`w-6 h-6 border-2 rounded-full transition-all ${
+                    isSelected 
+                      ? "border-primary bg-primary" 
+                      : "border-gray-300"
+                  }`}>
+                    {isSelected && (
+                      <CheckCircle className="w-4 h-4 text-white absolute transform translate-x-0.5 translate-y-0.5" />
+                    )}
+                  </div>
+                </Button>
+              );
+            })
+          )}
         </div>
 
         {/* Submit Button */}
         <Button
           onClick={handleNextQuestion}
-          disabled={!selectedAnswer || submitQuizMutation.isPending}
+          disabled={(!selectedAnswer || selectedAnswer.trim() === "") || submitQuizMutation.isPending}
           className="w-full"
           size="lg"
         >

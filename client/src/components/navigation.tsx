@@ -1,6 +1,7 @@
 import { useCEFRTracking } from "@/hooks/use-cefr-tracking";
 import { Button } from "@/components/ui/button";
 import { User, Minus, Plus } from "lucide-react";
+import { Link } from "wouter";
 
 export function Navigation() {
   const { 
@@ -39,7 +40,7 @@ export function Navigation() {
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">ET</span>
             </div>
@@ -47,12 +48,12 @@ export function Navigation() {
               <h1 className="text-xl font-bold text-gray-900">Estonian Tutor</h1>
               <p className="text-xs text-gray-500">Aprende Estonio Fácilmente</p>
             </div>
-          </div>
+          </Link>
           
           <div className="flex items-center space-x-4">
             <div className="hidden sm:block">
-              <span className="text-sm text-gray-600">Nivel Actual:</span>
-              <span className={`ml-1 px-3 py-1 text-white rounded-full text-sm font-medium ${levelInfo.color}`}>
+              <span className="text-sm text-gray-600">Nivel Actual: </span>
+              <span className="text-sm font-medium text-gray-900">
                 {user?.cefrLevel}
               </span>
             </div>
