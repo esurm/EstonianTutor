@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+
 import { Navigation } from "@/components/navigation";
 import { ChatInterface } from "@/components/chat-interface";
 import { LearningModeSelector } from "@/components/learning-mode-selector";
@@ -8,17 +8,14 @@ import { ProgressDashboard } from "@/components/progress-dashboard";
 
 export default function Home() {
   const [currentMode, setCurrentMode] = useState<"chat" | "quiz" | "dialogue" | "pronunciation" | "grammar">("chat");
-  const { toast } = useToast();
 
-  const handleModeSelect = (mode: "quiz" | "dialogue" | "pronunciation" | "grammar") => {
-    setCurrentMode(mode);
+
+  const handleModeSelect = (mode: string) => {
+    setCurrentMode(mode as "quiz" | "dialogue" | "pronunciation" | "grammar");
   };
 
   const handleQuizComplete = (score: number) => {
-    toast({
-      title: "¡Quiz Completado!",
-      description: `Obtuviste ${score}% de respuestas correctas.`,
-    });
+    console.log(`Quiz completed with score: ${score}%`);
     setCurrentMode("chat");
   };
 
