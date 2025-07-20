@@ -26,13 +26,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Preguntas de palabras y significados",
       icon: HelpCircle,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-green-500",
-      gradientFrom: "from-green-50",
-      gradientTo: "to-green-100",
-      borderColor: "border-green-200",
-      hoverFrom: "hover:from-green-100",
-      hoverTo: "hover:to-green-200",
-      iconColor: "bg-green-500"
+      badgeColor: "bg-teal-500",
+      gradientFrom: "from-teal-50",
+      gradientTo: "to-teal-100",
+      borderColor: "border-teal-200",
+      hoverFrom: "hover:from-teal-100",
+      hoverTo: "hover:to-teal-200",
+      iconColor: "bg-teal-500"
     },
     {
       id: "quiz-grammar",
@@ -40,13 +40,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Conjugaciones, casos y estructuras",
       icon: BookOpen,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-purple-500",
-      gradientFrom: "from-purple-50",
-      gradientTo: "to-purple-100",
-      borderColor: "border-purple-200",
-      hoverFrom: "hover:from-purple-100",
-      hoverTo: "hover:to-purple-200",
-      iconColor: "bg-purple-500"
+      badgeColor: "bg-indigo-500",
+      gradientFrom: "from-indigo-50",
+      gradientTo: "to-indigo-100",
+      borderColor: "border-indigo-200",
+      hoverFrom: "hover:from-indigo-100",
+      hoverTo: "hover:to-indigo-200",
+      iconColor: "bg-indigo-500"
     },
     {
       id: "dialogue",
@@ -116,7 +116,8 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 onClick={() => handleModeClick(mode.id)}
                 className={`
                   group p-3 h-auto flex-col items-start space-y-0 
-                  ${mode.id === 'quiz' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300' : 
+                  ${mode.id === 'quiz-vocabulary' ? 'bg-teal-50 border-teal-200 hover:bg-teal-100 hover:border-teal-300' : 
+                    mode.id === 'quiz-grammar' ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' :
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
                     'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300'}
