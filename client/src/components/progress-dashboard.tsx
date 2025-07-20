@@ -14,6 +14,7 @@ import {
   Mic,
   CheckCircle
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProgressSession {
   id: number;
@@ -28,7 +29,11 @@ interface ProgressData {
   recentSessions: ProgressSession[];
 }
 
-export function ProgressDashboard() {
+interface ProgressDashboardProps {
+  onModeSelect?: (mode: string) => void;
+}
+
+export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {}) {
   const { user, getLevelInfo, getProgressToNextLevel } = useCEFRTracking();
   
   const { data: progressData, isLoading } = useQuery<ProgressData>({
@@ -158,51 +163,59 @@ export function ProgressDashboard() {
           </div>
         </div>
 
-        {/* Recent Performance */}
+        {/* Chat Mode Selector */}
         <div>
-          <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
-            <CheckCircle className="h-4 w-4 text-primary" />
-            <span>Rendimiento Reciente</span>
-          </h4>
+          <div className="flex items-center space-x-2 mb-3">
+            <MessageSquare className="h-4 w-4 text-primary" />
+            <h4 className="font-medium text-gray-900">Modos de Aprendizaje</h4>
+          </div>
           
-          {progressData?.recentSessions?.length ? (
-            <div className="space-y-2">
-              {progressData.recentSessions.slice(0, 5).map((session) => (
-                <div key={session.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${getSessionTypeColor(session.type)}`}>
-                    </div>
-                    <span className="text-sm text-gray-700 capitalize">
-                      {session.type === "quiz" && "Quiz"}
-                      {session.type === "chat" && "Conversación"}
-                      {session.type === "pronunciation" && "Pronunciación"}
-                      {session.type === "dialogue" && "Diálogo"}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    {session.score !== null && session.score !== undefined ? (
-                      <Badge 
-                        variant={session.score >= 80 ? "default" : session.score >= 60 ? "secondary" : "destructive"}
-                        className="text-xs"
-                      >
-                        {session.score}%
-                      </Badge>
-                    ) : (
-                      <span className="text-sm font-medium text-gray-900">
-                        {formatDuration(session.duration)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-4 text-gray-500">
-              <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No hay sesiones recientes</p>
-              <p className="text-xs">¡Empezá a practicar para ver tu progreso!</p>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Button
+              onClick={() => onModeSelect?.("chat")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Conversación General</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("dialogue")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Simulación de Diálogo</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("pronunciation")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Práctica de Pronunciación</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("grammar")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Ejercicios de Gramática</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("quiz")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Quiz Interactivo</span>
+            </Button>
+          </div>
         </div>
 
         {/* Achievement Badge */}

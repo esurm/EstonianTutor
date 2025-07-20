@@ -29,9 +29,6 @@ export default function Home() {
       case "dialogue":
         return (
           <div className="space-y-6">
-            <div className="order-first lg:order-last">
-              <LearningModeSelector onModeSelect={handleModeSelect} />
-            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -43,7 +40,7 @@ export default function Home() {
                 />
               </div>
               <div className="lg:col-span-1 order-last lg:order-none">
-                <ProgressDashboard />
+                <ProgressDashboard onModeSelect={handleModeSelect} />
               </div>
             </div>
           </div>
@@ -51,9 +48,6 @@ export default function Home() {
       case "pronunciation":
         return (
           <div className="space-y-6">
-            <div className="order-first lg:order-last">
-              <LearningModeSelector onModeSelect={handleModeSelect} />
-            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -65,7 +59,7 @@ export default function Home() {
                 />
               </div>
               <div className="lg:col-span-1 order-last lg:order-none">
-                <ProgressDashboard />
+                <ProgressDashboard onModeSelect={handleModeSelect} />
               </div>
             </div>
           </div>
@@ -73,9 +67,6 @@ export default function Home() {
       case "grammar":
         return (
           <div className="space-y-6">
-            <div className="order-first lg:order-last">
-              <LearningModeSelector onModeSelect={handleModeSelect} />
-            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -87,7 +78,7 @@ export default function Home() {
                 />
               </div>
               <div className="lg:col-span-1 order-last lg:order-none">
-                <ProgressDashboard />
+                <ProgressDashboard onModeSelect={handleModeSelect} />
               </div>
             </div>
           </div>
@@ -106,11 +97,8 @@ export default function Home() {
                 />
               </div>
               <div className="lg:col-span-1 order-last lg:order-none">
-                <ProgressDashboard />
+                <ProgressDashboard onModeSelect={handleModeSelect} />
               </div>
-            </div>
-            <div className="order-first lg:order-last">
-              <LearningModeSelector onModeSelect={handleModeSelect} />
             </div>
           </div>
         );
