@@ -60,9 +60,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const updates = req.body;
       const currentUser = await getCurrentUserForRequest(req);
+      console.log(`Updating user ${currentUser.id} with:`, updates);
       const updatedUser = await storage.updateUser(currentUser.id, updates);
+      console.log(`User updated successfully. New CEFR level:`, updatedUser.cefrLevel);
       res.json(updatedUser);
     } catch (error) {
+      console.error("Failed to update user:", error);
       res.status(500).json({ error: "Failed to update user" });
     }
   });
@@ -71,16 +74,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/chat", async (req, res) => {
     try {
       const { message, sessionId, mode = "chat" } = req.body;
+      // Always fetch fresh user data to get latest CEFR level
       const currentUser = await getCurrentUserForRequest(req);
+      
+      // Double-check: refetch user from database to ensure we have latest CEFR level
+      const freshUser = await storage.getUser(currentUser.id);
+      const userWithLatestCEFR = freshUser || currentUser;
       
       let session;
       if (sessionId) {
         session = await storage.getSession(sessionId);
       } else {
         session = await storage.createSession({
-          userId: currentUser.id,
+          userId: userWithLatestCEFR.id,
           sessionType: mode === "dialogue" ? "dialogue" : mode === "pronunciation" ? "pronunciation" : mode === "grammar" ? "grammar" : "chat",
-          cefrLevelAtStart: currentUser.cefrLevel,
+          cefrLevelAtStart: userWithLatestCEFR.cefrLevel,
           endTime: null,
           score: null,
           wordsUsed: 0,
@@ -115,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tutorResponse = await openaiService.getChatResponse(
         message,
         conversationHistory,
-        currentUser.cefrLevel,
+        userWithLatestCEFR.cefrLevel,
         mode
       );
 
@@ -135,10 +143,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         useEstonian = /[õäöüšž]|tere|tänan|palun|kuidas|mina|sina|olen/i.test(cleanMessageForTTS);
       }
       
-      console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode, 'CEFR Level:', currentUser.cefrLevel);
+      console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode, 'CEFR Level:', userWithLatestCEFR.cefrLevel);
+      
+      // Debug: Log cleaned message and user level before TTS
+      console.log('Clean message for TTS:', cleanMessageForTTS.substring(0, 100) + '...');
+      console.log('Using Estonian TTS:', useEstonian, 'User CEFR Level:', userWithLatestCEFR.cefrLevel);
       
       const tts = useEstonian 
-        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE", currentUser.cefrLevel)
+        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE", userWithLatestCEFR.cefrLevel)
         : await speechService.synthesizeSpeech(cleanMessageForTTS, "es-HN");
 
       // Save assistant message
