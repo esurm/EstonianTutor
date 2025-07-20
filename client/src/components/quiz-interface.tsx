@@ -79,9 +79,10 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     mutationFn: (data: { sessionId: number; answers: QuizAnswer[]; responseTime: number[] }) => 
       api.submitQuiz(data.sessionId, data.answers, data.responseTime),
     onSuccess: (results) => {
+      console.log("Quiz submission successful, results:", results);
       setQuizResults(results);
       setShowResults(true);
-      onQuizComplete(results);
+      // Don't call onQuizComplete here to prevent premature closing
     },
     onError: () => {
       toast({
@@ -165,7 +166,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Quiz complete
+      // Quiz complete - submit answers and show results
+      console.log("Quiz completed, submitting answers:", newAnswers.length);
       if (sessionId) {
         const responseTimes = newAnswers.map(a => a.responseTime);
         submitQuizMutation.mutate({
@@ -173,6 +175,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           answers: newAnswers,
           responseTime: responseTimes
         });
+      } else {
+        console.error("No sessionId available for quiz submission");
       }
     }
   };
@@ -343,13 +347,34 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             </div>
           )}
 
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="w-full"
-            size="lg"
-          >
-            Hacer Otro Quiz
-          </Button>
+          <div className="flex space-x-4">
+            <Button 
+              onClick={() => {
+                setShowResults(false);
+                setQuestions([]);
+                setCurrentQuestionIndex(0);
+                setSelectedAnswer("");
+                setAnswers([]);
+                setQuizResults(null);
+                generateQuizMutation.mutate();
+              }} 
+              className="flex-1"
+              size="lg"
+            >
+              Hacer Otro Quiz
+            </Button>
+            <Button 
+              onClick={() => {
+                onQuizComplete(quizResults);
+                onQuizClose();
+              }} 
+              variant="outline"
+              className="flex-1"
+              size="lg"
+            >
+              Finalizar
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
