@@ -155,7 +155,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
         currentAudio.currentTime = 0;
       }
 
-      // Create and play new audio (only once)
+      // Create and play new audio (only once - removed duplicate playAudio call)
       const audio = new Audio(audioUrl);
       setCurrentAudio(audio);
       setPlayingAudioId(messageId);
@@ -184,14 +184,6 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       console.error('Error playing audio:', error);
       setPlayingAudioId(null);
       setCurrentAudio(null);
-    }
-
-    try {
-      setPlayingAudioId(messageId);
-      await playAudio(audioUrl);
-      setPlayingAudioId(null);
-    } catch (error) {
-      setPlayingAudioId(null);
     }
   };
 
@@ -235,7 +227,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
           </div>
           
           <div className="text-right">
-            <p className="text-sm opacity-90">Nivel: {user?.cefrLevel || 'B1'}</p>
+            <p className="text-sm opacity-90">Nivel: {(user as any)?.cefrLevel || 'B1'}</p>
             <p className="text-xs opacity-75">Sesión Activa</p>
           </div>
         </div>
