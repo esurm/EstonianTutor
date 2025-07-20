@@ -53,9 +53,11 @@ export default function Home() {
       case "chat":
       default:
         return (
-          <div className="space-y-6">
+          <div className="flex flex-col space-y-6 h-full">
             <ChatInterface />
-            <LearningModeSelector onModeSelect={handleModeSelect} />
+            <div className="flex-1">
+              <LearningModeSelector onModeSelect={handleModeSelect} />
+            </div>
           </div>
         );
     }
@@ -92,7 +94,7 @@ export default function Home() {
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Main Learning Area - Left Column (2/3 width) */}
           <div className="lg:col-span-2">
             {renderMainContent()}
