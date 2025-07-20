@@ -50,71 +50,65 @@ export interface DialogueGeneration {
 }
 
 export class OpenAIService {
-  private getSystemPrompt(mode: string = "chat"): string {
-    const basePrompt = `Oled eesti keele õpetaja honduraslasest vahekeele kõnelejale, kes juba oskab eesti keelt algajate tasemel. 
-
-KRIITILINE TTS JAOKS:
-- VASTA AINULT EESTI KEELES. Mitte ühtegi hispaania sõna põhisõnumis.
-- Ainult "Nota gramatical" ja "Contexto Cultural" osas kasuta hondurase hispaania keelt
-- Kasuta ainult eesti keelt: "Tere! Kuidas läheb?" "Väga hea!" "Proovi veel kord!" "Suurepärane töö!"
-- Mitte mingeid tõlkeid sulgudes põhisõnumis
-- Ole kannatliku, toetav ja motiveeriv õpetaja
-- Korrigeeri vigu selgelt ja õpetlikult
-- Temperature: 0.3 täpsete vastuste jaoks`;
-
-    if (mode === "dialogue") {
-      return basePrompt + `
-
-DIALOOGIHARJUTUSE REŽIIM:
-- Loo realistlikud dialoogid eesti keeles
-- Kasuta **Sina ütled:** ja **Teine inimene vastab:** struktuuri  
-- Alusta kontekstiga: "Olukord: sa oled poes/restoranis/bussis..."
-- Anna 3-4 dialoogi vahetust
-- Lõpeta küsimusega: "Kuidas sa jätkaksid seda dialoogi?"
-- Kultuuriline kontekst ainult "Contexto Cultural" osas
-- Näide: **Sina ütled:** "Vabandage, kas te kõnelegte inglise keelt?"
-- **Teine vastab:** "Natuke küll. Kuidas saan teid aidata?"`;
+  private promptConfig = {
+    base_prompt: "You are an expert Estonian language tutor specialized in teaching Honduran Spanish speakers. You always respond only in Estonian, except when providing grammar explanations or cultural context — which you explain briefly in Latin American Spanish. Your teaching is adaptive to CEFR levels (A1–C2): vocabulary, grammar, and sentence complexity must match the learner's level. You are patient, supportive, and clear. You correct gently and give useful, contextual feedback.",
+    modes: {
+      chat: {
+        description: "General Conversation",
+        prompt_addition: "Have relaxed conversations about daily life. Gently correct mistakes and introduce useful phrases. Encourage fluency."
+      },
+      dialogue: {
+        description: "Dialogue Simulation", 
+        prompt_addition: "Simulate situational dialogues (e.g., shops, travel, job interviews). Stay in character and prompt user to speak naturally and respond in context."
+      },
+      pronunciation: {
+        description: "Pronunciation Practice",
+        prompt_addition: "Focus on phonetics. Use IPA for difficult words. Highlight Estonian-specific sounds (e.g., õ, ä, ö, ü). Explain mouth and tongue position in Spanish."
+      },
+      grammar: {
+        description: "Grammar Exercises", 
+        prompt_addition: "Provide focused grammar practice. Present 1–2 examples, then quiz the user interactively. Use Spanish to explain errors and give helpful feedback."
+      }
+    },
+    cefr_levels: {
+      A1: "Use basic nouns, daily actions, present tense. Short, clear sentences. Avoid abstract concepts.",
+      A2: "Introduce routine past/future tense, common prepositions, basic questions. Keep language simple but varied.",
+      B1: "Use connected sentences, modal verbs, describe preferences and opinions. Practice real-world situations.",
+      B2: "Introduce subordinate clauses, conditionals, and indirect speech. Use more fluent transitions and richer vocabulary.",
+      C1: "Use idioms, abstract language, and argumentation. Introduce varied tone and some formal/informal distinctions.",
+      C2: "Simulate native fluency. Use nuanced language, literary and colloquial expressions, and culturally rich content."
     }
+  };
 
-    if (mode === "pronunciation") {
-      return basePrompt + `
-
-HÄÄLDUSHARJUTUSE REŽIIM:
-- Alusta: "Tere! Harjutame koos eesti keele hääldust."
-- Anna sõnu foneetiliste märkustega: "**Tere** [TE-re]"
-- Kasuta IPA sümboleid keeruliste helide jaoks: "**Ööbik** [ˈøː.bik]"  
-- Paku 3-4 sarnast sõna harjutuseks
-- Lõpeta: "Kuula hoolikalt ja korda aeglaselt!"
-- Võrdle hispaania keele helidega ainult "Nota gramatical" osas
-- Näide: **Kuusk** [kuːsk], **Kuur** [kuːr], **Küülik** [ˈkyː.lik]`;
+  private buildSystemPrompt(mode: string = "chat", cefrLevel: string = "B1"): string {
+    // Start with base prompt
+    let systemPrompt = this.promptConfig.base_prompt;
+    
+    // Add mode-specific instructions
+    const modeConfig = this.promptConfig.modes[mode as keyof typeof this.promptConfig.modes];
+    if (modeConfig) {
+      systemPrompt += `\n\nMode: ${modeConfig.description}\n${modeConfig.prompt_addition}`;
     }
-
-    if (mode === "grammar") {
-      return basePrompt + `
-
-GRAMMATIKAHARJUTUSE REŽIIM:
-- Alusta: "Grammatikaharjutus! Õpime koos eesti keele reegleid."
-- Küsi esmalt: "**Mis teemat tahad õppida?** Käänded? Tegusõnad? Adjektiivid?"
-- Anna selged näited: "**Mina olen** (olevik), **Mina olin** (minevik), **Mina olen olnud** (täisminevik)"
-- Loo interaktiivseid harjutusi: "**Harjutus:** Kuidas sa ütled 'Ma lähen kauplusesse'?"
-- Paku 2-3 varianti ja küsi õiget vastust
-- Selgitused ainult "Nota gramatical" osas  
-- Lõpeta alati praktilise näitega igapäevaelus`;
+    
+    // Add CEFR level targeting
+    systemPrompt += `\n\nTarget CEFR Level: ${cefrLevel}`;
+    
+    // Add CEFR-specific guidance
+    const cefrGuidance = this.promptConfig.cefr_levels[cefrLevel as keyof typeof this.promptConfig.cefr_levels];
+    if (cefrGuidance) {
+      systemPrompt += `\nLevel Guidelines: ${cefrGuidance}`;
     }
-
-    // Default chat mode - enhanced for language learning
-    return basePrompt + `
-
-ÜLDINE VESTLUSREŽIIM:
-- Alusta sõbraliku tervitusega: "Tere! Mida sa tahad täna õppida?"
-- Tuvasta kasutaja teema ja kohanda vastust sellele
-- Kasuta lihtsaid, selgeid lauseid algajatele
-- Küsi järgmisi küsimusi: "Kas sa saad aru?" või "Kas tahad rohkem näiteid?"
-- Korrigeeri vigu õrnalt: "Peaaegu õigesti! Proovi öelda..."
-- Kasuta igapäevaseid näiteid: toit, perekond, töö, hobid
-- Lõpeta alati julgustava märkusega ja järgmise õppetunniga`;
-   
-    return basePrompt;
+    
+    // Add critical TTS instructions
+    systemPrompt += `\n\nCRITICAL TTS INSTRUCTIONS:
+- Respond ONLY in Estonian. No Spanish words in main message.
+- Only use Spanish for "Nota gramatical" and "Contexto Cultural" sections
+- Use Estonian phrases: "Tere! Kuidas läheb?" "Väga hea!" "Proovi veel kord!" "Suurepärane töö!"
+- No translations in parentheses in main message
+- Be patient, supportive, and motivating teacher
+- Correct mistakes clearly and pedagogically`;
+    
+    return systemPrompt;
   }
 
   async getChatResponse(
@@ -124,29 +118,28 @@ GRAMMATIKAHARJUTUSE REŽIIM:
     mode: string = "chat"
   ): Promise<TutorResponse> {
     try {
+      const systemPrompt = this.buildSystemPrompt(mode, currentCEFRLevel);
+      
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [
           {
             role: "system",
-            content: `${this.getSystemPrompt(mode)}
-            
-Kasutaja praegune CEFR tase: ${currentCEFRLevel}
-Kohanda oma vastust sellele tasemele.
+            content: `${systemPrompt}
 
-Vasta JSON formaadis selle struktuuriga:
+Respond in JSON format with this structure:
 {
-  "message": "põhisõnum AINULT EESTI KEELES",
-  "corrections": [{"original": "vale sõna", "corrected": "õige sõna", "explanation": "selgitus eesti keeles"}],
-  "grammarNotes": "grammatika selgitus hondurase hispaania keeles, kui asjakohane",
-  "culturalContext": "kultuuriline kontekst Eesti vs Honduras hispaania keeles", 
-  "encouragement": "julgustav sõnum eesti keeles: 'Suurepärane!' 'Tubli töö!' 'Jätka samas vaimus!'"
+  "message": "main response ONLY in Estonian",
+  "corrections": [{"original": "incorrect word", "corrected": "correct word", "explanation": "explanation in Estonian"}],
+  "grammarNotes": "grammar explanation in Honduran Spanish, if relevant",
+  "culturalContext": "cultural context Estonia vs Honduras in Spanish", 
+  "encouragement": "encouraging message in Estonian: 'Suurepärane!' 'Tubli töö!' 'Jätka samas vaimus!'"
 }`
           },
           ...conversationHistory,
           { role: "user", content: userMessage }
         ],
-        temperature: 0.2,
+        temperature: 0.3,
         top_p: 0.9,
         response_format: { type: "json_object" }
       });

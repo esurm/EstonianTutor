@@ -40,11 +40,13 @@ The application uses a comprehensive schema designed around language learning:
 #### AI Integration Services
 
 **OpenAI Service**: 
-- GPT-4 powered conversational tutor with specialized Estonian teaching persona
-- Mode-specific prompts for dialogue simulation, pronunciation practice, and grammar exercises
+- GPT-4o powered conversational tutor with specialized Estonian teaching persona
+- **Dynamic JSON-based prompt system**: Assembles prompts at runtime based on user's CEFR level (A1-C2) and conversation mode
+- Mode-specific prompts for general conversation, dialogue simulation, pronunciation practice, and grammar exercises
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
 - Grammar correction and Honduras-Estonia cultural comparisons
+- Responses ONLY in Estonian (except grammar notes and cultural context in Spanish)
 
 **Speech Service**:
 - Whisper API integration for Spanish speech-to-text transcription
