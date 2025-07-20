@@ -102,9 +102,11 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 onClick={() => handleModeClick(mode.id)}
                 className={`
                   group p-4 h-auto flex-col items-start space-y-0 
-                  bg-gray-50 border border-gray-200
-                  hover:bg-gray-100 hover:border-gray-300
-                  transition-all duration-200 
+                  ${mode.id === 'quiz' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300' : 
+                    mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
+                    mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
+                    'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300'}
+                  border transition-all duration-200 
                   hover:shadow-md hover:scale-[1.02]
                 `}
               >
@@ -128,19 +130,6 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
               </Button>
             );
           })}
-        </div>
-        
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-start space-x-3">
-            <Lightbulb className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-gray-900 mb-1">Sugerencia del Tutor</h4>
-              <p className="text-sm text-gray-600">
-                Para mejor resultado, alternás entre diferentes tipos de ejercicios. 
-                ¡La variedad es clave para el aprendizaje efectivo!
-              </p>
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>
