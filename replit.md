@@ -1,8 +1,8 @@
-# Estonian Tutor MVP
+# Aprende Estonio - Tutor de Idiomas con IA
 
 ## Overview
 
-The Estonian Tutor MVP is a comprehensive language learning web application specifically designed for intermediate Honduran Spanish speakers learning Estonian. The application combines modern web technologies with AI-powered tutoring to create an immersive, personalized learning experience. It features speech integration, adaptive CEFR-level assessment, interactive learning tools, and cultural context integration.
+"Aprende Estonio - Tutor de Idiomas con IA" is a comprehensive Estonian language learning web application specifically designed for intermediate Honduran Spanish speakers. The application combines modern web technologies with AI-powered tutoring to create an immersive, personalized learning experience. It features Google OAuth authentication, persistent Supabase database integration, speech integration with Azure TTS ("Anu" voice), adaptive CEFR-level assessment, interactive learning tools, and cultural context integration.
 
 ## User Preferences
 
