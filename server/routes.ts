@@ -14,6 +14,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes
   app.get("/api/auth/user", getCurrentUser);
+  
+  // Serve auth test page for development
+  app.get("/test-auth", (req, res) => {
+    res.sendFile("test-auth.html", { root: "." });
+  });
 
   // For development - fallback to demo user if not authenticated
   const getDemoUser = async () => {
@@ -50,8 +55,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Helper function to get current user (authenticated or demo)
   const getCurrentUserForRequest = async (req: any) => {
     if (req.isAuthenticated()) {
+      console.log(`🔐 Authenticated user: ${req.user.email} (ID: ${req.user.id})`);
       return req.user;
     } else {
+      console.log(`👤 Using demo user for unauthenticated request`);
       return await getDemoUser();
     }
   };

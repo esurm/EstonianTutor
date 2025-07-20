@@ -53,9 +53,11 @@ export function setupAuth(app: Express) {
           
           if (user) {
             // Update existing user with Google ID
-            user = await storage.updateUser(user.id, { googleId });
+            console.log(`🔗 Linking Google account to existing user: ${email}`);
+            user = await storage.updateUser(user.id, { googleId, profileImage });
           } else {
             // Create new user
+            console.log(`✨ Creating new user from Google OAuth: ${email}`);
             user = await storage.createUser({
               googleId,
               email,
@@ -68,6 +70,8 @@ export function setupAuth(app: Express) {
               totalTime: 0,
             });
           }
+        } else {
+          console.log(`🎯 Existing Google user logged in: ${email}`);
         }
 
         return done(null, user);
