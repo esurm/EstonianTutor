@@ -233,13 +233,15 @@ ${difficultyGuidance}
 EJEMPLOS DE FORMATO CORRECTO:
 
 MULTIPLE CHOICE (vocabulario):
-- Question: "Mis värvi on meri?" (¿De qué color es el mar?)
+- Question: "Mis värvi on meri?"
+- Translation: "¿De qué color es el mar?"
 - Options: ["sinine", "roheline", "punane", "kollane"]
 - Correct: "sinine"
 - Explanation: "'Sinine' significa 'azul' en español. El mar es azul."
 
 COMPLETION (gramática):
-- Question: "Ma _____ kooli iga päev." (Voy a la escuela todos los días)
+- Question: "Ma _____ kooli iga päev."
+- Translation: "Voy a la escuela todos los días"
 - Correct: "lähen"
 - Explanation: "'Lähen' es la forma presente del verbo 'ir' en primera persona."
 
@@ -248,6 +250,7 @@ Responde en JSON:
   "questions": [
     {
       "question": "pregunta COMPLETAMENTE EN ESTONIO (usa _____ para espacios a completar)",
+      "translation": "traducción de la pregunta al español hondureño para ayuda del usuario",
       "questionType": "multiple_choice" | "completion",
       "options": ["opción1 en estonio", "opción2 en estonio", "opción3 en estonio", "opción4 en estonio"] (solo para multiple_choice),
       "correctAnswer": "respuesta correcta en estonio",

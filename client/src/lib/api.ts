@@ -35,6 +35,7 @@ export interface TutorResponse {
 
 export interface QuizQuestion {
   question: string;
+  translation?: string;
   questionType?: "multiple_choice" | "completion";
   type?: "multiple_choice" | "completion";
   options?: string[];

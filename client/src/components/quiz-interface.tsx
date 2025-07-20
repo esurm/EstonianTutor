@@ -414,7 +414,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             <span className="font-medium text-gray-900">{currentQuestion.question}</span>
           </div>
           <p className="text-sm text-gray-600 italic ml-11">
-            Escucha el audio para la pronunciación correcta
+            {currentQuestion.translation || "Haz clic en el botón de audio para escuchar la pronunciación"}
           </p>
         </div>
 
