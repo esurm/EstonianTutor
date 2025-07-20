@@ -225,26 +225,33 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             content: `Genera un quiz de estonio para nivel ${cefrLevel}${category ? ` en la categoría ${category}` : ""}.
 
 Crea 5 preguntas variadas (múltiple opción y completar espacios) APROPIADAS para el nivel específico.
-Las explicaciones deben estar en español hondureño.
+CRUCIAL: TODAS las preguntas y opciones deben estar COMPLETAMENTE EN ESTONIO. Solo las explicaciones en español hondureño.
 
 NIVEL ${cefrLevel} - DIFICULTAD ESPECÍFICA:
 ${difficultyGuidance}
 
-Tipos de preguntas:
-- "multiple_choice": 4 opciones, una correcta (questionType: "multiple_choice")
-- "completion": usuario escribe la respuesta (questionType: "completion")
+EJEMPLOS DE FORMATO CORRECTO:
 
-IMPORTANTE: Para preguntas "completion", presenta la oración con un espacio en blanco usando _____ donde el usuario debe completar.
+MULTIPLE CHOICE (vocabulario):
+- Question: "Mis värvi on meri?" (¿De qué color es el mar?)
+- Options: ["sinine", "roheline", "punane", "kollane"]
+- Correct: "sinine"
+- Explanation: "'Sinine' significa 'azul' en español. El mar es azul."
+
+COMPLETION (gramática):
+- Question: "Ma _____ kooli iga päev." (Voy a la escuela todos los días)
+- Correct: "lähen"
+- Explanation: "'Lähen' es la forma presente del verbo 'ir' en primera persona."
 
 Responde en JSON:
 {
   "questions": [
     {
-      "question": "pregunta o frase con espacio en blanco (usa _____ para espacios a completar)",
+      "question": "pregunta COMPLETAMENTE EN ESTONIO (usa _____ para espacios a completar)",
       "questionType": "multiple_choice" | "completion",
-      "options": ["opción1", "opción2", "opción3", "opción4"] (solo para multiple_choice),
+      "options": ["opción1 en estonio", "opción2 en estonio", "opción3 en estonio", "opción4 en estonio"] (solo para multiple_choice),
       "correctAnswer": "respuesta correcta en estonio",
-      "explanation": "explicación en español hondureño del por qué es correcta",
+      "explanation": "explicación clara en español hondureño del significado y gramática",
       "cefrLevel": "${cefrLevel}"
     }
   ]

@@ -49,6 +49,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [quizResults, setQuizResults] = useState<any>(null);
+  const [showAnswerFeedback, setShowAnswerFeedback] = useState(false);
+  const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
 
   const { toast } = useToast();
   const { user } = useCEFRTracking();
@@ -117,7 +119,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     setSelectedAnswer(answer);
   };
 
-  const handleNextQuestion = () => {
+  const handleSubmitAnswer = () => {
     const isCompletionQuestion = currentQuestion?.questionType === "completion" || currentQuestion?.type === "completion";
     
     if (!selectedAnswer || selectedAnswer.trim() === "") {
@@ -129,6 +131,16 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       return;
     }
 
+    // Check if answer is correct
+    const userAnswer = selectedAnswer.toLowerCase().trim();
+    const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim();
+    const isCorrect = userAnswer === correctAnswer;
+    
+    setIsAnswerCorrect(isCorrect);
+    setShowAnswerFeedback(true);
+  };
+
+  const handleNextQuestion = () => {
     const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
     
     const answerData: QuizAnswer = {
@@ -145,10 +157,13 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     const newAnswers = [...answers, answerData];
     setAnswers(newAnswers);
 
+    // Reset for next question
+    setShowAnswerFeedback(false);
+    setSelectedAnswer("");
+    setQuestionStartTime(Date.now());
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer("");
-      setQuestionStartTime(Date.now());
     } else {
       // Quiz complete
       if (sessionId) {
@@ -456,25 +471,62 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           )}
         </div>
 
+        {/* Answer Feedback */}
+        {showAnswerFeedback && (
+          <div className={`border rounded-lg p-4 ${isAnswerCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+            <div className="flex items-center space-x-2 mb-2">
+              {isAnswerCorrect ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-600" />
+              )}
+              <span className={`font-medium ${isAnswerCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                {isAnswerCorrect ? '¡Correcto!' : 'Incorrecto'}
+              </span>
+            </div>
+            
+            {!isAnswerCorrect && (
+              <p className="text-sm text-red-700 mb-2">
+                Respuesta correcta: <span className="font-medium">{currentQuestion.correctAnswer}</span>
+              </p>
+            )}
+            
+            <p className="text-sm text-gray-700">
+              {currentQuestion.explanation}
+            </p>
+          </div>
+        )}
+
         {/* Submit Button */}
-        <Button
-          onClick={handleNextQuestion}
-          disabled={(!selectedAnswer || selectedAnswer.trim() === "") || submitQuizMutation.isPending}
-          className="w-full"
-          size="lg"
-        >
-          {currentQuestionIndex < questions.length - 1 ? (
-            <>
-              Siguiente Pregunta
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </>
-          ) : (
-            <>
-              Finalizar Quiz
-              <CheckCircle className="ml-2 h-4 w-4" />
-            </>
-          )}
-        </Button>
+        {!showAnswerFeedback ? (
+          <Button
+            onClick={handleSubmitAnswer}
+            disabled={(!selectedAnswer || selectedAnswer.trim() === "") || submitQuizMutation.isPending}
+            className="w-full"
+            size="lg"
+          >
+            Comprobar Respuesta
+            <CheckCircle className="ml-2 h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            onClick={handleNextQuestion}
+            className="w-full"
+            size="lg"
+          >
+            {currentQuestionIndex < questions.length - 1 ? (
+              <>
+                Siguiente Pregunta
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Ver Resultados
+                <Award className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
