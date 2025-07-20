@@ -10,6 +10,51 @@ export interface TextToSpeechResult {
 }
 
 export class SpeechService {
+  
+  /**
+   * Generates SSML block for Azure Speech API based on CEFR level and text
+   * @param text - Text to be spoken
+   * @param cefrLevel - User's CEFR level (A1-C2)
+   * @returns Complete SSML string ready for Azure Speech API
+   */
+  generateSSML(text: string, cefrLevel: string = "B1"): string {
+    // Escape XML special characters in text
+    const escapedText = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+
+    // Determine speech rate based on CEFR level
+    let prosodyTag = '';
+    switch (cefrLevel) {
+      case 'A1':
+        prosodyTag = '<prosody rate="-30%">';
+        break;
+      case 'A2':
+        prosodyTag = '<prosody rate="-20%">';
+        break;
+      case 'B1':
+        prosodyTag = '<prosody rate="slow">';
+        break;
+      case 'B2':
+      case 'C1':
+      case 'C2':
+      default:
+        // Use default rate (medium) - no prosody tag needed
+        prosodyTag = '';
+        break;
+    }
+
+    const closingProsodyTag = prosodyTag ? '</prosody>' : '';
+
+    return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="et-EE">
+  <voice name="et-EE-AnuNeural">
+    ${prosodyTag}${escapedText}${closingProsodyTag}
+  </voice>
+</speak>`;
+  }
   async transcribeAudio(audioBlob: Blob, language: string = "es-HN"): Promise<SpeechRecognitionResult> {
     try {
       // Using Whisper API for transcription
@@ -43,22 +88,28 @@ export class SpeechService {
     }
   }
 
-  async synthesizeSpeech(text: string, language: string = "et-EE"): Promise<TextToSpeechResult> {
+  async synthesizeSpeech(text: string, language: string = "et-EE", cefrLevel?: string): Promise<TextToSpeechResult> {
     try {
       // Using Azure Speech API for multi-language TTS
       const azureKey = process.env.AZURE_SPEECH_KEY || process.env.AZURE_SPEECH_KEY_ENV_VAR || "default_key";
       const azureRegion = process.env.AZURE_SPEECH_REGION || "eastus";
       
-      // Determine voice based on detected language content
-      const voiceName = this.getVoiceForLanguage(language, text);
+      let ssml: string;
       
-      const ssml = `
-        <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${language}">
-          <voice name="${voiceName}">
-            ${text}
-          </voice>
-        </speak>
-      `;
+      // Use CEFR-aware SSML for Estonian content
+      if (language === "et-EE" && cefrLevel) {
+        ssml = this.generateSSML(text, cefrLevel);
+      } else {
+        // Fallback to old method for Spanish and other languages
+        const voiceName = this.getVoiceForLanguage(language, text);
+        ssml = `
+          <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${language}">
+            <voice name="${voiceName}">
+              ${text}
+            </voice>
+          </speak>
+        `;
+      }
 
       const response = await fetch(`https://${azureRegion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
         method: "POST",

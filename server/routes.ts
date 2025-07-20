@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('TTS Language:', useEstonian ? 'Estonian (Anu)' : 'Spanish (Carlos)', 'Mode:', mode);
       
       const tts = useEstonian 
-        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE")
+        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE", currentUser.cefrLevel)
         : await speechService.synthesizeSpeech(cleanMessageForTTS, "es-HN");
 
       // Save assistant message
