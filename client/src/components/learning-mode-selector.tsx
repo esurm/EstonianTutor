@@ -111,7 +111,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 `}
               >
                 <div className="w-full text-left">
-                  <div className="flex items-center space-x-2 mb-1">
+                  <div className="flex items-center justify-between mb-1">
                     <h4 className="font-semibold text-gray-900 group-hover:text-gray-800">
                       {mode.title}
                     </h4>

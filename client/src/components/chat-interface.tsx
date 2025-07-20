@@ -243,7 +243,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[400px] max-h-[500px]">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[500px] max-h-[600px]">
           {messages.map((message) => (
             <div key={message.id}>
               {message.source === "assistant" ? (
