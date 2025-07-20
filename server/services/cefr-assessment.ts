@@ -36,11 +36,13 @@ export class CEFRAssessmentService {
       sessionScore
     );
 
-    // Determine if level should change
-    const newLevel = this.determineNewLevel(
+    // Determine if level should change (now requires session history analysis)
+    const newLevel = await this.determineNewLevel(
+      userId,
       previousLevel,
       performanceScore,
-      assessment.recommendation
+      assessment.recommendation,
+      "quiz" // Default session type for assessment
     );
 
     // Update user level if changed
@@ -84,25 +86,109 @@ export class CEFRAssessmentService {
     return Math.min(5, Math.max(1, totalScore));
   }
 
-  private determineNewLevel(
+  private async determineNewLevel(
+    userId: number,
     currentLevel: CEFRLevel,
     performanceScore: number,
-    recommendation: "maintain" | "increase" | "decrease"
-  ): CEFRLevel {
+    recommendation: "maintain" | "increase" | "decrease",
+    sessionType: string
+  ): Promise<CEFRLevel> {
     const currentIndex = this.levelProgression.indexOf(currentLevel);
     
-    // Strong performance indicators for level progression
-    if (performanceScore >= 4.5 && recommendation === "increase" && currentIndex < this.levelProgression.length - 1) {
-      return this.levelProgression[currentIndex + 1];
+    // Get recent user performance history
+    const recentSessions = await storage.getUserSessions(userId);
+    const levelSessions = recentSessions.filter(s => s.cefrLevelAtStart === currentLevel);
+    
+    // Require minimum sessions at current level before advancement
+    const minimumSessionsRequired = this.getMinimumSessionsForLevel(currentLevel);
+    if (levelSessions.length < minimumSessionsRequired) {
+      return currentLevel; // Not enough experience at current level
     }
     
-    // Poor performance indicators for level regression
+    // Calculate performance across different session types
+    const performanceByType = this.analyzePerformanceByType(levelSessions);
+    const diversityScore = this.calculateDiversityScore(levelSessions);
+    
+    // Advancement requires consistent high performance across multiple areas
+    if (performanceScore >= 4.5 && recommendation === "increase" && currentIndex < this.levelProgression.length - 1) {
+      const avgScore = this.calculateAverageRecentScore(levelSessions);
+      const consistencyScore = this.calculateConsistencyScore(levelSessions);
+      
+      // Require high average (>75%), good consistency (>70%), and topic diversity (>60%)
+      if (avgScore >= 75 && consistencyScore >= 70 && diversityScore >= 60) {
+        return this.levelProgression[currentIndex + 1];
+      }
+    }
+    
+    // Regression only after consistent poor performance
     if (performanceScore <= 2.0 && recommendation === "decrease" && currentIndex > 0) {
-      return this.levelProgression[currentIndex - 1];
+      const recentPoorSessions = levelSessions.filter(s => s.score && s.score < 50).length;
+      // Require at least 3 poor performances before regression
+      if (recentPoorSessions >= 3) {
+        return this.levelProgression[currentIndex - 1];
+      }
     }
 
-    // Maintain current level
     return currentLevel;
+  }
+
+  private getMinimumSessionsForLevel(level: CEFRLevel): number {
+    const requirements = {
+      A1: 3, // Minimum sessions before advancing from A1
+      A2: 4,
+      B1: 5,
+      B2: 6,
+      C1: 7,
+      C2: 8
+    };
+    return requirements[level] || 5;
+  }
+
+  private analyzePerformanceByType(sessions: any[]): Record<string, number> {
+    const byType: Record<string, { total: number, sum: number }> = {};
+    
+    sessions.forEach(session => {
+      if (!session.score) return;
+      const type = session.sessionType;
+      if (!byType[type]) byType[type] = { total: 0, sum: 0 };
+      byType[type].total++;
+      byType[type].sum += session.score;
+    });
+
+    const averages: Record<string, number> = {};
+    Object.keys(byType).forEach(type => {
+      averages[type] = byType[type].sum / byType[type].total;
+    });
+    
+    return averages;
+  }
+
+  private calculateDiversityScore(sessions: any[]): number {
+    const uniqueTypes = new Set(sessions.map(s => s.sessionType)).size;
+    const expectedTypes = 4; // chat, quiz, dialogue, pronunciation, grammar
+    return Math.min(100, (uniqueTypes / expectedTypes) * 100);
+  }
+
+  private calculateAverageRecentScore(sessions: any[]): number {
+    const scoredSessions = sessions.filter(s => s.score !== null);
+    if (scoredSessions.length === 0) return 0;
+    
+    const totalScore = scoredSessions.reduce((sum, s) => sum + s.score, 0);
+    return totalScore / scoredSessions.length;
+  }
+
+  private calculateConsistencyScore(sessions: any[]): number {
+    const scores = sessions.filter(s => s.score !== null).map(s => s.score);
+    if (scores.length < 3) return 0;
+    
+    // Calculate standard deviation
+    const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+    const stdDev = Math.sqrt(variance);
+    
+    // Lower standard deviation = higher consistency
+    // Convert to percentage where lower variation = higher score
+    return Math.max(0, 100 - (stdDev / mean) * 100);
   }
 
   async getAdaptiveDifficultyContent(userId: number): Promise<{

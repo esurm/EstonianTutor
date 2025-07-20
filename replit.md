@@ -66,10 +66,12 @@ The application uses a comprehensive schema designed around language learning:
 - Real-time audio processing and playback management
 
 #### CEFR Assessment System
-- Dynamic difficulty adjustment based on performance metrics
-- Comprehensive scoring including speed, accuracy, and complexity
-- Automatic level progression recommendations
-- Performance tracking with detailed analytics
+- **Progressive advancement system**: Requires sustained performance across multiple sessions and topic areas
+- **Minimum session requirements**: A1(3), A2(4), B1(5), B2(6), C1(7), C2(8) sessions before advancement consideration
+- **Multi-criteria advancement**: Requires 75%+ average score, 70%+ consistency, 60%+ topic diversity
+- **Comprehensive scoring**: Speed, accuracy, complexity, and session performance analysis
+- **Regression protection**: Requires 3+ poor performances before level decrease
+- Performance tracking with detailed analytics across different learning modes
 
 ### Data Flow
 
