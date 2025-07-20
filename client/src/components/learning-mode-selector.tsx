@@ -1,0 +1,160 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { 
+  HelpCircle, 
+  MessageSquare, 
+  Mic, 
+  BookOpen,
+  Sparkles,
+  Users,
+  Brain,
+  Lightbulb
+} from "lucide-react";
+
+interface LearningModeProps {
+  onModeSelect: (mode: "quiz" | "dialogue" | "pronunciation" | "grammar") => void;
+}
+
+export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
+  const [selectedMode, setSelectedMode] = useState<string | null>(null);
+
+  const modes = [
+    {
+      id: "quiz",
+      title: "Quiz de Vocabulario",
+      description: "Preguntas adaptadas a tu nivel",
+      icon: HelpCircle,
+      badge: "AUTO-GENERADO",
+      badgeColor: "bg-blue-500",
+      gradientFrom: "from-blue-50",
+      gradientTo: "to-blue-100",
+      borderColor: "border-blue-200",
+      hoverFrom: "hover:from-blue-100",
+      hoverTo: "hover:to-blue-200",
+      iconColor: "bg-blue-500"
+    },
+    {
+      id: "dialogue",
+      title: "Simulación de Diálogo",
+      description: "Crea situaciones personalizadas",
+      icon: MessageSquare,
+      badge: "PERSONALIZADO",
+      badgeColor: "bg-purple-500",
+      gradientFrom: "from-purple-50",
+      gradientTo: "to-purple-100",
+      borderColor: "border-purple-200",
+      hoverFrom: "hover:from-purple-100",
+      hoverTo: "hover:to-purple-200",
+      iconColor: "bg-purple-500"
+    },
+    {
+      id: "pronunciation",
+      title: "Práctica de Pronunciación",
+      description: "Feedback instantáneo de IA",
+      icon: Mic,
+      badge: "CON IA",
+      badgeColor: "bg-green-500",
+      gradientFrom: "from-green-50",
+      gradientTo: "to-green-100",
+      borderColor: "border-green-200",
+      hoverFrom: "hover:from-green-100",
+      hoverTo: "hover:to-green-200",
+      iconColor: "bg-green-500"
+    },
+    {
+      id: "grammar",
+      title: "Ejercicios de Gramática",
+      description: "Explicaciones culturales incluidas",
+      icon: BookOpen,
+      badge: "ADAPTATIVO",
+      badgeColor: "bg-orange-500",
+      gradientFrom: "from-orange-50",
+      gradientTo: "to-orange-100",
+      borderColor: "border-orange-200",
+      hoverFrom: "hover:from-orange-100",
+      hoverTo: "hover:to-orange-200",
+      iconColor: "bg-orange-500"
+    }
+  ];
+
+  const handleModeClick = (modeId: string) => {
+    setSelectedMode(modeId);
+    onModeSelect(modeId as "quiz" | "dialogue" | "pronunciation" | "grammar");
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Brain className="h-5 w-5 text-primary" />
+          <span>Herramientas de Aprendizaje</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {modes.map((mode) => {
+            const Icon = mode.icon;
+            const isSelected = selectedMode === mode.id;
+            
+            return (
+              <Button
+                key={mode.id}
+                variant="ghost"
+                onClick={() => handleModeClick(mode.id)}
+                className={`
+                  group p-4 h-auto flex-col items-start space-y-0 
+                  bg-gradient-to-br ${mode.gradientFrom} ${mode.gradientTo} 
+                  border ${mode.borderColor} 
+                  ${mode.hoverFrom} ${mode.hoverTo} 
+                  transition-all duration-200 
+                  hover:shadow-md hover:scale-[1.02]
+                  ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}
+                `}
+              >
+                <div className="w-full flex items-center justify-between mb-3">
+                  <div className={`w-10 h-10 ${mode.iconColor} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <Icon className="h-5 w-5 text-white" />
+                  </div>
+                  <Badge className={`text-xs text-white ${mode.badgeColor}`}>
+                    {mode.badge}
+                  </Badge>
+                </div>
+                
+                <div className="w-full text-left">
+                  <h4 className="font-semibold text-gray-900 mb-1 group-hover:text-gray-800">
+                    {mode.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 group-hover:text-gray-700">
+                    {mode.description}
+                  </p>
+                </div>
+                
+                {isSelected && (
+                  <div className="w-full flex items-center justify-center mt-2 pt-2 border-t border-gray-200">
+                    <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                    <span className="text-xs text-primary ml-1 font-medium">Seleccionado</span>
+                  </div>
+                )}
+              </Button>
+            );
+          })}
+        </div>
+        
+        <div className="mt-6 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+          <div className="flex items-start space-x-3">
+            <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
+            <div>
+              <h4 className="font-medium text-gray-900 mb-1">Sugerencia del Tutor</h4>
+              <p className="text-sm text-gray-600">
+                Para mejor resultado, alternás entre diferentes tipos de ejercicios. 
+                ¡La variedad es clave para el aprendizaje efectivo!
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
