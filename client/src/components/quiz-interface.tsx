@@ -399,7 +399,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
         <div className="flex items-center justify-between mb-4">
           <div>
             <CardTitle className="text-lg">
-              {category === "vocabulary" ? "Quiz de Vocabulario" : "Ejercicios de Gramática"} - Nivel {user?.cefrLevel || "B1"}
+              {category === "vocabulary" ? "Quiz de Vocabulario" : "Quiz de Gramática"} - Nivel {user?.cefrLevel || "B1"}
             </CardTitle>
             <p className="text-sm text-gray-600">
               Pregunta {currentQuestionIndex + 1} de {questions.length}

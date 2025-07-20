@@ -36,7 +36,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
     },
     {
       id: "quiz-grammar",
-      title: "Ejercicios de Gramática",
+      title: "Quiz de Gramática",
       description: "Conjugaciones, casos y estructuras",
       icon: BookOpen,
       badge: "AUTO-GENERADO",
