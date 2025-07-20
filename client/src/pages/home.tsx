@@ -53,21 +53,39 @@ export default function Home() {
       case "dialogue":
         return (
           <div className="space-y-6">
-            <ChatInterface key="dialogue" placeholder="Describí una situación: '¿Cómo pido ayuda en una tienda en Estonia?'" mode="dialogue" />
+            <ChatInterface 
+              key="dialogue" 
+              placeholder="Describí una situación: '¿Cómo pido ayuda en una tienda en Estonia?'" 
+              mode="dialogue" 
+              title="Simulación de Diálogo"
+              headerColor="bg-purple-600"
+            />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
       case "pronunciation":
         return (
           <div className="space-y-6">
-            <ChatInterface key="pronunciation" placeholder="Escribí una palabra o frase en estonio para practicar pronunciación..." mode="pronunciation" />
+            <ChatInterface 
+              key="pronunciation" 
+              placeholder="Escribí una palabra o frase en estonio para practicar pronunciación..." 
+              mode="pronunciation"
+              title="Práctica de Pronunciación"
+              headerColor="bg-green-600"
+            />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
       case "grammar":
         return (
           <div className="space-y-6">
-            <ChatInterface key="grammar" placeholder="Preguntá sobre gramática: '¿Cómo funcionan los casos en estonio?'" mode="grammar" />
+            <ChatInterface 
+              key="grammar" 
+              placeholder="Preguntá sobre gramática: '¿Cómo funcionan los casos en estonio?'" 
+              mode="grammar"
+              title="Ejercicios de Gramática"
+              headerColor="bg-orange-600"
+            />
             <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );

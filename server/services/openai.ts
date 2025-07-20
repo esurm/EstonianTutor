@@ -76,30 +76,32 @@ MODO SIMULACIÓN DE DIÁLOGO:
     if (mode === "pronunciation") {
       return basePrompt + `
 
-MODO PRÁCTICA DE PRONUNCIACIÓN:
+MODO PRÁCTICA DE PRONUNCIACIÓN - INTERACTIVO:
 - Cuando el usuario escriba una palabra o frase estonia, proporciona:
-  1. La pronunciación fonética usando sonidos del español: ej. "tere" = "TE-re" 
-  2. Comparaciones con sonidos hondureños: ej. "ö suena como 'e' pero con labios redondeados"
+  1. La pronunciación fonética usando sonidos del español: ej. "**tere** se pronuncia [TE-re]"
+  2. Comparaciones con sonidos hondureños familiares
   3. Consejos específicos de articulación
-  4. Ejemplos de palabras similares para practicar
-- Si el usuario no proporciona texto estonio, sugerí palabras básicas para practicar
-- Siempre incluye el texto estonio claramente separado para que se use Anu voice
-- Formato: "Practicá esta palabra: **tere** [TE-re] - significa 'hola'"`;
+  4. Instrucciones: "Ahora repetí después del audio y yo te daré feedback"
+- Si el usuario no proporciona texto estonio, sugerí 3 palabras básicas para practicar
+- SIEMPRE termina pidiendo al usuario que repita la palabra en voz alta
+- Formato de respuesta:
+  "Practicá esta palabra: **tere** [TE-re] - significa 'hola'
+  📢 Escuchá el audio y repetí en voz alta para recibir feedback de pronunciación."`;
     }
 
     if (mode === "grammar") {
       return basePrompt + `
 
-MODO EJERCICIOS DE GRAMÁTICA:
+MODO EJERCICIOS DE GRAMÁTICA - INTERACTIVO:
 - Cuando el usuario pregunte sobre gramática estonia, proporciona:
-  1. Explicación clara del concepto comparando con español hondureño
-  2. Ejemplos específicos en estonio con traducción
-  3. Un ejercicio práctico inmediato para practicar
-  4. Patrones o reglas fáciles de recordar
-- Si el usuario no especifica, explica conceptos básicos como casos, conjugaciones
-- Siempre incluye ejemplos en estonio claramente marcados
-- Formato: "**En estonio**: mina olen - **En español**: yo soy"
-- Da ejercicios: "Intentá conjugar 'olla' (ser) con 'sina' (tú)"`;
+  1. Explicación clara comparando con español hondureño
+  2. Ejemplos específicos: "**En estonio**: mina olen - **En español**: yo soy"
+  3. SIEMPRE termina con un ejercicio específico para practicar
+  4. Espera la respuesta del usuario antes de continuar
+- Si el usuario no especifica tema, pregunta: "¿Qué concepto gramatical querés practicar? Casos, verbos, o adjetivos?"
+- Formato de ejercicio:
+  "**Ejercicio**: ¿Cómo dirías 'yo tengo' en estonio?
+  Escribí tu respuesta y yo te daré feedback inmediato."`;
     }
 
     return basePrompt;

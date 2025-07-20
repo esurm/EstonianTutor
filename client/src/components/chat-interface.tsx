@@ -38,7 +38,7 @@ interface ChatMessage {
   encouragement?: string;
 }
 
-export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic en el micrófono...", mode = "chat" }: { placeholder?: string; mode?: string }) {
+export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic en el micrófono...", mode = "chat", title = "Tutor de Estonio", headerColor = "bg-blue-600" }: { placeholder?: string; mode?: string; title?: string; headerColor?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
@@ -139,9 +139,20 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
   };
 
   const handlePlayAudio = async (audioUrl: string, messageId: string) => {
-    if (playingAudioId === messageId) {
+    try {
+      if (playingAudioId === messageId) {
+        // Pause current audio
+        setPlayingAudioId(null);
+        return;
+      }
+
+      // Play new audio
+      setPlayingAudioId(messageId);
+      await playAudio(audioUrl);
+      setPlayingAudioId(null); // Reset when done
+    } catch (error) {
+      console.error('Error playing audio:', error);
       setPlayingAudioId(null);
-      return;
     }
 
     try {
@@ -180,20 +191,20 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="bg-blue-600 text-white">
+      <CardHeader className={`${headerColor} text-white`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
               <Bot className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-white font-semibold">Tutor de Estonio</h2>
+              <h2 className="text-white font-semibold">{title}</h2>
               <p className="text-white text-opacity-80 text-sm">¡Listo para ayudarte!</p>
             </div>
           </div>
           
           <div className="text-right">
-            <p className="text-sm opacity-90">Nivel: {user?.cefrLevel}</p>
+            <p className="text-sm opacity-90">Nivel: {user?.cefrLevel || 'B1'}</p>
             <p className="text-xs opacity-75">Sesión Activa</p>
           </div>
         </div>
@@ -211,7 +222,15 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                   </div>
                   <div className="flex-1 max-w-md">
                     <div className="bg-gray-100 rounded-lg px-4 py-3">
-                      <p className="text-gray-900 text-sm mb-2">{message.text}</p>
+                      <div 
+                        className="text-gray-900 text-sm mb-2"
+                        dangerouslySetInnerHTML={{
+                          __html: message.text
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                            .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>')
+                        }}
+                      />
                       {message.audioUrl && (
                         <Button
                           variant="ghost"

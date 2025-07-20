@@ -119,11 +119,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mode
       );
 
-      // Generate TTS for response with language detection
-      const hasEstonian = /[õäöüšž]|mis|kes|kus|kuidas|on|ei|ja|või|ning/i.test(tutorResponse.message);
+      // Clean message for TTS (remove markdown formatting)
+      const cleanMessageForTTS = tutorResponse.message
+        .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold** formatting
+        .replace(/\*(.*?)\*/g, '$1')      // Remove *italic* formatting
+        .replace(/`([^`]+)`/g, '$1');     // Remove `code` formatting
+      
+      // Generate TTS for response with proper language detection
+      const hasEstonian = /[õäöüšž]|mis|kes|kus|kuidas|tere|tänan|palun/i.test(cleanMessageForTTS);
+      console.log('Language detection:', hasEstonian ? 'Estonian detected' : 'Spanish only', 'Text:', cleanMessageForTTS.substring(0, 100));
+      
       const tts = hasEstonian 
-        ? await speechService.synthesizeSpeech(tutorResponse.message, "et-EE")
-        : await speechService.synthesizeSpeech(tutorResponse.message, "es-HN");
+        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE")
+        : await speechService.synthesizeSpeech(cleanMessageForTTS, "es-HN");
 
       // Save assistant message
       const assistantMessage = await storage.createMessage({
