@@ -38,7 +38,7 @@ interface ChatMessage {
   encouragement?: string;
 }
 
-export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic en el micrófono..." }: { placeholder?: string }) {
+export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic en el micrófono...", mode = "chat" }: { placeholder?: string; mode?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
@@ -60,7 +60,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
   const { user } = useCEFRTracking();
 
   const chatMutation = useMutation({
-    mutationFn: (message: string) => api.sendChatMessage(message, currentSessionId || undefined),
+    mutationFn: (message: string) => api.sendChatMessage(message, currentSessionId || undefined, mode),
     onSuccess: (data) => {
       setCurrentSessionId(data.sessionId);
       

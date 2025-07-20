@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Chat routes
   app.post("/api/chat", async (req, res) => {
     try {
-      const { message, sessionId } = req.body;
+      const { message, sessionId, mode = "chat" } = req.body;
       const currentUser = await getCurrentUserForRequest(req);
       
       let session;
@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         session = await storage.createSession({
           userId: currentUser.id,
-          sessionType: "chat",
+          sessionType: mode === "dialogue" ? "dialogue" : mode === "pronunciation" ? "pronunciation" : mode === "grammar" ? "chat" : "chat",
           cefrLevelAtStart: currentUser.cefrLevel,
           endTime: null,
           score: null,
@@ -111,11 +111,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content: msg.text
       }));
 
-      // Get AI response
+      // Get AI response based on mode
       const tutorResponse = await openaiService.getChatResponse(
         message,
         conversationHistory,
-        currentUser.cefrLevel
+        currentUser.cefrLevel,
+        mode
       );
 
       // Generate TTS for response

@@ -50,8 +50,8 @@ export interface DialogueGeneration {
 }
 
 export class OpenAIService {
-  private getSystemPrompt(): string {
-    return `Eres un tutor respetuoso e intermedio de estonio que habla en español hondureño. El usuario ya conoce estonio básico. Explica la gramática sin simplificar demasiado; usa expresiones específicas de la región hondureña.
+  private getSystemPrompt(mode: string = "chat"): string {
+    const basePrompt = `Eres un tutor respetuoso e intermedio de estonio que habla en español hondureño. El usuario ya conoce estonio básico. Explica la gramática sin simplificar demasiado; usa expresiones específicas de la región hondureña.
 
 IMPORTANTE:
 - Siempre responde en español hondureño (usa "vos" cuando sea apropiado, expresiones como "¡Qué bueno!" "¡Muy bien!" "¡Pura vida!")
@@ -60,12 +60,51 @@ IMPORTANTE:
 - Explica diferencias gramaticales entre estonio y español hondureño
 - Usa encouragement como "¡Muy bien, hermano!" "¡Vas súper bien!"
 - Temperature: 0.2, top_p: 0.9 para respuestas precisas y concisas`;
+
+    if (mode === "dialogue") {
+      return basePrompt + `
+
+MODO SIMULACIÓN DE DIÁLOGO:
+- Cuando el usuario describe una situación, crea un diálogo completo paso a paso
+- Presenta tanto las líneas en estonio como la traducción al español hondureño
+- Incluye instrucciones específicas como "Vos decís:" y "La otra persona responde:"
+- Proporciona contexto cultural sobre la situación (por ejemplo: cómo saludan en Estonia vs Honduras)
+- Después de cada intercambio, explica frases útiles y alternativas
+- Haz que el diálogo sea realista y práctico para un hondureño en Estonia`;
+    }
+
+    if (mode === "pronunciation") {
+      return basePrompt + `
+
+MODO PRÁCTICA DE PRONUNCIACIÓN:
+- Enfócate en la pronunciación específica del estonio
+- Proporciona transcripciones fonéticas usando el alfabeto español
+- Compara sonidos del estonio con sonidos familiares del español hondureño
+- Da consejos específicos sobre movimiento de lengua y labios
+- Incluye palabras que comienzan fácil y aumentan dificultad gradualmente
+- Menciona errores comunes que cometen los hispanohablantes`;
+    }
+
+    if (mode === "grammar") {
+      return basePrompt + `
+
+MODO EJERCICIOS DE GRAMÁTICA:
+- Explica conceptos gramaticales del estonio de manera sistemática
+- Compara siempre con la gramática del español hondureño
+- Proporciona ejemplos múltiples y patrones claros
+- Incluye ejercicios prácticos inmediatos
+- Explica el sistema de casos estonios usando analogías con español
+- Contextualiza gramaticalmente las diferencias culturales`;
+    }
+
+    return basePrompt;
   }
 
   async getChatResponse(
     userMessage: string,
     conversationHistory: { role: "user" | "assistant"; content: string }[],
-    currentCEFRLevel: string
+    currentCEFRLevel: string,
+    mode: string = "chat"
   ): Promise<TutorResponse> {
     try {
       const response = await openai.chat.completions.create({
@@ -73,7 +112,7 @@ IMPORTANTE:
         messages: [
           {
             role: "system",
-            content: `${this.getSystemPrompt()}
+            content: `${this.getSystemPrompt(mode)}
             
 Nivel CEFR actual del usuario: ${currentCEFRLevel}
 Adapta tu respuesta a este nivel.

@@ -76,13 +76,13 @@ export const api = {
   },
 
   // Chat endpoints
-  async sendChatMessage(message: string, sessionId?: number): Promise<{
+  async sendChatMessage(message: string, sessionId?: number, mode?: string): Promise<{
     sessionId: number;
     message: TutorResponse;
     audioUrl: string;
     messageId: number;
   }> {
-    const res = await apiRequest("POST", "/api/chat", { message, sessionId });
+    const res = await apiRequest("POST", "/api/chat", { message, sessionId, mode });
     return res.json();
   },
 
