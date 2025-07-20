@@ -270,9 +270,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let correctCount = 0;
       const totalQuestions = answers.length;
 
-      // Save quiz results and calculate score
+      // Save quiz results and calculate score  
       for (const answer of answers) {
-        const isCorrect = answer.userAnswer === answer.correctAnswer;
+        // More flexible comparison for text answers (case insensitive, trimmed)
+        const userAnswer = answer.userAnswer.toLowerCase().trim();
+        const correctAnswer = answer.correctAnswer.toLowerCase().trim();
+        const isCorrect = userAnswer === correctAnswer;
         if (isCorrect) correctCount++;
 
         await storage.createQuiz({

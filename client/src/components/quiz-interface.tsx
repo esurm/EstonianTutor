@@ -28,7 +28,8 @@ interface QuizInterfaceProps {
 
 interface QuizAnswer {
   question: string;
-  type: string;
+  type?: string;
+  questionType?: string;
   options?: string[];
   correctAnswer: string;
   userAnswer: string;
@@ -55,7 +56,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
   // Generate quiz
   const generateQuizMutation = useMutation({
-    mutationFn: () => api.generateQuiz(user?.cefrLevel, category),
+    mutationFn: () => api.generateQuiz(user?.cefrLevel || "B1", category),
     onSuccess: (data) => {
       setQuestions(data.quiz.questions);
       setSessionId(data.sessionId);
@@ -132,7 +133,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     
     const answerData: QuizAnswer = {
       question: currentQuestion.question,
-      type: currentQuestion.questionType || currentQuestion.type,
+      type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
       options: currentQuestion.options,
       correctAnswer: currentQuestion.correctAnswer,
       userAnswer: selectedAnswer,
@@ -240,9 +241,78 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <CheckCircle className="h-6 w-6 mx-auto mb-2 text-gray-600" />
-              <p className="font-semibold">{user?.cefrLevel}</p>
+              <p className="font-semibold">{user?.cefrLevel || "B1"}</p>
               <p className="text-xs text-gray-500">Nivel CEFR</p>
             </div>
+          </div>
+
+          {/* Detailed Answer Review */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Revisión de Respuestas</h3>
+            {answers.map((answer, index) => {
+              const isCorrect = answer.userAnswer.toLowerCase().trim() === answer.correctAnswer.toLowerCase().trim();
+              
+              return (
+                <div key={index} className={`border rounded-lg p-4 ${isCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      {isCorrect ? (
+                        <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 mb-2">
+                        Pregunta {index + 1}: {answer.question}
+                      </p>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-600">Tu respuesta:</span>
+                          <span className={`font-medium ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                            {answer.userAnswer}
+                          </span>
+                        </div>
+                        
+                        {!isCorrect && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-gray-600">Respuesta correcta:</span>
+                            <span className="font-medium text-green-700">
+                              {answer.correctAnswer}
+                            </span>
+                          </div>
+                        )}
+                        
+                        <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-3">
+                          <p className="text-blue-800 text-sm">
+                            <span className="font-medium">Explicación:</span> {answer.explanation}
+                          </p>
+                        </div>
+                        
+                        {answer.options && answer.options.length > 0 && (
+                          <div className="mt-2">
+                            <span className="text-xs text-gray-500">Opciones disponibles:</span>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {answer.options.map((option, idx) => (
+                                <span key={idx} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                                  {option}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span>Tiempo: {answer.responseTime}s</span>
+                          <span>Nivel: {answer.cefrLevel}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {quizResults.assessment?.levelChanged && (
@@ -286,7 +356,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
         <div className="flex items-center justify-between mb-4">
           <div>
             <CardTitle className="text-lg">
-              Quiz de Vocabulario - Nivel {user?.cefrLevel}
+              Quiz de Vocabulario - Nivel {user?.cefrLevel || "B1"}
             </CardTitle>
             <p className="text-sm text-gray-600">
               Pregunta {currentQuestionIndex + 1} de {questions.length}
