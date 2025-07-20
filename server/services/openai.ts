@@ -219,7 +219,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-4.1-mini",
         messages: [
           {
             role: "system",
@@ -291,7 +291,7 @@ Respond in JSON format:
       });
 
       const endTime = Date.now();
-      console.log(`Quiz generation took ${endTime - startTime}ms with gpt-4o-mini`);
+      console.log(`Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini`);
       return JSON.parse(response.choices[0].message.content || "{}");
     } catch (error) {
       console.error("Quiz generation error:", error);
