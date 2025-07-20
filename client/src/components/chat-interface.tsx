@@ -231,8 +231,8 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                   <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                     <Bot className="h-4 w-4 text-white" />
                   </div>
-                  <div className="flex-1 max-w-md">
-                    <div className="bg-gray-100 rounded-lg px-4 py-3">
+                  <div className="flex-1">
+                    <div className="bg-gray-100 rounded-lg px-4 py-3 inline-block max-w-md">
                       <div className="flex items-start justify-between">
                         <div 
                           className="text-gray-900 text-sm flex-1"

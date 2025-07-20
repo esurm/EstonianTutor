@@ -109,7 +109,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         <div className="bg-blue-600 rounded-lg p-4 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-90">Nivel CEFR Actual</p>
+              <p className="text-sm opacity-90">CEFR</p>
               <p className="text-2xl font-bold">{(user as any)?.cefrLevel}</p>
               <p className="text-xs opacity-75">{levelInfo.name}</p>
             </div>
@@ -139,22 +139,22 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
 
         {/* Performance Metrics */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
+          <div className="bg-gray-50 rounded-lg p-3 text-center flex flex-col justify-center min-h-[80px]">
             <BookOpen className="h-6 w-6 mx-auto mb-2 text-primary" />
             <p className="text-2xl font-bold text-primary">{(user as any)?.wordsLearned || 0}</p>
             <p className="text-xs text-gray-600">Palabras Aprendidas</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
+          <div className="bg-gray-50 rounded-lg p-3 text-center flex flex-col justify-center min-h-[80px]">
             <Target className="h-6 w-6 mx-auto mb-2 text-green-500" />
             <p className="text-2xl font-bold text-green-500">{(user as any)?.accuracy || 0}%</p>
             <p className="text-xs text-gray-600">Precisión</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
+          <div className="bg-gray-50 rounded-lg p-3 text-center flex flex-col justify-center min-h-[80px]">
             <Award className="h-6 w-6 mx-auto mb-2 text-purple-500" />
             <p className="text-2xl font-bold text-purple-500">{(user as any)?.streak || 0}</p>
             <p className="text-xs text-gray-600">Días Seguidos</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-3 text-center">
+          <div className="bg-gray-50 rounded-lg p-3 text-center flex flex-col justify-center min-h-[80px]">
             <Clock className="h-6 w-6 mx-auto mb-2 text-orange-500" />
             <p className="text-2xl font-bold text-orange-500">
               {formatDuration((user as any)?.totalTime || 0)}

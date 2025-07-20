@@ -390,12 +390,9 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     );
   }
 
-  const cardBgColor = category === "vocabulary" ? "bg-cyan-50" : "bg-indigo-50";
-  const headerBgColor = category === "vocabulary" ? "bg-cyan-100" : "bg-indigo-100";
-  
   return (
-    <Card className={cardBgColor}>
-      <CardHeader className={headerBgColor}>
+    <Card className="bg-gray-50">
+      <CardHeader className="bg-gray-100">
         <div className="flex items-center justify-between mb-4">
           <div>
             <CardTitle className="text-lg">
