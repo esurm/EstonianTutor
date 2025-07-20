@@ -222,54 +222,54 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Genera un quiz de estonio para nivel ${cefrLevel} enfocado en ${category === 'vocabulary' ? 'VOCABULARIO' : 'GRAMÁTICA'}.
+            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} focused on ${category === 'vocabulary' ? 'VOCABULARY' : 'GRAMMAR'}.
 
 ${category === 'vocabulary' ? `
-ENFOQUE EN VOCABULARIO:
-- Preguntas sobre significados de palabras
-- Sinónimos y antónimos  
-- Palabras relacionadas con temas específicos
-- Identificación de objetos y conceptos
-- 70% preguntas de opción múltiple, 30% completar
+VOCABULARY FOCUS:
+- Questions about word meanings and definitions
+- Synonyms and antonyms
+- Words related to specific themes (family, colors, food, etc.)
+- Object and concept identification
+- 70% multiple-choice questions, 30% completion questions
 ` : `
-ENFOQUE EN GRAMÁTICA:
-- Conjugaciones verbales (presente, pasado, futuro)
-- Casos gramaticales (nominativo, genitivo, partitivo)
-- Estructura de oraciones y preposiciones
-- 30% preguntas de opción múltiple, 70% completar
+GRAMMAR FOCUS:
+- Verb conjugations (present, past, future tenses)
+- Grammatical cases (nominative, genitive, partitive, etc.)
+- Sentence structure and prepositions
+- 30% multiple-choice questions, 70% completion questions
 `}
 
-Crea 5 preguntas variadas APROPIADAS para el nivel específico.
-CRUCIAL: TODAS las preguntas y opciones deben estar COMPLETAMENTE EN ESTONIO. Solo las explicaciones en español hondureño.
+Create 5 varied questions APPROPRIATE for the specific CEFR level.
+CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
 
-NIVEL ${cefrLevel} - DIFICULTAD ESPECÍFICA:
+CEFR LEVEL ${cefrLevel} - SPECIFIC DIFFICULTY:
 ${difficultyGuidance}
 
-EJEMPLOS DE FORMATO CORRECTO:
+CORRECT FORMAT EXAMPLES:
 
-MULTIPLE CHOICE (vocabulario):
+MULTIPLE CHOICE (vocabulary):
 - Question: "Mis värvi on meri?"
 - Translation: "¿De qué color es el mar?"
 - Options: ["sinine", "roheline", "punane", "kollane"]
 - Correct: "sinine"
 - Explanation: "'Sinine' significa 'azul' en español. El mar es azul."
 
-COMPLETION (gramática):
+COMPLETION (grammar):
 - Question: "Ma _____ kooli iga päev."
 - Translation: "Voy a la escuela todos los días"
 - Correct: "lähen"
 - Explanation: "'Lähen' es la forma presente del verbo 'ir' en primera persona."
 
-Responde en JSON:
+Respond in JSON format:
 {
   "questions": [
     {
-      "question": "pregunta COMPLETAMENTE EN ESTONIO (usa _____ para espacios a completar)",
-      "translation": "traducción de la pregunta al español hondureño para ayuda del usuario",
+      "question": "question COMPLETELY IN ESTONIAN (use _____ for blanks to complete)",
+      "translation": "translation of the question to Honduran Spanish to help the user",
       "questionType": "multiple_choice" | "completion",
-      "options": ["opción1 en estonio", "opción2 en estonio", "opción3 en estonio", "opción4 en estonio"] (solo para multiple_choice),
-      "correctAnswer": "respuesta correcta en estonio",
-      "explanation": "explicación clara en español hondureño del significado y gramática",
+      "options": ["option1 in Estonian", "option2 in Estonian", "option3 in Estonian", "option4 in Estonian"] (only for multiple_choice),
+      "correctAnswer": "correct answer in Estonian",
+      "explanation": "clear explanation in Honduran Spanish about meaning and grammar",
       "cefrLevel": "${cefrLevel}"
     }
   ]
@@ -277,7 +277,7 @@ Responde en JSON:
           },
           {
             role: "user",
-            content: `Genera quiz para nivel ${cefrLevel}${category ? ` categoría ${category}` : ""}`
+            content: `Generate quiz for CEFR level ${cefrLevel}${category ? ` category ${category}` : ""}`
           }
         ],
         temperature: 0.3,
