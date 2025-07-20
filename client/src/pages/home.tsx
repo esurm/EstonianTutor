@@ -4,7 +4,7 @@ import { ChatInterface } from "@/components/chat-interface";
 import { LearningModeSelector } from "@/components/learning-mode-selector";
 import { QuizInterface } from "@/components/quiz-interface";
 import { ProgressDashboard } from "@/components/progress-dashboard";
-import { CulturalNotes } from "@/components/cultural-notes";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Lightbulb, TriangleAlert, Target, Sparkles } from "lucide-react";
@@ -99,7 +99,6 @@ export default function Home() {
           {/* Sidebar - Right Column (1/3 width) */}
           <div className="space-y-6">
             <ProgressDashboard />
-            <CulturalNotes />
             
             {/* Quick Actions */}
             <Card>
@@ -107,19 +106,6 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
                 
                 <div className="space-y-3">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleQuickAction("createDialogue")}
-                    className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors h-auto"
-                  >
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="h-5 w-5 text-purple-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium text-gray-900">Crear Diálogo</p>
-                      <p className="text-xs text-gray-600">Describe una situación</p>
-                    </div>
-                  </Button>
                   
                   <Button
                     variant="ghost"

@@ -52,10 +52,7 @@ export function Navigation() {
           
           <div className="flex items-center space-x-4">
             <div className="hidden sm:block">
-              <span className="text-sm text-gray-600">Nivel Actual: </span>
-              <span className="text-sm font-medium text-gray-900">
-                {user?.cefrLevel}
-              </span>
+              <span className="text-sm text-gray-600">Nivel Actual</span>
             </div>
             
             {/* Difficulty Controls */}

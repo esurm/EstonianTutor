@@ -154,6 +154,8 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
 
   async generateQuiz(cefrLevel: string, category?: string): Promise<QuizGeneration> {
     try {
+      const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
+      
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -161,16 +163,23 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             role: "system",
             content: `Genera un quiz de estonio para nivel ${cefrLevel}${category ? ` en la categoría ${category}` : ""}.
 
-Crea 5 preguntas variadas (múltiple opción y llenar espacios).
+Crea 5 preguntas variadas (múltiple opción y completar espacios).
 Las explicaciones deben estar en español hondureño.
+
+NIVEL ${cefrLevel} - DIFICULTAD ESPECÍFICA:
+${difficultyGuidance}
+
+Tipos de preguntas:
+- "multiple_choice": 4 opciones, una correcta
+- "completion": usuario escribe la respuesta
 
 Responde en JSON:
 {
   "questions": [
     {
       "question": "pregunta en español hondureño",
-      "type": "multiple_choice" | "fill_blank",
-      "options": ["opción1", "opción2", "opción3", "opción4"],
+      "type": "multiple_choice" | "completion",
+      "options": ["opción1", "opción2", "opción3", "opción4"] (solo para multiple_choice),
       "correctAnswer": "respuesta correcta",
       "explanation": "explicación en español hondureño",
       "cefrLevel": "${cefrLevel}"
@@ -192,6 +201,18 @@ Responde en JSON:
       console.error("Quiz generation error:", error);
       throw new Error("Failed to generate quiz");
     }
+  }
+
+  private getDifficultyGuidance(cefrLevel: string): string {
+    const guidance = {
+      A1: "Usa vocabulario básico (saludos, números, colores). Estructuras simples. Frases de 3-5 palabras.",
+      A2: "Vocabulario cotidiano (familia, trabajo, compras). Oraciones simples con presente y pasado básico.",
+      B1: "Temas familiares (viajes, hobbies, planes). Usa futuro, condicional básico. Expresiones de opinión simples.",
+      B2: "Temas abstractos (cultura, sociedad). Estructuras complejas, subjuntivo ocasional. Vocabulario especializado.",
+      C1: "Temas especializados (política, filosofía). Matices de significado. Expresiones idiomáticas estonias.",
+      C2: "Dominio casi nativo. Sutilezas culturales. Registro formal e informal. Literatura estonia."
+    };
+    return guidance[cefrLevel as keyof typeof guidance] || guidance.B1;
   }
 
   async generateDialogue(scenario: string, cefrLevel: string): Promise<DialogueGeneration> {
