@@ -51,8 +51,13 @@ export function Navigation() {
           </Link>
           
           <div className="flex items-center space-x-4">
-            <div className="hidden sm:block">
+            <div className="hidden sm:flex items-center space-x-3">
               <span className="text-sm text-gray-600">Nivel Actual</span>
+              {user?.profileImage && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-500">Conectado con Google</span>
+                </div>
+              )}
             </div>
             
             {/* Difficulty Controls */}
@@ -80,8 +85,25 @@ export function Navigation() {
               </Button>
             </div>
             
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">
-              <User className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="w-8 h-8 p-0 relative overflow-hidden">
+              {user?.profileImage ? (
+                <img 
+                  src={user.profileImage} 
+                  alt={user.name || 'User Profile'} 
+                  className="w-full h-full object-cover rounded-sm"
+                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                    // Fallback to default icon if image fails to load
+                    const target = e.currentTarget;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      const icon = parent.querySelector('.user-icon');
+                      if (icon) (icon as HTMLElement).style.display = 'block';
+                    }
+                  }}
+                />
+              ) : null}
+              <User className={`h-4 w-4 user-icon ${user?.profileImage ? 'hidden' : ''}`} />
             </Button>
           </div>
         </div>
