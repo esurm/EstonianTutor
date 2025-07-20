@@ -38,7 +38,7 @@ interface ChatMessage {
   encouragement?: string;
 }
 
-export function ChatInterface() {
+export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic en el micrófono..." }: { placeholder?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
@@ -343,7 +343,7 @@ export function ChatInterface() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Escribir en estonio o hacer clic en el micrófono..."
+                placeholder={placeholder}
                 disabled={chatMutation.isPending || isRecording}
                 className="w-full"
               />

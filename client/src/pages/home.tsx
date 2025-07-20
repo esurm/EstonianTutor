@@ -23,17 +23,17 @@ export default function Home() {
     if (mode === "dialogue") {
       toast({
         title: "Simulación de Diálogo",
-        description: "Describí una situación y te genero un diálogo personalizado.",
+        description: "Describí una situación y te ayudo a practicar el diálogo en estonio.",
       });
     } else if (mode === "pronunciation") {
       toast({
         title: "Práctica de Pronunciación", 
-        description: "Hacé clic en el micrófono y repetí las palabras en estonio.",
+        description: "Usá el micrófono para practicar pronunciación en estonio.",
       });
     } else if (mode === "grammar") {
       toast({
         title: "Ejercicios de Gramática",
-        description: "Practicá gramática con explicaciones culturales.",
+        description: "Pedí explicaciones gramaticales y ejercicios específicos.",
       });
     }
   };
@@ -50,14 +50,33 @@ export default function Home() {
     switch (currentMode) {
       case "quiz":
         return <QuizInterface onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "dialogue":
+        return (
+          <div className="space-y-6">
+            <ChatInterface key="dialogue" placeholder="Describí una situación: '¿Cómo pido ayuda en una tienda en Estonia?'" />
+            <LearningModeSelector onModeSelect={handleModeSelect} />
+          </div>
+        );
+      case "pronunciation":
+        return (
+          <div className="space-y-6">
+            <ChatInterface key="pronunciation" placeholder="Escribí una palabra o frase en estonio para practicar pronunciación..." />
+            <LearningModeSelector onModeSelect={handleModeSelect} />
+          </div>
+        );
+      case "grammar":
+        return (
+          <div className="space-y-6">
+            <ChatInterface key="grammar" placeholder="Preguntá sobre gramática: '¿Cómo funcionan los casos en estonio?'" />
+            <LearningModeSelector onModeSelect={handleModeSelect} />
+          </div>
+        );
       case "chat":
       default:
         return (
-          <div className="flex flex-col space-y-6 h-full">
+          <div className="space-y-6">
             <ChatInterface />
-            <div className="flex-1">
-              <LearningModeSelector onModeSelect={handleModeSelect} />
-            </div>
+            <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
     }
@@ -94,7 +113,7 @@ export default function Home() {
       <Navigation />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Learning Area - Left Column (2/3 width) */}
           <div className="lg:col-span-2">
             {renderMainContent()}
@@ -104,7 +123,7 @@ export default function Home() {
           <div className="space-y-6">
             <ProgressDashboard />
             
-            {/* Quick Actions */}
+            {/* Quick Actions - Aligned with Learning Tools */}
             <Card>
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
