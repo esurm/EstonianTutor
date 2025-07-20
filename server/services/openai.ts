@@ -78,14 +78,14 @@ MODO SIMULACIÓN DE DIÁLOGO:
 
 MODO PRÁCTICA DE PRONUNCIACIÓN - INTERACTIVO:
 - Cuando el usuario escriba una palabra o frase estonia, proporciona:
-  1. La pronunciación fonética usando sonidos del español: ej. "**tere** se pronuncia [TE-re]"
+  1. La pronunciación fonética usando sonidos del español: ej. "**[et]tere[/et]** se pronuncia [TE-re]"
   2. Comparaciones con sonidos hondureños familiares
   3. Consejos específicos de articulación
   4. Instrucciones: "Ahora repetí después del audio y yo te daré feedback"
 - Si el usuario no proporciona texto estonio, sugerí 3 palabras básicas para practicar
-- SIEMPRE termina pidiendo al usuario que repita la palabra en voz alta
+- SIEMPRE incluye palabras estonias entre [et] y [/et] para TTS correcto
 - Formato de respuesta:
-  "Practicá esta palabra: **tere** [TE-re] - significa 'hola'
+  "Practicá esta palabra: **[et]tere[/et]** [TE-re] - significa 'hola'
   📢 Escuchá el audio y repetí en voz alta para recibir feedback de pronunciación."`;
     }
 
@@ -95,10 +95,11 @@ MODO PRÁCTICA DE PRONUNCIACIÓN - INTERACTIVO:
 MODO EJERCICIOS DE GRAMÁTICA - INTERACTIVO:
 - Cuando el usuario pregunte sobre gramática estonia, proporciona:
   1. Explicación clara comparando con español hondureño
-  2. Ejemplos específicos: "**En estonio**: mina olen - **En español**: yo soy"
+  2. Ejemplos específicos: "**En estonio**: [et]mina olen[/et] - **En español**: yo soy"
   3. SIEMPRE termina con un ejercicio específico para practicar
   4. Espera la respuesta del usuario antes de continuar
 - Si el usuario no especifica tema, pregunta: "¿Qué concepto gramatical querés practicar? Casos, verbos, o adjetivos?"
+- SIEMPRE incluye palabras estonias entre [et] y [/et] para TTS correcto
 - Formato de ejercicio:
   "**Ejercicio**: ¿Cómo dirías 'yo tengo' en estonio?
   Escribí tu respuesta y yo te daré feedback inmediato."`;

@@ -138,21 +138,43 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
     }
   };
 
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
   const handlePlayAudio = async (audioUrl: string, messageId: string) => {
     try {
-      if (playingAudioId === messageId) {
-        // Pause current audio
+      // If this message is currently playing, pause it
+      if (playingAudioId === messageId && currentAudio) {
+        currentAudio.pause();
         setPlayingAudioId(null);
+        setCurrentAudio(null);
         return;
       }
 
+      // Stop any other audio
+      if (currentAudio) {
+        currentAudio.pause();
+      }
+
       // Play new audio
+      const audio = new Audio(audioUrl);
+      setCurrentAudio(audio);
       setPlayingAudioId(messageId);
-      await playAudio(audioUrl);
-      setPlayingAudioId(null); // Reset when done
+      
+      audio.onended = () => {
+        setPlayingAudioId(null);
+        setCurrentAudio(null);
+      };
+      
+      audio.onerror = () => {
+        setPlayingAudioId(null);
+        setCurrentAudio(null);
+      };
+      
+      await audio.play();
     } catch (error) {
       console.error('Error playing audio:', error);
       setPlayingAudioId(null);
+      setCurrentAudio(null);
     }
 
     try {
@@ -226,6 +248,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                         className="text-gray-900 text-sm mb-2"
                         dangerouslySetInnerHTML={{
                           __html: message.text
+                            .replace(/\[et\](.*?)\[\/et\]/g, '<strong class="text-blue-600">$1</strong>') // Estonian text in blue bold
                             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                             .replace(/\*(.*?)\*/g, '<em>$1</em>')
                             .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>')
@@ -236,14 +259,13 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                           variant="ghost"
                           size="sm"
                           onClick={() => handlePlayAudio(message.audioUrl!, message.id)}
-                          className="flex items-center space-x-2 text-primary text-xs hover:text-primary/80 p-0 h-auto"
+                          className="text-primary hover:text-primary/80 p-1 h-auto w-8"
                         >
                           {playingAudioId === message.id ? (
-                            <Pause className="h-3 w-3" />
+                            <Pause className="h-4 w-4" />
                           ) : (
-                            <Play className="h-3 w-3" />
+                            <Play className="h-4 w-4" />
                           )}
-                          <span>Reproducir Audio</span>
                         </Button>
                       )}
                     </div>

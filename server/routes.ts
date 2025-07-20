@@ -119,19 +119,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mode
       );
 
-      // Clean message for TTS (remove markdown formatting)
-      const cleanMessageForTTS = tutorResponse.message
+      // Process message for TTS with bracket-based language detection
+      const messageForTTS = tutorResponse.message
         .replace(/\*\*(.*?)\*\*/g, '$1')  // Remove **bold** formatting
         .replace(/\*(.*?)\*/g, '$1')      // Remove *italic* formatting
         .replace(/`([^`]+)`/g, '$1');     // Remove `code` formatting
       
-      // Generate TTS for response with proper language detection
-      const hasEstonian = /[õäöüšž]|mis|kes|kus|kuidas|tere|tänan|palun/i.test(cleanMessageForTTS);
-      console.log('Language detection:', hasEstonian ? 'Estonian detected' : 'Spanish only', 'Text:', cleanMessageForTTS.substring(0, 100));
+      // Check for Estonian brackets [et]...[/et] 
+      const hasEstonianBrackets = /\[et\].*?\[\/et\]/i.test(messageForTTS);
+      console.log('Language detection - Brackets found:', hasEstonianBrackets, 'Text sample:', messageForTTS.substring(0, 100));
       
-      const tts = hasEstonian 
-        ? await speechService.synthesizeSpeech(cleanMessageForTTS, "et-EE")
-        : await speechService.synthesizeSpeech(cleanMessageForTTS, "es-HN");
+      let tts;
+      if (hasEstonianBrackets) {
+        // Extract Estonian parts and create mixed TTS
+        const estonianParts = messageForTTS.match(/\[et\](.*?)\[\/et\]/gi) || [];
+        const cleanedForTTS = messageForTTS.replace(/\[et\](.*?)\[\/et\]/gi, '$1');
+        
+        console.log('Estonian parts found:', estonianParts);
+        tts = await speechService.synthesizeSpeech(cleanedForTTS, "et-EE");
+      } else {
+        // Pure Spanish content
+        tts = await speechService.synthesizeSpeech(messageForTTS, "es-HN");
+      }
 
       // Save assistant message
       const assistantMessage = await storage.createMessage({
