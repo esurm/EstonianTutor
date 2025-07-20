@@ -218,7 +218,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
       
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1",
+        model: "gpt-4.1-mini",
         messages: [
           {
             role: "system",

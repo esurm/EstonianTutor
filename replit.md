@@ -49,7 +49,7 @@ The application uses a comprehensive schema designed around language learning:
   - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
   - Questions in Estonian with Spanish translations for comprehension
   - Color-coded interface: Cyan for vocabulary, Indigo for grammar
-  - **English prompts to GPT-4o** for optimal AI performance with specialized focus areas
+  - **Quiz generation powered by GPT-4.1-mini** for efficient quiz creation with specialized focus areas
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
 - Grammar correction and Honduras-Estonia cultural comparisons
