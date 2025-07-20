@@ -59,7 +59,7 @@ export class OpenAIService {
       },
       dialogue_simulation: {
         description: "Dialogue Simulation",
-        prompt_addition: "Simulate situational dialogues (e.g., shops, travel, job interviews). Stay in character and prompt user to speak naturally and respond in context."
+        prompt_addition: "Always try to simulate situational dialogues trying to understand the concept from user prompt (e.g., shops, travel, job interviews). Stay in character and prompt user to speak naturally and respond in context."
       },
       pronunciation_practice: {
         description: "Pronunciation Practice",
