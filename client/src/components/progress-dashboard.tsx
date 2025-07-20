@@ -210,9 +210,9 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("quiz-vocabulary")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg hover:bg-cyan-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-teal-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-cyan-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Vocabulario</span>
             </Button>
             

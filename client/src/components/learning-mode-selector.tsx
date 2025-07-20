@@ -26,13 +26,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Preguntas de palabras y significados",
       icon: HelpCircle,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-teal-500",
-      gradientFrom: "from-teal-50",
-      gradientTo: "to-teal-100",
-      borderColor: "border-teal-200",
-      hoverFrom: "hover:from-teal-100",
-      hoverTo: "hover:to-teal-200",
-      iconColor: "bg-teal-500"
+      badgeColor: "bg-cyan-500",
+      gradientFrom: "from-cyan-50",
+      gradientTo: "to-cyan-100",
+      borderColor: "border-cyan-200",
+      hoverFrom: "hover:from-cyan-100",
+      hoverTo: "hover:to-cyan-200",
+      iconColor: "bg-cyan-500"
     },
     {
       id: "quiz-grammar",
@@ -116,7 +116,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 onClick={() => handleModeClick(mode.id)}
                 className={`
                   group p-3 h-auto flex-col items-start space-y-0 
-                  ${mode.id === 'quiz-vocabulary' ? 'bg-teal-50 border-teal-200 hover:bg-teal-100 hover:border-teal-300' : 
+                  ${mode.id === 'quiz-vocabulary' ? 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' : 
                     mode.id === 'quiz-grammar' ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' :
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
