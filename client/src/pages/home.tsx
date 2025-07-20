@@ -29,6 +29,9 @@ export default function Home() {
       case "dialogue":
         return (
           <div className="space-y-6">
+            <div className="order-first lg:order-last">
+              <LearningModeSelector onModeSelect={handleModeSelect} />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -39,16 +42,18 @@ export default function Home() {
                   headerColor="bg-purple-100"
                 />
               </div>
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-last lg:order-none">
                 <ProgressDashboard />
               </div>
             </div>
-            <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
       case "pronunciation":
         return (
           <div className="space-y-6">
+            <div className="order-first lg:order-last">
+              <LearningModeSelector onModeSelect={handleModeSelect} />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -59,16 +64,18 @@ export default function Home() {
                   headerColor="bg-green-100"
                 />
               </div>
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-last lg:order-none">
                 <ProgressDashboard />
               </div>
             </div>
-            <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
       case "grammar":
         return (
           <div className="space-y-6">
+            <div className="order-first lg:order-last">
+              <LearningModeSelector onModeSelect={handleModeSelect} />
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-3">
                 <ChatInterface 
@@ -79,11 +86,10 @@ export default function Home() {
                   headerColor="bg-orange-100"
                 />
               </div>
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-last lg:order-none">
                 <ProgressDashboard />
               </div>
             </div>
-            <LearningModeSelector onModeSelect={handleModeSelect} />
           </div>
         );
       case "chat":
@@ -99,11 +105,13 @@ export default function Home() {
                   headerColor="bg-blue-100"
                 />
               </div>
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-last lg:order-none">
                 <ProgressDashboard />
               </div>
             </div>
-            <LearningModeSelector onModeSelect={handleModeSelect} />
+            <div className="order-first lg:order-last">
+              <LearningModeSelector onModeSelect={handleModeSelect} />
+            </div>
           </div>
         );
     }

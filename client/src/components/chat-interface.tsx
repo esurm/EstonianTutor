@@ -235,7 +235,7 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-[500px] max-h-[600px]">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 'calc(100vh - 280px)', maxHeight: 'calc(100vh - 280px)' }}>
           {messages.map((message) => (
             <div key={message.id}>
               {message.source === "assistant" ? (
@@ -245,30 +245,32 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
                   </div>
                   <div className="flex-1 max-w-md">
                     <div className="bg-gray-100 rounded-lg px-4 py-3">
-                      <div 
-                        className="text-gray-900 text-sm mb-2"
-                        dangerouslySetInnerHTML={{
-                          __html: message.text
-                            // Remove Estonian brackets since they're no longer used
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                            .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>')
-                        }}
-                      />
-                      {message.audioUrl && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handlePlayAudio(message.audioUrl!, message.id)}
-                          className="text-primary hover:text-primary/80 p-1 h-auto w-8"
-                        >
-                          {playingAudioId === message.id ? (
-                            <Pause className="h-4 w-4" />
-                          ) : (
-                            <Play className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
+                      <div className="flex items-start justify-between">
+                        <div 
+                          className="text-gray-900 text-sm flex-1"
+                          dangerouslySetInnerHTML={{
+                            __html: message.text
+                              // Remove Estonian brackets since they're no longer used
+                              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                              .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded">$1</code>')
+                          }}
+                        />
+                        {message.audioUrl && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handlePlayAudio(message.audioUrl!, message.id)}
+                            className="text-primary hover:text-primary/80 p-1 h-auto w-8 ml-2 flex-shrink-0"
+                          >
+                            {playingAudioId === message.id ? (
+                              <Pause className="h-4 w-4" />
+                            ) : (
+                              <Play className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
                       {message.timestamp.toLocaleTimeString("es-HN", {
