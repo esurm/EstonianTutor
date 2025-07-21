@@ -300,38 +300,32 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     try {
       const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
       
+      // Category-specific optimized prompts
+      const prompts = this.getCategoryPrompts(category, cefrLevel);
+      
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
         model: "gpt-4.1-mini",
         messages: [
           {
             role: "system",
-            content: `You are an Estonian language teacher. Create exactly 5 ${category} questions for CEFR level ${cefrLevel}. 
-
-Requirements:
-- All questions MUST be in Estonian
-- All explanations MUST be in Spanish  
-- Include "translation" field with Spanish translation of question
-- Use JSON format with "questions" array
-- Each question needs: question, translation, questionType, options (for multiple_choice), correctAnswer, explanation, cefrLevel
-
-Return only valid JSON, no extra text.`
+            content: prompts.system
           },
           {
             role: "user",
-            content: `Create 5 ${category} questions for level ${cefrLevel}. Use JSON format.`
+            content: prompts.user
           }
         ],
         temperature: 0.2,
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 800,
+        max_tokens: prompts.maxTokens,
         response_format: { type: "json_object" }
       });
 
       const endTime = Date.now();
-      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini (optimized prompt)`);
+      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini (${category} optimized)`);
       
       const content = response.choices[0].message.content || "{}";
       try {
@@ -644,6 +638,52 @@ Responde en JSON:
     } catch (error) {
       console.error("Dialogue generation error:", error);
       throw new Error("Failed to generate dialogue");
+    }
+  }
+
+  private getCategoryPrompts(category: string, cefrLevel: string) {
+    switch(category) {
+      case "vocabulary":
+        return {
+          system: `Create 5 Estonian vocabulary questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 vocabulary questions with options, correct answer, explanation.`,
+          maxTokens: 600
+        };
+      
+      case "grammar":
+        return {
+          system: `Create 5 Estonian grammar questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 grammar questions with options, correct answer, explanation.`,
+          maxTokens: 650
+        };
+      
+      case "conjugation":
+        return {
+          system: `Create 5 Estonian verb conjugation questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 conjugation questions with options, correct answer, explanation.`,
+          maxTokens: 600
+        };
+      
+      case "sentence_reordering":
+        return {
+          system: `Create 5 Estonian word order questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 sentence reordering questions with options, correct answer, explanation.`,
+          maxTokens: 650
+        };
+      
+      case "error_detection":
+        return {
+          system: `Create 5 Estonian error detection questions (${cefrLevel}). Show incorrect sentences, users find the error word. Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 error detection questions. Format: "Leia lause seast viga: [sentence with 1 error]". correctAnswer is the error word only.`,
+          maxTokens: 550
+        };
+      
+      default:
+        return {
+          system: `Create 5 Estonian questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
+          user: `5 questions with options, correct answer, explanation.`,
+          maxTokens: 700
+        };
     }
   }
 }
