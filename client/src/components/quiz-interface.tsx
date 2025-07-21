@@ -184,7 +184,21 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     // Check if answer is correct
     const userAnswer = selectedAnswer.toLowerCase().trim();
     const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim();
-    const isCorrect = userAnswer === correctAnswer;
+    
+    // For sentence reordering, be more flexible with Estonian word order
+    let isCorrect = userAnswer === correctAnswer;
+    if (category === "sentence_reordering" && !isCorrect) {
+      // Check if all words are present and properly arranged (flexible Estonian order)
+      const userWords = userAnswer.split(' ').filter(w => w.length > 0);
+      const correctWords = correctAnswer.split(' ').filter(w => w.length > 0);
+      
+      // Basic check: same words count and all words present
+      const hasSameWords = userWords.length === correctWords.length && 
+                          userWords.every(word => correctWords.includes(word));
+      
+      // Accept if all words are present (Estonian allows flexible word order)
+      isCorrect = hasSameWords;
+    }
     
     setIsAnswerCorrect(isCorrect);
     setShowAnswerFeedback(true);
@@ -704,35 +718,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
                 </Button>
               )}
 
-              {/* Show feedback after answer */}
-              {showAnswerFeedback && (
-                <div className={`border rounded-lg p-4 ${
-                  isAnswerCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
-                }`}>
-                  <div className="flex items-center space-x-2 mb-2">
-                    {isAnswerCorrect ? (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-red-600" />
-                    )}
-                    <span className={`font-medium ${isAnswerCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                      {isAnswerCorrect ? '¡Correcto!' : 'Incorrecto'}
-                    </span>
-                  </div>
-                  {!isAnswerCorrect && (
-                    <div className="text-sm">
-                      <div className="mb-2">
-                        <span className="text-gray-600">Tu respuesta:</span>
-                        <span className="ml-2 text-red-700 font-medium">{selectedAnswer}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">Respuesta correcta:</span>
-                        <span className="ml-2 text-green-700 font-medium">{currentQuestion.correctAnswer}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+
             </div>
           ) : (
             currentQuestion.options?.map((option, index) => {
