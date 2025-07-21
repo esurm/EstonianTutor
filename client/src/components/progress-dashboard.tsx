@@ -104,7 +104,8 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="space-y-6 h-full overflow-y-auto pb-6">
+      <CardContent className="h-full overflow-y-auto pb-6 flex flex-col">
+        <div className="space-y-6 flex-shrink-0">
         {/* CEFR Level Display */}
         <div className="bg-blue-600 rounded-lg p-4 text-white">
           <div className="flex items-start justify-between">
@@ -162,9 +163,10 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <p className="text-xs text-gray-600">Tiempo Total</p>
           </div>
         </div>
+        </div>
 
         {/* Chat Mode Selector */}
-        <div className="mt-auto">
+        <div className="mt-auto pb-2">
           <div className="flex items-center space-x-2 mb-3">
             <MessageSquare className="h-4 w-4 text-primary" />
             <h4 className="font-medium text-gray-900">Modos de Aprendizaje</h4>
