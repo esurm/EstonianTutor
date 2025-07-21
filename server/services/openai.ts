@@ -317,10 +317,10 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             content: prompts.user
           }
         ],
-        temperature: 0.2,
-        top_p: 1.0,
-        frequency_penalty: 0.1,
-        presence_penalty: 0,
+        temperature: prompts.temperature,
+        top_p: prompts.topP,
+        frequency_penalty: prompts.frequencyPenalty,
+        presence_penalty: prompts.presencePenalty,
         max_tokens: prompts.maxTokens,
         response_format: { type: "json_object" }
       });
@@ -934,7 +934,11 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
         return {
           system: vocabSystem.systemPersonality,
           user: vocabSystem.userPrompt,
-          maxTokens: vocabSystem.maxTokens
+          maxTokens: vocabSystem.maxTokens,
+          temperature: vocabSystem.temperature,
+          topP: vocabSystem.topP,
+          presencePenalty: vocabSystem.presencePenalty,
+          frequencyPenalty: vocabSystem.frequencyPenalty
         };
       
       case "grammar":
@@ -942,7 +946,11 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
         return {
           system: grammarSystem.systemPersonality,
           user: grammarSystem.userPrompt,
-          maxTokens: grammarSystem.maxTokens
+          maxTokens: grammarSystem.maxTokens,
+          temperature: grammarSystem.temperature,
+          topP: grammarSystem.topP,
+          presencePenalty: grammarSystem.presencePenalty,
+          frequencyPenalty: grammarSystem.frequencyPenalty
         };
       
       case "conjugation":
@@ -950,7 +958,11 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
         return {
           system: conjugationSystem.systemPersonality,
           user: conjugationSystem.userPrompt,
-          maxTokens: conjugationSystem.maxTokens
+          maxTokens: conjugationSystem.maxTokens,
+          temperature: conjugationSystem.temperature,
+          topP: conjugationSystem.topP,
+          presencePenalty: conjugationSystem.presencePenalty,
+          frequencyPenalty: conjugationSystem.frequencyPenalty
         };
       
       case "sentence_reordering":
@@ -958,7 +970,11 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
         return {
           system: reorderingSystem.systemPersonality,
           user: reorderingSystem.userPrompt,
-          maxTokens: reorderingSystem.maxTokens
+          maxTokens: reorderingSystem.maxTokens,
+          temperature: reorderingSystem.temperature,
+          topP: reorderingSystem.topP,
+          presencePenalty: reorderingSystem.presencePenalty,
+          frequencyPenalty: reorderingSystem.frequencyPenalty
         };
       
       case "error_detection":
@@ -966,14 +982,22 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
         return {
           system: errorSystem.systemPersonality,
           user: errorSystem.userPrompt,
-          maxTokens: errorSystem.maxTokens
+          maxTokens: errorSystem.maxTokens,
+          temperature: errorSystem.temperature,
+          topP: errorSystem.topP,
+          presencePenalty: errorSystem.presencePenalty,
+          frequencyPenalty: errorSystem.frequencyPenalty
         };
       
       default:
         return {
           system: `Create 5 Estonian questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
           user: `5 questions with options, correct answer, explanation.`,
-          maxTokens: 700
+          maxTokens: 700,
+          temperature: 0.3,
+          topP: 1.0,
+          presencePenalty: 0.0,
+          frequencyPenalty: 0.0
         };
     }
   }
