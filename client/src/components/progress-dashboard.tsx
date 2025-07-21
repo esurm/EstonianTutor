@@ -251,6 +251,15 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
               <div className="w-3 h-3 bg-red-600 rounded-full dark:bg-red-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Errores</span>
             </Button>
+            
+            <Button
+              variant="ghost"
+              disabled
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg transition-colors h-auto dark:bg-cyan-950 dark:border-cyan-800 opacity-60 cursor-not-allowed"
+            >
+              <div className="w-3 h-3 bg-cyan-600 rounded-full dark:bg-cyan-400"></div>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Chatear</span>
+            </Button>
           </div>
         </div>
 
