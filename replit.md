@@ -40,17 +40,24 @@ The application uses a comprehensive schema designed around language learning:
 #### AI Integration Services
 
 **OpenAI Service**: 
-- GPT-4.1 powered conversational tutor with specialized Estonian teaching persona
+- **GPT-4.1** for conversational tutoring with specialized Estonian teaching persona
+- **GPT-4.1-mini** for quiz generation (faster, cost-effective)
 - **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
 - Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
-- **Updated dialogue simulation**: Now actively interprets user prompts to create contextual situational dialogues
-- CEFR level targeting (A1-C2) with specific complexity guidelines for each level
+- **Mode-specific parameters optimized for AI behavior**:
+  - General conversation: temperature 0.7, presence_penalty 0.3, max_tokens 400
+  - Dialogue simulation: temperature 0.8, presence_penalty 0.5, max_tokens 500
+  - Pronunciation: temperature 0.2, max_tokens 250 (high accuracy)
+  - Grammar exercises: temperature 0.3, max_tokens 400 (precise output)
+  - Quiz generation: temperature 0.2, frequency_penalty 0.1, max_tokens 250 (reliable/regenerable)
+- **Enhanced error handling**: Robust JSON parsing with fallback responses for API failures
 - **Dual Quiz Generation System**: 
   - **Vocabulary Quizzes**: Focus on word meanings, synonyms, themed vocabulary (70% multiple-choice, 30% completion)
   - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
   - Questions in Estonian with Spanish translations for comprehension
-  - Color-coded interface: Cyan for vocabulary, Indigo for grammar
-  - **Quiz generation powered by GPT-4.1-mini** for efficient quiz creation with specialized focus areas
+  - Strict category separation enforced with enhanced prompts
+- **Batch quiz generation capability** for token optimization (ready for production scaling)
+- CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
 - Grammar correction and Honduras-Estonia cultural comparisons

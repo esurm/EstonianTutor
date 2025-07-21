@@ -206,7 +206,21 @@ Respond in JSON format with this structure:
         response_format: { type: "json_object" }
       });
 
-      return JSON.parse(response.choices[0].message.content || "{}");
+      const content = response.choices[0].message.content || "{}";
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        console.error("JSON parsing error for chat response:", parseError);
+        console.error("Raw content:", content);
+        // Return fallback response
+        return {
+          message: "Vabandage, tekkis tehniline probleem. Proovige uuesti.",
+          corrections: [],
+          grammarNotes: "",
+          culturalContext: "",
+          encouragement: "Proovige uuesti!"
+        };
+      }
     } catch (error) {
       console.error("OpenAI API error:", error);
       throw new Error("Failed to get tutor response");
@@ -259,7 +273,23 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         response_format: { type: "json_object" }
       });
 
-      return JSON.parse(response.choices[0].message.content || "{}");
+      const content = response.choices[0].message.content || "{}";
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        console.error("JSON parsing error for CEFR assessment:", parseError);
+        console.error("Raw content:", content);
+        // Return fallback assessment
+        return {
+          currentLevel: currentLevel,
+          confidence: 0.5,
+          speedScore: 3,
+          accuracyScore: 3,
+          complexityScore: 3,
+          recommendation: "maintain",
+          reasoning: "Evaluación técnica fallida, manteniendo nivel actual"
+        };
+      }
     } catch (error) {
       console.error("CEFR Assessment error:", error);
       throw new Error("Failed to assess CEFR level");
@@ -349,7 +379,27 @@ Respond in JSON format:
 
       const endTime = Date.now();
       console.log(`Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini`);
-      return JSON.parse(response.choices[0].message.content || "{}");
+      
+      const content = response.choices[0].message.content || "{}";
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        console.error("JSON parsing error for quiz generation:", parseError);
+        console.error("Raw content:", content);
+        // Return fallback quiz
+        return {
+          questions: [
+            {
+              question: "Mis on 'tere' tähendus?",
+              type: "multiple_choice",
+              options: ["Adiós", "Hola", "Gracias", "Por favor"],
+              correctAnswer: "Hola",
+              explanation: "'Tere' significa 'hola' en español.",
+              cefrLevel: cefrLevel
+            }
+          ]
+        };
+      }
     } catch (error) {
       console.error("Quiz generation error:", error);
       throw new Error("Failed to generate quiz");
@@ -494,11 +544,40 @@ Responde en JSON:
             content: `Crea diálogo para: ${scenario}, nivel ${cefrLevel}`
           }
         ],
-        temperature: 0.4,
+        temperature: 0.8,
+        top_p: 1.0,
+        presence_penalty: 0.5,
+        frequency_penalty: 0,
+        max_tokens: 500,
         response_format: { type: "json_object" }
       });
 
-      return JSON.parse(response.choices[0].message.content || "{}");
+      const content = response.choices[0].message.content || "{}";
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        console.error("JSON parsing error for dialogue generation:", parseError);
+        console.error("Raw content:", content);
+        // Return fallback dialogue
+        return {
+          scenario: "Conversación básica",
+          turns: [
+            {
+              speaker: "other",
+              estonian: "Tere! Kuidas läheb?",
+              spanish: "¡Hola! ¿Cómo te va?",
+              audioPrompt: true
+            },
+            {
+              speaker: "user",
+              estonian: "Tere! Hästi, tänan!",
+              spanish: "¡Hola! Bien, gracias!",
+              audioPrompt: true
+            }
+          ],
+          culturalNotes: "Saludo estonio básico muy común en Estonia."
+        };
+      }
     } catch (error) {
       console.error("Dialogue generation error:", error);
       throw new Error("Failed to generate dialogue");
