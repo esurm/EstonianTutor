@@ -98,14 +98,14 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
   return (
     <Card className="h-full" style={{ height: 'calc(100vh - 120px)' }}>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           <TrendingUp className="h-4 w-4 text-primary" />
-          <span className="font-medium text-gray-900">Tu Progreso</span>
-        </CardTitle>
+          <h4 className="font-medium text-gray-900">Tu Progreso</h4>
+        </div>
       </CardHeader>
       
       <CardContent className="h-full overflow-y-auto p-6 flex flex-col">
-        <div className="space-y-6 flex-shrink-0 -mt-2">
+        <div className="space-y-6 flex-shrink-0 -mt-4">
         {/* CEFR Level Display */}
         <div className="bg-blue-600 rounded-lg p-4 text-white">
           <div className="flex items-start justify-between">
