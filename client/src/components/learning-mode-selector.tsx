@@ -138,7 +138,7 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
 
   const handleModeClick = (modeId: string) => {
     // Directly trigger the mode selection without showing selection state
-    onModeSelect(modeId as "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar");
+    onModeSelect(modeId as "quiz-vocabulary" | "quiz-grammar" | "quiz-conjugation" | "quiz-sentence-reordering" | "quiz-error-detection" | "dialogue" | "pronunciation" | "grammar");
   };
 
   return (
@@ -162,6 +162,9 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                   group p-3 h-auto flex-col items-start space-y-0 
                   ${mode.id === 'quiz-vocabulary' ? 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' : 
                     mode.id === 'quiz-grammar' ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' :
+                    mode.id === 'quiz-conjugation' ? 'bg-rose-50 border-rose-200 hover:bg-rose-100 hover:border-rose-300' :
+                    mode.id === 'quiz-sentence-reordering' ? 'bg-amber-50 border-amber-200 hover:bg-amber-100 hover:border-amber-300' :
+                    mode.id === 'quiz-error-detection' ? 'bg-red-50 border-red-200 hover:bg-red-100 hover:border-red-300' :
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
                     'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300'}
