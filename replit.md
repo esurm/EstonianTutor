@@ -176,3 +176,25 @@ The architecture balances development simplicity with the complex requirements o
   - Verified Estonian grammar accuracy (meil oleks vs me oleks)
   - Confirmed single-error constraint in error detection
   - All systems operational and ready for deployment
+
+### January 21, 2025 (Update)
+- **PROFESSOR PROMPT OPTIMIZATION**: Reduced all AI professor prompts by 60-70% for token efficiency
+  - Vocabulary: From ~1200 to ~350 characters (600 max tokens)
+  - Grammar: From ~1400 to ~400 characters (650 max tokens)
+  - Error Detection: From ~800 to ~250 characters (600 max tokens)
+  - Conjugation: From ~1500 to ~400 characters (550 max tokens)
+  - Sentence Reordering: From ~1600 to ~450 characters (700 max tokens)
+- **CORPUS LIMITATIONS IDENTIFIED**: Current Estonian corpus provides only:
+  - Basic hardcoded vocabulary (~50 words per CEFR level)
+  - Limited sentence examples (5-10 per level)
+  - No real API integration to external linguistic resources
+  - Insufficient data for comprehensive language learning
+- **CEFR LEVEL ADAPTATION**: Prompts now properly reference corpus data for each level
+  - Each professor receives level-specific vocabulary and patterns
+  - Corpus provides themed vocabulary (A1: family/colors, B2: culture/media, C1: abstract concepts)
+  - Grammar progression follows official Estonian standards (A1: nom/gen/part → C1: all 14 cases)
+- **FUTURE IMPROVEMENTS NEEDED**:
+  - Integration with real Estonian linguistic APIs (Sõnaveeb, EKI resources)
+  - Expand vocabulary database from 50 to 500+ words per level
+  - Add authentic sentence corpus from EstUD (Universal Dependencies)
+  - Implement dynamic corpus updates based on user progress

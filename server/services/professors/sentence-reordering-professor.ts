@@ -9,79 +9,39 @@ export class SentenceReorderingProfessor extends BaseProfessor {
   getSystemPrompt(): string {
     const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
     
-    return `Eres un PROFESOR DE ESTRUCTURA SINTÁCTICA ESTONIA especializado en orden de palabras.
+    return `ESTRUCTURA ${this.cefrLevel} - Orden de palabras estonio.
 
-TU ESPECIALIZACIÓN ÚNICA: ORDEN DE PALABRAS EN ESTONIO
-- Enseñas la estructura flexible pero regulada del estonio
-- Conoces las diferencias con el orden rígido del español
-- Dominas las variaciones permitidas y sus matices
+Ejemplos corpus:
+${sentenceExamples.slice(0, 3).map(s => s.text).join(", ")}
 
-CONOCIMIENTO DEL CORPUS ESTONIO:
-${this.corpusKnowledge}
+Reglas orden:
+- Flexible: tiempo al inicio común
+- SVO neutral, variaciones válidas
+- Énfasis mueve al inicio
 
-EJEMPLOS DE ORACIONES NIVEL ${this.cefrLevel}:
-${sentenceExamples.slice(0, 5).map(s => s.text).join("\n")}
+Patrones: ${this.getWordOrderPatterns()}
 
-REGLAS DE ORDEN ESTONIO:
-1. FLEXIBLE pero con patrones preferidos
-2. Tiempo frecuentemente al inicio: "Täna ma lähen"
-3. Verbo en segunda posición (V2) común pero no obligatorio
-4. Sujeto-Verbo-Objeto es neutral, pero permite variaciones
-5. Adverbios de manera cerca del verbo
-6. Énfasis mueve elementos al inicio
-
-PATRONES PARA ${this.cefrLevel}:
-${this.getWordOrderPatterns()}
-
-ESTRUCTURA JSON OBLIGATORIA:
-{
-  "questions": [
-    {
-      "question": "Järjesta sõnad õigesti:",
-      "translation": "[oración correcta en español]",
-      "type": "sentence_reordering",
-      "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-      "correctAnswer": "[oración correcta con puntuación]",
-      "alternativeAnswers": ["[variante válida 1]", "[variante válida 2]"],
-      "explanation": "[patrón usado - máximo 6 palabras español]",
-      "cefrLevel": "${this.cefrLevel}"
-    }
-  ]
-}
-
-REGLAS CRÍTICAS:
-- Las palabras en options deben formar EXACTAMENTE la oración correcta
-- SIEMPRE incluye alternativeAnswers para órdenes válidos
-- La oración debe ser natural y común en estonio
-- Puntuación correcta (mayúscula inicial, punto final)
-- Explicación del patrón principal usado`;
+JSON: {
+  "questions": [{
+    "question": "Järjesta sõnad õigesti:",
+    "translation": "traducción",
+    "type": "sentence_reordering",
+    "options": [palabras],
+    "correctAnswer": "oración correcta.",
+    "alternativeAnswers": ["variante1", "variante2"],
+    "explanation": "patrón usado"
+  }]
+}`;
   }
 
   getUserPrompt(): string {
-    return `Genera EXACTAMENTE 5 ejercicios de ordenar palabras en estonio para nivel ${this.cefrLevel}.
-
-REQUISITOS ESPECÍFICOS:
-1. Palabras desordenadas que formen una oración natural
-2. Incluye 1-2 órdenes alternativos válidos cuando sea posible
-3. Usa vocabulario y estructuras apropiadas para ${this.cefrLevel}
-4. Las oraciones deben ser comunes en la vida real
-5. Mezcla diferentes patrones de orden
-
-LONGITUD DE ORACIONES PARA ${this.cefrLevel}:
-${this.getSentenceLengthGuidance()}
-
-IMPORTANTE:
-- El estonio permite varios órdenes correctos
-- "Täna ma lähen kooli" = "Ma lähen täna kooli" (ambos correctos)
-- Incluye estas variantes en alternativeAnswers
-
-Genera el JSON con exactamente 5 ejercicios.`;
+    return `5 ejercicios reordenar ${this.cefrLevel}. Incluye alternativas válidas. JSON completo.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 1200, // Increased to prevent JSON truncation
-      temperature: 0.1,
+      maxTokens: 700, // Balanced for alternatives
+      temperature: 0.15,
       topP: 0.8,
       frequencyPenalty: 0.0,
       presencePenalty: 0.1

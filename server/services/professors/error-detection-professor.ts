@@ -7,41 +7,19 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `GENERA 5 ORACIONES CON UN ERROR CADA UNA EN FORMATO JSON
+    return `ERROR DETECTION ${this.cefrLevel} - UN error por oración.
 
-REGLA ABSOLUTA: EXACTAMENTE UN ERROR por oración.
+PROHIBIDO: adjetivo+sustantivo, múltiples cambios
+PERMITIDO: caso simple, persona verbal, locativo
 
-PROHIBIDO:
-- NO uses adjetivo + sustantivo juntos (evita errores de concordancia)
-- NO uses construcciones que requieran múltiples cambios
-- SOLO errores simples de caso, persona verbal, o preposición
+Ejemplos:
+${this.getSpecificErrorExamplesForLevel()}
 
-PERMITIDO:
-- Error de caso en UN sustantivo solo: "Ma näen kass" (→ kassi)
-- Error de persona verbal: "Ta lähen" (→ läheb)
-- Error de preposición/caso locativo: "Ma elan Tallinn" (→ Tallinnas)
-
-Estructura JSON:
-{
-  "questions": [
-    {"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."}
-  ]
-}
-
-EJEMPLOS nivel ${this.cefrLevel}:
-${this.getSpecificErrorExamplesForLevel()}`;
+JSON: {"questions": [{"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."}]}`;
   }
 
   getUserPrompt(): string {
-    return `Genera 5 oraciones con EXACTAMENTE UN ERROR cada una.
-
-CRÍTICO: Si usas adjetivo + sustantivo, AMBOS deben estar en el MISMO caso (correcto o incorrecto).
-Ejemplo: "tähtsat probleemi" (partitivo) O "tähtis probleem" (nominativo) - NO MEZCLES CASOS.
-
-EJEMPLOS nivel ${this.cefrLevel}:
-${this.getSpecificErrorExamplesForLevel()}
-
-SOLO UN ERROR POR ORACIÓN.`;
+    return `5 oraciones, UN ERROR cada una. Nivel ${this.cefrLevel}. NO adjetivo+sustantivo. JSON.`;
   }
 
   private getSpecificErrorExamplesForLevel(): string {
@@ -74,11 +52,11 @@ SOLO UN ERROR POR ORACIÓN.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700, // Increased for C1 level completeness
-      temperature: 0.05,
+      maxTokens: 600, // Balanced for complete JSON
+      temperature: 0.2,
       topP: 0.9,
       frequencyPenalty: 0.0,
-      presencePenalty: 0.0
+      presencePenalty: 0.1
     };
   }
 

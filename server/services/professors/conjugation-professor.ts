@@ -9,78 +9,40 @@ export class ConjugationProfessor extends BaseProfessor {
   getSystemPrompt(): string {
     const verbExamples = estonianCorpus.generateGrammarExamples("verb_conjugation", this.cefrLevel);
     
-    return `Eres un PROFESOR DE CONJUGACIÓN VERBAL ESTONIA especializado en enseñar verbos a hispanohablantes.
+    return `CONJUGACIÓN ${this.cefrLevel} - Solo verbos, NO significados.
 
-TU ESPECIALIZACIÓN ÚNICA: CONJUGACIÓN VERBAL ESTONIA
-- SOLO enseñas formas verbales, personas, tiempos
-- PROHIBIDO enseñar vocabulario o casos nominales
-- Experto en diferencias verbo español vs estonio
-- Dominas todos los tiempos y modos verbales estonios
+Sistema verbal:
+- ma/sa/ta/me/te/nad: olen/oled/on/oleme/olete/on
+- Condicional "meil oleks" (NO "me oleks")
 
-CONOCIMIENTO DEL CORPUS ESTONIO:
-${this.corpusKnowledge}
+Tiempos: ${this.getVerbSystemForLevel()}
 
-EJEMPLOS DE CONJUGACIÓN NIVEL ${this.cefrLevel}:
-${verbExamples.slice(0, 5).join("\n")}
+Tipos:
+- Conjugar: "Ma ___ (olema)" → olen
+- Identificar tiempo: "läks" → pasado
+- Completar por contexto
+- Transformar tiempos
 
-SISTEMA VERBAL ESTONIO CORRECTO:
-- ma olen, sa oled, ta on, me oleme, te olete, nad on
-- CONDICIONAL: ma oleksin, sa oleksid, ta oleks, me oleksime, te oleksite, nad oleksid
-- POTENCIAL CON "MEIL": meil oleks aega (tendríamos tiempo) - NUNCA "me oleks"
-- USA "MEIL" (adesivo) PARA "TENER" CONDICIONAL
-
-CONJUGACIONES PARA ${this.cefrLevel}:
-${this.getVerbSystemForLevel()}
-
-TIPOS DE EJERCICIOS PERMITIDOS:
-1. Conjugar verbo con persona: "Ma _____ (olema)" → olen
-2. Identificar tiempo verbal: "Ta läks" → pasado simple
-3. Completar con forma correcta según contexto temporal
-4. Transformar entre tiempos verbales
-
-ESTRUCTURA JSON OBLIGATORIA:
-{
-  "questions": [
-    {
-      "question": "[oración con verbo a conjugar]",
-      "translation": "[traducción e instrucción en español]",
-      "type": "multiple_choice",
-      "options": ["forma1", "forma2", "forma3", "forma4"],
-      "correctAnswer": "[forma verbal correcta]",
-      "explanation": "[tiempo/persona - máximo 8 palabras español]",
-      "cefrLevel": "${this.cefrLevel}"
-    }
-  ]
-}
-
-REGLAS CRÍTICAS:
-- SOLO ejercicios sobre formas verbales
-- Usa verbos frecuentes apropiados para el nivel
-- Mezcla personas y tiempos según ${this.cefrLevel}
-- Explicaciones claras: "presente 1ra persona", "pasado 3ra"
-- NUNCA preguntes sobre significados de verbos`;
+JSON: {
+  "questions": [{
+    "question": "oración con verbo",
+    "translation": "instrucción",
+    "type": "multiple_choice",
+    "options": [4 formas],
+    "correctAnswer": "forma correcta",
+    "explanation": "tiempo/persona"
+  }]
+}`;
   }
 
   getUserPrompt(): string {
-    return `Genera EXACTAMENTE 5 ejercicios de conjugación verbal estonia para nivel ${this.cefrLevel}.
-
-REQUISITOS ESPECÍFICOS:
-1. SOLO ejercicios sobre conjugación de verbos
-2. Usa verbos comunes: olema, minema, tulema, tegema, saama, etc.
-3. Incluye diferentes personas (ma, sa, ta, me, te, nad)
-4. Enfócate en los tiempos apropiados para ${this.cefrLevel}
-5. Las opciones deben ser diferentes conjugaciones del mismo verbo
-
-TIEMPOS PRIORITARIOS PARA ${this.cefrLevel}:
-${this.getPriorityTenses()}
-
-Genera el JSON con exactamente 5 preguntas de conjugación.`;
+    return `5 ejercicios conjugación ${this.cefrLevel}. Verbos: olema, minema, tulema. JSON completo.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700, // Increased for C1 level completeness
-      temperature: 0.05,
+      maxTokens: 550, // Balanced for complete JSON
+      temperature: 0.1,
       topP: 0.6,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0

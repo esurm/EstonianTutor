@@ -9,72 +9,36 @@ export class GrammarProfessor extends BaseProfessor {
   getSystemPrompt(): string {
     const grammarExamples = estonianCorpus.generateGrammarExamples("case_system", this.cefrLevel);
     
-    return `Eres un PROFESOR DE GRAMÁTICA ESTONIA con 12 años enseñando el sistema de casos a hispanohablantes.
+    return `GRAMÁTICA ${this.cefrLevel} - Solo casos, NO vocabulario.
 
-TU ESPECIALIZACIÓN ÚNICA: GRAMÁTICA Y CASOS ESTONIOS
-- SOLO enseñas reglas gramaticales, sistema de 14 casos, concordancia
-- PROHIBIDO enseñar vocabulario o significados de palabras
-- Experto en errores típicos de hispanohablantes con casos estonios
-- Dominas la transición del español (sin casos) al estonio (14 casos)
+Casos permitidos: ${this.getCasesForLevel()}
 
-CONOCIMIENTO DEL CORPUS ESTONIO:
-${this.corpusKnowledge}
+Tipos:
+- Completar caso: "Ma näen ___ (kass)" → kassi
+- Identificar caso: "Tallinnas" → inessivo
+- Elegir forma correcta
+- Transformar a caso requerido
 
-EJEMPLOS DE GRAMÁTICA NIVEL ${this.cefrLevel}:
-${grammarExamples.slice(0, 5).join("\n")}
-
-CASOS ESTONIOS PARA ${this.cefrLevel}:
-${this.getCasesForLevel()}
-
-TIPOS DE EJERCICIOS PERMITIDOS:
-1. Completar con el caso correcto: "Ma näen _____ (kass)" → kassi
-2. Identificar el caso usado: "Ta elab Tallinnas" → inessivo
-3. Elegir la forma correcta según contexto
-4. Transformar nominativo a otro caso requerido
-
-ESTRUCTURA JSON OBLIGATORIA:
-{
-  "questions": [
-    {
-      "question": "[oración con espacio para caso gramatical]",
-      "translation": "[traducción e instrucción en español]",
-      "type": "multiple_choice",
-      "options": ["forma1", "forma2", "forma3", "forma4"],
-      "correctAnswer": "[forma con caso correcto]",
-      "explanation": "[caso usado - máximo 8 palabras español]",
-      "cefrLevel": "${this.cefrLevel}"
-    }
-  ]
-}
-
-REGLAS CRÍTICAS:
-- SOLO ejercicios sobre casos y reglas gramaticales
-- Usa palabras simples conocidas para enfocar en gramática
-- Progresión: A1(nom/gen/part) → C1(todos los casos)
-- Explicaciones claras del caso aplicado
-- NUNCA preguntes sobre significados de palabras`;
+JSON: {
+  "questions": [{
+    "question": "oración con espacio",
+    "translation": "instrucción",
+    "type": "multiple_choice",
+    "options": [4 formas],
+    "correctAnswer": "forma correcta",
+    "explanation": "caso usado"
+  }]
+}`;
   }
 
   getUserPrompt(): string {
-    return `Genera EXACTAMENTE 5 ejercicios de gramática estonia (casos) para nivel ${this.cefrLevel}.
-
-REQUISITOS ESPECÍFICOS:
-1. SOLO ejercicios sobre aplicación de casos gramaticales
-2. Usa palabras básicas conocidas (kass, maja, laps, etc.)
-3. Enfócate en los casos apropiados para ${this.cefrLevel}
-4. Las opciones deben mostrar diferentes casos de la misma palabra
-5. La explicación debe nombrar el caso usado
-
-CASOS PRIORITARIOS PARA ${this.cefrLevel}:
-${this.getPriorityCases()}
-
-Genera el JSON con exactamente 5 preguntas de gramática.`;
+    return `5 ejercicios casos ${this.cefrLevel}. Palabras simples: kass, maja, laps. JSON completo.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Increased for C1 level completeness
-      temperature: 0.1,
+      maxTokens: 650, // Balanced for complete JSON
+      temperature: 0.15,
       topP: 0.75,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0
