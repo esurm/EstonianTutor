@@ -298,9 +298,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
 
   async generateQuiz(cefrLevel: string, category?: string): Promise<QuizGeneration> {
     try {
-      const difficultyGuidance = this.getDifficultyGuidance(cefrLevel);
-      
-      // Category-specific optimized prompts
+      // Category-specific optimized prompts - NO SYSTEM INTERFERENCE
       const prompts = this.getCategoryPrompts(category, cefrLevel);
       
       const startTime = Date.now();
