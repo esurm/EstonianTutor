@@ -582,87 +582,167 @@ Responde en JSON:
     switch(category) {
       case "vocabulary":
         return {
-          system: `Generate exactly 5 Estonian vocabulary questions for CEFR ${cefrLevel}.
-STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-Each question tests vocabulary knowledge only - word meanings, synonyms, definitions.
-Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
-ONLY vocabulary - NO grammar or error detection!`,
-          user: `5 Estonian vocabulary questions`,
+          system: `Eres un profesor experto de estonio creando ejercicios de vocabulario para nivel ${cefrLevel}.
+
+TAREA ESPECÍFICA: Vocabulario estonio SOLAMENTE
+- Crea preguntas sobre significados de palabras, sinónimos, definiciones
+- Palabras relacionadas con temas específicos (familia, colores, comida, animales, objetos)
+- Identificación de objetos y conceptos
+- NO preguntas de gramática, conjugaciones o estructura
+
+NIVEL ${cefrLevel} - VOCABULARIO:
+${this.getDifficultyGuidance(cefrLevel)}
+
+FORMATO JSON ESTRICTO:
+{"questions":[
+  {
+    "question": "[pregunta en estonio sobre vocabulario]",
+    "translation": "[traducción al español]",
+    "options": ["opción1", "opción2", "opción3", "opción4"],
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[explicación en español - máximo 8 palabras]"
+  }
+]}
+
+EJEMPLOS VÁLIDOS:
+- "Mis on 'kass'?" → opciones: ["perro", "gato", "pájaro", "pez"]
+- "Kuidas öelda 'rojo' eesti keeles?" → opciones: ["sinine", "punane", "kollane", "roheline"]`,
+          user: `Crea exactamente 5 preguntas de vocabulario estonio para nivel ${cefrLevel}. Solo vocabulario, no gramática.`,
           maxTokens: 800
         };
       
       case "grammar":
         return {
-          system: `Generate exactly 5 Estonian grammar questions for CEFR ${cefrLevel}.
-STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-Each question tests grammar rules - verb forms, cases, sentence structure.
-Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
-ONLY grammar rules - NO vocabulary or error detection!`,
-          user: `5 Estonian grammar questions`,
+          system: `Eres un profesor experto de gramática estonia creando ejercicios para nivel ${cefrLevel}.
+
+TAREA ESPECÍFICA: Gramática estonia SOLAMENTE
+- Crea preguntas sobre reglas gramaticales, casos, tiempos verbales
+- Estructura de oraciones, preposiciones, mecánica del idioma
+- Uso correcto de casos (nominativo, genitivo, partitivo, etc.)
+- NO vocabulario, NO detección de errores, NO significados
+
+NIVEL ${cefrLevel} - GRAMÁTICA:
+${this.getDifficultyGuidance(cefrLevel)}
+
+FORMATO JSON ESTRICTO:
+{"questions":[
+  {
+    "question": "[pregunta de gramática en estonio]",
+    "translation": "[traducción al español]",
+    "options": ["opción1", "opción2", "opción3", "opción4"],
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[explicación gramatical en español - máximo 8 palabras]"
+  }
+]}
+
+EJEMPLOS VÁLIDOS:
+- "Millist käänet kasutada: Ma näen _____ (kass)" → opciones: ["kass", "kassi", "kassile", "kassiga"]
+- "Täida lünk: Ma _____ (olema) õpilane" → opciones: ["olen", "oled", "on", "oleme"]`,
+          user: `Crea exactamente 5 preguntas de gramática estonia para nivel ${cefrLevel}. Solo gramática, no vocabulario.`,
           maxTokens: 850
         };
       
       case "conjugation":
         return {
-          system: `Generate exactly 5 Estonian verb conjugation questions for CEFR ${cefrLevel}.
-STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-Each question tests verb conjugations - tenses, persons, forms.
-Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
-ONLY verb conjugations - NO vocabulary or grammar rules!`,
-          user: `5 Estonian conjugation questions`,
+          system: `Eres un profesor experto de conjugación verbal estonia creando ejercicios para nivel ${cefrLevel}.
+
+TAREA ESPECÍFICA: Conjugación verbal SOLAMENTE
+- Crea preguntas sobre formas verbales, tiempos, personas
+- Conjugaciones de presente, pasado, futuro, condicional
+- Variaciones de persona y número (ma, sa, ta, me, te, nad)
+- NO vocabulario, NO gramática general, NO significados
+
+NIVEL ${cefrLevel} - CONJUGACIÓN:
+${this.getDifficultyGuidance(cefrLevel)}
+
+FORMATO JSON ESTRICTO:
+{"questions":[
+  {
+    "question": "[pregunta de conjugación en estonio]",
+    "translation": "[traducción al español]",
+    "options": ["forma1", "forma2", "forma3", "forma4"],
+    "correctAnswer": "[forma verbal correcta]",
+    "explanation": "[explicación de conjugación en español - máximo 8 palabras]"
+  }
+]}
+
+EJEMPLOS VÁLIDOS:
+- "Ma _____ (minema) kooli" → opciones: ["lähen", "läheb", "läheme", "lähete"]
+- "Eile ta _____ (tulema) koju" → opciones: ["tuleb", "tuli", "tulen", "tuleme"]`,
+          user: `Crea exactamente 5 preguntas de conjugación verbal estonia para nivel ${cefrLevel}. Solo conjugaciones.`,
           maxTokens: 800
         };
       
       case "sentence_reordering":
         return {
-          system: `Generate exactly 5 Estonian sentence reordering questions for CEFR ${cefrLevel}.
-STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-Each question tests word order - scrambled words to form correct sentences.
-Fields: question (Estonian), translation (Spanish), options (4 word choices), correctAnswer, explanation (Spanish, under 10 words)
-ONLY word order - NO vocabulary or grammar rules!`,
-          user: `5 Estonian sentence reordering questions`,
+          system: `Eres un profesor experto de estructura estonia creando ejercicios para nivel ${cefrLevel}.
+
+TAREA ESPECÍFICA: Orden de palabras SOLAMENTE
+- Crea preguntas sobre estructura correcta de oraciones
+- Orden estonio: tiempo-manera-lugar, posición de verbos
+- Reordenamiento de palabras para formar oraciones correctas
+- NO vocabulario, NO conjugaciones, NO significados
+
+NIVEL ${cefrLevel} - ESTRUCTURA:
+${this.getDifficultyGuidance(cefrLevel)}
+
+FORMATO JSON ESTRICTO:
+{"questions":[
+  {
+    "question": "[instrucción de reordenamiento en estonio]",
+    "translation": "[traducción al español]",
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[primera palabra del orden correcto]",
+    "explanation": "[explicación de orden en español - máximo 8 palabras]"
+  }
+]}
+
+EJEMPLOS VÁLIDOS:
+- "Järjesta õigesti: [homme, ma, kooli, lähen]" → opciones en orden correcto
+- "Kus peab olema 'kiiresti': [ta, jookseb, parki]" → donde va el adverbio`,
+          user: `Crea exactamente 5 preguntas de orden de palabras estonia para nivel ${cefrLevel}. Solo estructura.`,
           maxTokens: 850
         };
       
       case "error_detection":
         return {
-          system: `Tu tarea es crear ejercicios de detección de errores para estudiantes de nivel ${cefrLevel} aprendiendo estonio.
+          system: `Eres un profesor experto de corrección estonia creando ejercicios para nivel ${cefrLevel}.
 
-INSTRUCCIONES CRÍTICAS:
-1. Crea oraciones en estonio que contengan UN error gramatical real y obvio
-2. El error debe ser claro y pedagógicamente útil para estudiantes ${cefrLevel}
-3. Todas las explicaciones deben estar SOLO en español
+TAREA ESPECÍFICA: Detección de errores SOLAMENTE
+- Crea oraciones con UN error gramatical real y obvio
+- Identifica errores en casos, verbos, concordancia, ortografía
+- Corrección de errores pedagógicamente útiles
+- NO vocabulario, NO significados, NO traducciones
 
 TIPOS DE ERRORES REALES A CREAR:
-- Error de caso: "Ma näen kass" → debería ser "kassi" (caso partitivo)
-- Error de verbo: "Me läheb kooli" → debería ser "läheme" (concordancia plural)
-- Error de plural: "kolm kass" → debería ser "kolme kassi" (forma correcta)
-- Error de tiempo: "Eile ma lähen kooli" → debería ser "läksin" (pasado)
+- Error de caso: "Ma näen kass" → debería ser "kassi" (partitivo)
+- Error de verbo: "Me läheb" → debería ser "läheme" (plural)
+- Error de plural: "kolm kass" → debería ser "kolme kassi"
+- Error de tiempo: "Eile ma lähen" → debería ser "läksin" (pasado)
 
-ESTRUCTURAS CORRECTAS DEL ESTONIO (NO marques como errores):
-✓ "Me näeme suur maja aknast" - palabra orden correcto
-✓ "mida ta ostis" - pronombre relativo correcto
-✓ "Ta ütles, et ta loeb" - discurso indirecto correcto
+ESTRUCTURAS CORRECTAS (NO marcar como errores):
 ✓ "maja aknast" - caso elativo correcto
+✓ "mida ta ostis" - pronombre relativo correcto
+✓ "Me näeme suur maja" - orden correcto
 
+NIVEL ${cefrLevel} - ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}
 
-FORMATO JSON REQUERIDO:
+FORMATO JSON ESTRICTO:
 {"questions":[
   {
     "question": "Leia lausest grammatiline viga: [oración con error real]",
-    "translation": "Encuentra el error gramatical: [traducción al español]", 
+    "translation": "[traducción al español de la oración]",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[la palabra incorrecta]",
-    "explanation": "[explicación en español - máximo 8 palabras]"
+    "correctAnswer": "[palabra que contiene el error]",
+    "explanation": "[explicación del error en español - máximo 8 palabras]"
   }
 ]}
 
-EJEMPLOS DE ERRORES REALES VÁLIDOS:
-- "Ma armastan kassid" → error: falta partitivo → debería ser "Ma armastan kasse"
-- "Te läheb kooli" → error: verbo singular con pronombre plural → debería ser "Te lähete"
-- "Mul on kolm raamat" → error: falta plural → debería ser "kolm raamatut"`,
-          user: `Crea exactamente 5 preguntas con errores gramaticales REALES en estonio para nivel ${cefrLevel}. Cada oración debe contener un error obvio. Explicaciones solo en español.`,
+EJEMPLOS DE ERRORES REALES:
+- "Ma armastan kassid" → error en "kassid" → debería ser "kasse"
+- "Te läheb kooli" → error en "läheb" → debería ser "lähete"`,
+          user: `Crea exactamente 5 oraciones estonia con errores gramaticales REALES para nivel ${cefrLevel}. Cada oración debe tener un error obvio.`,
           maxTokens: 900
         };
       
