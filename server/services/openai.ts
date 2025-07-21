@@ -306,22 +306,20 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate 1 Estonian ${category} question for CEFR ${cefrLevel}. Question in Estonian, explanation in Spanish.
+            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. ALL questions in Estonian, explanations in Spanish. Respond in JSON format.
 
-${category === 'vocabulary' ? 'Focus: word meanings' : 'Focus: grammar, verb forms'}
-
-JSON: {"question": "Estonian question", "translation": "Spanish translation", "questionType": "multiple_choice", "options": ["A","B","C","D"], "correctAnswer": "answer", "explanation": "Spanish explanation", "cefrLevel": "${cefrLevel}"}`
+JSON: {"questions": [{"question": "Q", "translation": "T", "questionType": "multiple_choice", "options": ["A","B","C","D"], "correctAnswer": "A", "explanation": "E", "cefrLevel": "${cefrLevel}"}]}`
           },
           {
             role: "user",
-            content: `Create 1 ${category} question for level ${cefrLevel}`
+            content: `Create 5 ${category} questions for level ${cefrLevel}. Return JSON format.`
           }
         ],
         temperature: 0.2,
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 200,
+        max_tokens: 600,
         response_format: { type: "json_object" }
       });
 
@@ -330,9 +328,9 @@ JSON: {"question": "Estonian question", "translation": "Spanish translation", "q
       
       const content = response.choices[0].message.content || "{}";
       try {
-        const result = JSON.parse(content);
-        // Wrap single question in questions array format
-        return { questions: [result] };
+        // Clean response to remove markdown code blocks if present
+        const cleanContent = content.replace(/^```json\s*\n?/g, '').replace(/\n?```$/g, '').trim();
+        return JSON.parse(cleanContent);
       } catch (parseError) {
         console.error("JSON parsing error for quiz generation:", parseError);
         console.error("Raw content:", content);
@@ -452,13 +450,10 @@ Respond in JSON format with questions array.`
         };
       });
 
-      // For now, fall back to sequential generation since OpenAI Batch API requires file uploads
-      // In a production environment, this would use the actual Batch API
-      const results: QuizGeneration[] = [];
-      for (const request of requests) {
-        const quiz = await this.generateQuiz(request.cefrLevel, request.category);
-        results.push(quiz);
-      }
+      // Use Promise.all for parallel generation instead of sequential
+      const results = await Promise.all(
+        requests.map(request => this.generateQuiz(request.cefrLevel, request.category))
+      );
 
       const endTime = Date.now();
       console.log(`✅ Batch quiz generation completed in ${endTime - startTime}ms`);
