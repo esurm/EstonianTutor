@@ -351,18 +351,72 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       } catch (parseError) {
         console.error("❌ JSON parsing error for quiz generation:", parseError);
         console.error("Raw content length:", content.length);
-        console.error("Raw content preview:", content.substring(0, 200) + "...");
-        // Return fallback quiz with proper structure (5 questions as expected)
-        return {
-          questions: [
-            {
-              question: "Mis on 'tere' tähendus?",
-              translation: "¿Qué significa 'tere'?",
-              questionType: "multiple_choice",
-              options: ["Adiós", "Hola", "Gracias", "Por favor"],
-              correctAnswer: "Hola",
-              explanation: "'Tere' significa 'hola' en español.",
-              cefrLevel: cefrLevel
+        console.error("Raw content preview:", content.substring(0, 500) + "...");
+        console.error("Raw content end:", "..." + content.substring(content.length - 200));
+        console.error("Category:", category, "CEFR Level:", cefrLevel);
+        console.error("Temperature used:", prompts.temperature);
+        // Return fallback quiz appropriate for the category
+        if (category === "sentence_reordering") {
+          return {
+            questions: [
+              {
+                question: "Järjesta sõnad õigesti:",
+                translation: "Ordena las palabras correctamente:",
+                questionType: "sentence_reordering",
+                options: ["Ma", "lähen", "poodi"],
+                correctAnswer: "Ma lähen poodi.",
+                explanation: "Orden básico: sujeto + verbo + lugar",
+                cefrLevel: cefrLevel
+              },
+              {
+                question: "Järjesta sõnad õigesti:",
+                translation: "Ordena las palabras correctamente:",
+                questionType: "sentence_reordering", 
+                options: ["Täna", "on", "ilus", "ilm"],
+                correctAnswer: "Täna on ilus ilm.",
+                explanation: "Tiempo + verbo + adjetivo + sustantivo",
+                cefrLevel: cefrLevel
+              },
+              {
+                question: "Järjesta sõnad õigesti:",
+                translation: "Ordena las palabras correctamente:",
+                questionType: "sentence_reordering",
+                options: ["Ta", "räägib", "eesti", "keelt"],
+                correctAnswer: "Ta räägib eesti keelt.",
+                explanation: "Sujeto + verbo + objeto directo",
+                cefrLevel: cefrLevel
+              },
+              {
+                question: "Järjesta sõnad õigesti:",
+                translation: "Ordena las palabras correctamente:",
+                questionType: "sentence_reordering",
+                options: ["Me", "õpime", "koolis"],
+                correctAnswer: "Me õpime koolis.",
+                explanation: "Sujeto + verbo + lugar",
+                cefrLevel: cefrLevel
+              },
+              {
+                question: "Järjesta sõnad õigesti:",
+                translation: "Ordena las palabras correctamente:",
+                questionType: "sentence_reordering",
+                options: ["Homme", "tuleb", "sõber"],
+                correctAnswer: "Homme tuleb sõber.",
+                explanation: "Tiempo + verbo + sujeto",
+                cefrLevel: cefrLevel
+              }
+            ]
+          };
+        } else {
+          return {
+            questions: [
+              {
+                question: "Mis on 'tere' tähendus?",
+                translation: "¿Qué significa 'tere'?",
+                questionType: "multiple_choice",
+                options: ["Adiós", "Hola", "Gracias", "Por favor"],
+                correctAnswer: "Hola",
+                explanation: "'Tere' significa 'hola' en español.",
+                cefrLevel: cefrLevel
             },
             {
               question: "Kuidas öelda 'tänan' inglise keeles?",
@@ -401,6 +455,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             }
           ]
         };
+        }
       }
     } catch (error) {
       console.error("Quiz generation error:", error);
