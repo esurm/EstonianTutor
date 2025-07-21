@@ -306,18 +306,27 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. Questions in Estonian, explanations in Spanish. Return valid JSON with questions array.`
+            content: `You are an Estonian language teacher. Create exactly 5 ${category} questions for CEFR level ${cefrLevel}. 
+
+Requirements:
+- All questions MUST be in Estonian
+- All explanations MUST be in Spanish  
+- Include "translation" field with Spanish translation of question
+- Use JSON format with "questions" array
+- Each question needs: question, translation, questionType, options (for multiple_choice), correctAnswer, explanation, cefrLevel
+
+Return only valid JSON, no extra text.`
           },
           {
             role: "user",
-            content: `Create 5 ${category} questions for level ${cefrLevel}.`
+            content: `Create 5 ${category} questions for level ${cefrLevel}. Use JSON format.`
           }
         ],
         temperature: 0.2,
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 500,
+        max_tokens: 800,
         response_format: { type: "json_object" }
       });
 
@@ -328,10 +337,19 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       try {
         // Clean response to remove markdown code blocks if present
         const cleanContent = content.replace(/^```json\s*\n?/g, '').replace(/\n?```$/g, '').trim();
-        return JSON.parse(cleanContent);
+        const result = JSON.parse(cleanContent);
+        
+        // Validate that we got actual questions, not fallback
+        if (result.questions && result.questions.length > 0) {
+          console.log(`✅ Successfully parsed ${result.questions.length} quiz questions`);
+          return result;
+        } else {
+          throw new Error("No questions found in API response");
+        }
       } catch (parseError) {
-        console.error("JSON parsing error for quiz generation:", parseError);
-        console.error("Raw content:", content);
+        console.error("❌ JSON parsing error for quiz generation:", parseError);
+        console.error("Raw content length:", content.length);
+        console.error("Raw content preview:", content.substring(0, 200) + "...");
         // Return fallback quiz with proper structure (5 questions as expected)
         return {
           questions: [
