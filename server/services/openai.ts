@@ -715,28 +715,7 @@ STRICT REQUIREMENTS:
 6. CorrectAnswer: The grammatically incorrect Estonian word
 
 CRITICAL: EXPLANATIONS MUST BE IN SPANISH, NEVER ESTONIAN
-- Good: "Adjetivo debe estar en plural"
-- Bad: "Adjektiiv peab olema mitmuses"
-- Good: "Falta caso ilativo"
-- Bad: "Puudub illatiiv kääne"
-
-REAL ERROR EXAMPLES WITH AUTHENTIC MISTAKES:
-- Wrong case: "Ma lähen pood" → should be "poodi" (missing illative)
-- Wrong verb: "Ta lähevad kooli" → should be "läheb" (wrong person)
-- Wrong adjective: "Meie sõbrad on tore inimesed" → should be "toredad" (singular instead of plural)
-- Wrong pronoun: "Mina läksime poodi" → should be "Meie" (person mismatch)
-- Wrong case: "Ma näen koer" → should be "koera" (missing partitive)
-
-ENSURE REAL GRAMMATICAL ERRORS - NOT CORRECT SENTENCES:
-- "Me läksime poodi" is CORRECT - don't mark as error
-- "Meie sõbrad on head" is CORRECT - don't mark as error
-- Create sentences with actual mistakes, not correct grammar
-
-CRITICAL: Use authentic Estonian grammar rules. Common errors:
-- Missing illative case (-sse, -de, vowel change)
-- Wrong plural forms (toredad vs tore, etc.)
-- Incorrect verb conjugations
-- Word order mistakes
+Create sentences with actual grammatical mistakes, not correct sentences.
 
 Generate varied, realistic Estonian sentences with authentic grammatical mistakes.`,
           user: `5 Estonian error detection questions with Spanish translations and explanations`,
@@ -755,54 +734,52 @@ Generate varied, realistic Estonian sentences with authentic grammatical mistake
   private getCefrGuidanceForErrorDetection(cefrLevel: string): string {
     switch (cefrLevel) {
       case "A1":
-        return `A1 Level - Focus on basic errors:
-- Simple present tense mistakes
-- Basic case errors (nominative/partitive confusion)
-- Elementary word order problems
-- Simple adjective agreement errors
-Use very simple vocabulary and short sentences.`;
+        return `A1 Level - Basic Estonian errors:
+- Present tense verb mistakes (*olen* vs *oled*)
+- Basic nominative/partitive case confusion
+- Simple word order errors (SVO)
+- Basic adjective agreement
+Use simple daily vocabulary, short sentences.`;
       
       case "A2":
-        return `A2 Level - Focus on elementary errors:
-- Basic case system mistakes (illative, partitive)
-- Simple verb conjugation errors
-- Basic plural forms (tore/toredad)
-- Simple sentence structure problems
-Use everyday vocabulary and moderate sentence length.
-EXPLANATIONS MUST BE IN SPANISH: "Falta caso ilativo", "Adjetivo debe ser plural".`;
+        return `A2 Level - Elementary Estonian errors:
+- Past tense (*lihtminevik*) mistakes
+- Basic case system (nominative, genitive, partitive, illative)
+- Plural forms (*tore/toredad*, *head/head*)
+- Modal verb constructions (*saama*, *tahtma*)
+Use everyday vocabulary, moderate sentence complexity.`;
       
       case "B1":
-        return `B1 Level - Focus on intermediate errors:
-- Complex case system mistakes
-- Conditional and past tense errors
-- Adjective declension problems
-- More complex word order issues
-Use intermediate vocabulary and varied sentence structures.`;
+        return `B1 Level - Intermediate Estonian errors:
+- All 14 cases in basic contexts
+- Perfect tense (*täisminevik*) mistakes
+- Basic consonant gradation patterns
+- Subordinate clause structure errors
+Use intermediate vocabulary, varied sentence structures.`;
       
       case "B2":
-        return `B2 Level - Focus on advanced intermediate errors:
-- Subtle case distinctions
-- Complex verb forms and moods
-- Advanced word order variations
-- Nuanced adjective agreements
-Use sophisticated vocabulary and complex sentences.`;
+        return `B2 Level - Upper-intermediate Estonian errors:
+- Complex case usage in advanced contexts
+- Conditional mood (*tingiv kõneviis*) mistakes
+- Advanced consonant gradation errors
+- Passive voice constructions
+Use sophisticated vocabulary, complex sentence patterns.`;
       
       case "C1":
-        return `C1 Level - Focus on advanced errors:
-- Sophisticated grammatical nuances
-- Complex syntactic structures
-- Advanced stylistic choices
-- Subtle semantic distinctions
-Use advanced vocabulary and intricate sentence patterns.
-EXPLANATIONS MUST BE IN SPANISH: "Error en estructura sintáctica", "Concordancia incorrecta".`;
+        return `C1 Level - Advanced Estonian errors:
+- Quotative mood (*kaudne kõneviis*) mistakes
+- Subtle case distinctions in complex contexts
+- Advanced aspectual and temporal nuances
+- Sophisticated discourse structures
+Use advanced vocabulary, intricate grammatical patterns.`;
       
       case "C2":
-        return `C2 Level - Focus on mastery-level errors:
-- Very subtle grammatical distinctions
-- Complex literary structures
-- Advanced stylistic variations
-- Nuanced semantic relationships
-Use native-level vocabulary and complex grammatical structures.`;
+        return `C2 Level - Mastery-level Estonian errors:
+- Native-like stylistic distinctions
+- Complex idiomatic constructions
+- Subtle semantic case relationships
+- Advanced discourse markers
+Use sophisticated vocabulary, native-level complexity.`;
       
       default:
         return `B1 Level - Standard intermediate errors focusing on case system and verb conjugations.`;
