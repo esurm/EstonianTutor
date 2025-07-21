@@ -853,9 +853,13 @@ KRITILISED NÕUDED:
    - Mitte absurdsed kombinatsioonid
 
 4. TASEME SOBIVUS (${cefrLevel}):
-   - A1-A2: Lihtsad 4-5 sõna laused
-   - B1-B2: Keskmised 5-6 sõna koos adverbidega  
-   - C1-C2: Keerukad 6-8 sõna koos kõrvallausetega
+   ${this.getCefrSentenceLengthGuidance(cefrLevel)}
+
+5. GRAMMATILINE ÕIGSUS (KRIITILINE):
+   - KÕIK options sõnad peavad olema grammatiliselt õiged
+   - Ära loo grammatikavigu sõnade segamisel
+   - KÕIK alternativeAnswers peavad olema loomulikud ja õiged
+   - Grammatikavigu ei tohi esineda mitte kusagil
 
 JSON FORMAAT:
 {"questions":[
@@ -870,19 +874,21 @@ JSON FORMAAT:
   }
 ]}
 
-PUNKTUATSIOONI REEGLID:
-- A1-A2: "Sõna1 sõna2 sõna3."
-- B1-B2: "Sõna1, sõna2 sõna3."  
-- C1-C2: "Sõna1, sõna2, sõna3 ja sõna4."
-
 KRIITILISED KONTROLLID:
 1. Kontrolli et options sisaldab AINULT correctAnswer sõnu
-2. Ära kasuta sõnu mis ei ole vastuses
-3. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
-4. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE`,
+2. Ära kasuta sõnu mis ei ole vastuses  
+3. KÕIK sõnad peavad olema grammatiliselt õiged
+4. KÕIK alternativeAnswers peavad olema loomulikud ja grammatiliselt korrektsed
+5. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
+6. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE
+
+PUNKTUATSIOONI REEGLID:
+- Alati lõpeta punktiga
+- Ära kasuta kõiks/kommasid lihtlausetes
+- Näited: "Ma lähen kooli." "Eile ta ostis raamatu."`,
 
       answerStructure: "wordReordering",
-      maxTokens: 950,
+      maxTokens: 1200,
       temperature: 0.0,
       topP: 1.0,
       presencePenalty: 0.0,
@@ -1054,6 +1060,49 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
           presencePenalty: 0.0,
           frequencyPenalty: 0.0
         };
+    }
+  }
+
+  private getCefrSentenceLengthGuidance(cefrLevel: string): string {
+    switch (cefrLevel) {
+      case "A1":
+        return `A1 Level - 3-4 sõna laused:
+- Lihtsad SVO: "Ma lähen kooli"
+- Aeg + SVO: "Täna ma söön"
+- 70% chance: 3 sõna, 30% chance: 4 sõna`;
+      
+      case "A2":
+        return `A2 Level - 4-5 sõna laused:
+- Põhilised adverbid: "Ma lähen kiiresti kooli"
+- Lihtne aeg/koht: "Eile ma sõin kodus"
+- 60% chance: 4 sõna, 40% chance: 5 sõna`;
+      
+      case "B1":
+        return `B1 Level - 4-6 sõna laused:
+- Objekti variandid: "Ta ostis poest toitu"
+- Adverbiaalsed määrused: "Me õpime ülikoolis eesti keelt"
+- 40% chance: 4-5 sõna, 60% chance: 5-6 sõna`;
+      
+      case "B2":
+        return `B2 Level - 5-6 sõna laused:
+- Keerukamad struktuurid: "Tudengid arutasid aktiivselt kultuurilisi teemasid"
+- Mitme määruse kasutamine: "Professor seletas täna ülikoolis grammatikat"
+- 30% chance: 5 sõna, 70% chance: 6 sõna`;
+      
+      case "C1":
+        return `C1 Level - 5-7 sõna laused:
+- Akadeemilised teemad: "Eksperdid arutlevad sageli keeruliste küsimuste üle"
+- Täpsemad väljendid: "Professor analüüsis põhjalikult kirjanduse näiteid"
+- 20% chance: 5 sõna, 50% chance: 6 sõna, 30% chance: 7 sõna`;
+      
+      case "C2":
+        return `C2 Level - 6-8 sõna laused:
+- Kõrgetasemelised väljendid: "Akadeemikud diskuteerivad intensiivselt filosoofiliste kontseptsioonide üle"
+- Keerukad struktuurid: "Kirjanikud käsitlesid sügavalt ühiskondlikke probleeme oma teostes"
+- 10% chance: 6 sõna, 60% chance: 7 sõna, 30% chance: 8 sõna`;
+      
+      default:
+        return `B1 Level - 4-6 sõna laused (standard)`;
     }
   }
 
