@@ -690,31 +690,42 @@ Solo conjugaciones.`,
       
       case "sentence_reordering":
         return {
-          system: `Eres un profesor experto de estructura estonia creando ejercicios para nivel ${cefrLevel}.
+          system: `Eres un profesor experto de estructura estonia creando ejercicios de reordenamiento para nivel ${cefrLevel}.
 
-TAREA ESPECÍFICA: Orden de palabras SOLAMENTE
-- Crea preguntas sobre estructura correcta de oraciones
-- Orden estonio: tiempo-manera-lugar, posición de verbos
-- Reordenamiento de palabras para formar oraciones correctas
-- NO vocabulario, NO conjugaciones, NO significados
+TAREA ESPECÍFICA: Reordenamiento de oraciones estonias SOLAMENTE
+- Crea ejercicios donde el estudiante debe ordenar palabras desordenadas
+- Enfócate en estructura correcta de oraciones estonias
+- Orden básico estonio: Sujeto-Verbo-Objeto, pero con flexibilidad
+- Posición de adverbios: tiempo-manera-lugar
+- NO vocabulario, NO conjugaciones, NO detección de errores
 
-NIVEL ${cefrLevel} - ESTRUCTURA:
-${this.getDifficultyGuidance(cefrLevel)}
+REGLAS DE ORDEN EN ESTONIO:
+- Tiempo al principio: "Homme ma lähen kooli" (Mañana voy a la escuela)
+- Manera después del verbo: "Ta jookseb kiiresti" (Él corre rápidamente)  
+- Lugar al final: "Me läheme parki" (Vamos al parque)
+- Objeto directo después del verbo: "Ma näen kassi" (Veo al gato)
+
+TIPOS DE EJERCICIOS A CREAR:
+1. Reordenamiento completo: palabras totalmente desordenadas
+2. Posición de adverbios: dónde colocar tiempo/manera/lugar
+3. Orden de sujeto-verbo-objeto con complementos
+4. Posición correcta de preposiciones y casos
 
 FORMATO JSON ESTRICTO:
 {"questions":[
   {
-    "question": "[instrucción de reordenamiento en estonio]",
-    "translation": "[traducción al español]",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[primera palabra del orden correcto]",
-    "explanation": "[explicación de orden en español - máximo 8 palabras]"
+    "question": "Järjesta sõnad õigesti: [lista de palabras desordenadas]",
+    "translation": "[traducción de la oración correcta al español]",
+    "options": ["primera_palabra", "segunda_palabra", "tercera_palabra", "cuarta_palabra"],
+    "correctAnswer": "[la primera palabra de la oración correcta]",
+    "explanation": "[explicación del orden en español - máximo 8 palabras]"
   }
 ]}
 
-EJEMPLOS VÁLIDOS:
-- "Järjesta õigesti: [homme, ma, kooli, lähen]" → opciones en orden correcto
-- "Kus peab olema 'kiiresti': [ta, jookseb, parki]" → donde va el adverbio`,
+EJEMPLOS VÁLIDOS PARA NIVEL ${cefrLevel}:
+- "Järjesta: [kooli, homme, lähen, ma]" → Respuesta correcta: "Homme ma lähen kooli"
+- "Järjesta: [kiiresti, jookseb, ta, parki]" → Respuesta correcta: "Ta jookseb kiiresti parki"
+- "Kuhu panna 'eile': [ma, ostsin, raamatu]" → Posición de adverbio temporal`,
           user: `Crea exactamente 5 preguntas de orden de palabras estonia para nivel ${cefrLevel}.
 
 GUÍA DE NIVEL ${cefrLevel}:
