@@ -710,15 +710,27 @@ STRICT REQUIREMENTS:
 1. Each Estonian sentence MUST contain exactly ONE real grammatical error
 2. Question format: "Leia lausest grammatiline viga: [sentence]"
 3. Translation: Spanish translation of the Estonian sentence (NOT instruction text)
-4. Explanation: Brief Spanish explanation of what's wrong (5-8 words only)
+4. Explanation: MUST BE IN SPANISH ONLY - Brief explanation of what's wrong (5-8 words)
 5. Options: Exactly 4 Estonian words from the sentence
 6. CorrectAnswer: The grammatically incorrect Estonian word
 
-REAL ERROR EXAMPLES:
-- Wrong case: "Ma lähen pood" → should be "poodi" (illative case needed)
-- Wrong verb: "Ta lähevad kooli" → should be "läheb" (3rd person singular)
-- Wrong adjective: "Meie sõbrad on tore" → should be "toredad" (plural form)
-- Wrong word order: "Koolis ma käin" → should be "Ma käin koolis"
+CRITICAL: EXPLANATIONS MUST BE IN SPANISH, NEVER ESTONIAN
+- Good: "Adjetivo debe estar en plural"
+- Bad: "Adjektiiv peab olema mitmuses"
+- Good: "Falta caso ilativo"
+- Bad: "Puudub illatiiv kääne"
+
+REAL ERROR EXAMPLES WITH AUTHENTIC MISTAKES:
+- Wrong case: "Ma lähen pood" → should be "poodi" (missing illative)
+- Wrong verb: "Ta lähevad kooli" → should be "läheb" (wrong person)
+- Wrong adjective: "Meie sõbrad on tore inimesed" → should be "toredad" (singular instead of plural)
+- Wrong pronoun: "Mina läksime poodi" → should be "Meie" (person mismatch)
+- Wrong case: "Ma näen koer" → should be "koera" (missing partitive)
+
+ENSURE REAL GRAMMATICAL ERRORS - NOT CORRECT SENTENCES:
+- "Me läksime poodi" is CORRECT - don't mark as error
+- "Meie sõbrad on head" is CORRECT - don't mark as error
+- Create sentences with actual mistakes, not correct grammar
 
 CRITICAL: Use authentic Estonian grammar rules. Common errors:
 - Missing illative case (-sse, -de, vowel change)
@@ -756,7 +768,8 @@ Use very simple vocabulary and short sentences.`;
 - Simple verb conjugation errors
 - Basic plural forms (tore/toredad)
 - Simple sentence structure problems
-Use everyday vocabulary and moderate sentence length.`;
+Use everyday vocabulary and moderate sentence length.
+EXPLANATIONS MUST BE IN SPANISH: "Falta caso ilativo", "Adjetivo debe ser plural".`;
       
       case "B1":
         return `B1 Level - Focus on intermediate errors:
@@ -780,7 +793,8 @@ Use sophisticated vocabulary and complex sentences.`;
 - Complex syntactic structures
 - Advanced stylistic choices
 - Subtle semantic distinctions
-Use advanced vocabulary and intricate sentence patterns.`;
+Use advanced vocabulary and intricate sentence patterns.
+EXPLANATIONS MUST BE IN SPANISH: "Error en estructura sintáctica", "Concordancia incorrecta".`;
       
       case "C2":
         return `C2 Level - Focus on mastery-level errors:

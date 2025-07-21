@@ -56,7 +56,7 @@ The application uses a comprehensive schema designed around language learning:
   - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
   - **Conjugation Quizzes**: Focus on verb tenses and persons (40% multiple-choice, 60% completion)
   - **Sentence Reordering**: Focus on Estonian word order and structure (20% multiple-choice, 80% completion)
-  - **Error Detection**: Focus on identifying grammar and spelling mistakes (60% multiple-choice, 40% completion)
+  - **Error Detection**: Focus on identifying real grammatical mistakes with Spanish explanations (fixed authentic Estonian grammar issues)
   - Questions in Estonian with Spanish translations for comprehension
   - Strict category separation enforced with enhanced prompts
   - Distinct color schemes with maximum contrast: Blue (vocabulary), Purple (grammar), Emerald (conjugation), Yellow (sentence reordering), Red (error detection), Cyan (chatroom placeholder)
