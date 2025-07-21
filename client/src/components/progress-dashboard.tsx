@@ -96,7 +96,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
   };
 
   return (
-    <Card className="h-full" style={{ height: 'calc(100vh - 120px)' }}>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex items-center space-x-2">
           <TrendingUp className="h-4 w-4 text-primary" />
