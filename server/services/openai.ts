@@ -622,7 +622,11 @@ FORMATO JSON VOCABULARIO:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 opciones, una correcta
-      maxTokens: 850
+      maxTokens: 850,
+      temperature: 0.3,
+      topP: 0.9,
+      presencePenalty: 0.2,
+      frequencyPenalty: 0.1
     };
   }
 
@@ -670,7 +674,11 @@ FORMATO JSON GRAMÁTICA:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 opciones gramaticales
-      maxTokens: 900
+      maxTokens: 900,
+      temperature: 0.2,
+      topP: 0.8,
+      presencePenalty: 0.1,
+      frequencyPenalty: 0.0
     };
   }
 
@@ -719,7 +727,11 @@ FORMATO JSON CONJUGACIÓN:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 formas verbales
-      maxTokens: 850
+      maxTokens: 850,
+      temperature: 0.1,
+      topP: 0.7,
+      presencePenalty: 0.0,
+      frequencyPenalty: 0.0
     };
   }
 
@@ -816,9 +828,10 @@ KRIITILISED KONTROLLID:
 
       answerStructure: "wordReordering",
       maxTokens: 950,
-      temperature: 0.2,
+      temperature: 0.0,
+      topP: 1.0,
       presencePenalty: 0.0,
-      frequencyPenalty: 0.1
+      frequencyPenalty: 0.0
     };
   }
 
@@ -905,7 +918,11 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
 ✗ Cualquier palabra en estonio en las explicaciones`,
 
       answerStructure: "errorIdentification", // Seleccionar palabra errónea
-      maxTokens: 1000
+      maxTokens: 1000,
+      temperature: 0.2,
+      topP: 0.8,
+      presencePenalty: 0.1,
+      frequencyPenalty: 0.2
     };
   }
 
