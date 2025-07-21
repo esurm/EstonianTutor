@@ -7,22 +7,33 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `GENERA ORACIONES ESTONIAS CON ERRORES EN FORMATO JSON
+    return `GENERA 5 ORACIONES CON UN ERROR CADA UNA EN FORMATO JSON
 
-EJEMPLOS EXACTOS nivel ${this.cefrLevel}:
-${this.getSpecificErrorExamplesForLevel()}
+CRÍTICO: UN SOLO ERROR por oración.
+Si usas adjetivo+sustantivo, AMBOS en el MISMO caso.
 
-COPIA estos patrones EXACTAMENTE, solo cambia las palabras.
-Genera un JSON con 5 preguntas.`;
+Estructura JSON requerida:
+{
+  "questions": [
+    {"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."},
+    // ... 5 preguntas total
+  ]
+}
+
+EJEMPLOS nivel ${this.cefrLevel}:
+${this.getSpecificErrorExamplesForLevel()}`;
   }
 
   getUserPrompt(): string {
-    return `Genera 5 oraciones con ERRORES típicos de hispanohablantes.
+    return `Genera 5 oraciones con EXACTAMENTE UN ERROR cada una.
 
-EJEMPLOS OBLIGATORIOS nivel ${this.cefrLevel}:
+CRÍTICO: Si usas adjetivo + sustantivo, AMBOS deben estar en el MISMO caso (correcto o incorrecto).
+Ejemplo: "tähtsat probleemi" (partitivo) O "tähtis probleem" (nominativo) - NO MEZCLES CASOS.
+
+EJEMPLOS nivel ${this.cefrLevel}:
 ${this.getSpecificErrorExamplesForLevel()}
 
-Usa estos patrones de error EXACTAMENTE.`;
+SOLO UN ERROR POR ORACIÓN.`;
   }
 
   private getSpecificErrorExamplesForLevel(): string {
@@ -45,7 +56,8 @@ Usa estos patrones de error EXACTAMENTE.`;
       
       C1: `
 {"question": "¿Qué palabra está mal: 'Eksperdid arutavad selle küsimus üle'?", "options": ["Eksperdid", "arutavad", "selle", "küsimus", "üle"], "correctAnswer": "küsimus", "explanation": "genitivo: küsimuse"}
-{"question": "¿Qué palabra está mal: 'Professor selgitas teema huvitavalt'?", "options": ["Professor", "selgitas", "teema", "huvitavalt"], "correctAnswer": "teema", "explanation": "objeto directo: teemat"}`,
+{"question": "¿Qué palabra está mal: 'Professor selgitas teema huvitavalt'?", "options": ["Professor", "selgitas", "teema", "huvitavalt"], "correctAnswer": "teema", "explanation": "partitivo: teemat"}
+{"question": "¿Qué palabra está mal: 'Õpilased arutasid tähtsat probleem'?", "options": ["Õpilased", "arutasid", "tähtsat", "probleem"], "correctAnswer": "probleem", "explanation": "partitivo: probleemi"}`,
       
       C2: `Nivel C2 no evaluado oficialmente en Estonia`
     };
@@ -54,7 +66,7 @@ Usa estos patrones de error EXACTAMENTE.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 500, // Optimized for speed and completeness
+      maxTokens: 700, // Increased for C1 level completeness
       temperature: 0.05,
       topP: 0.9,
       frequencyPenalty: 0.0,
