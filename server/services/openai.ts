@@ -312,6 +312,7 @@ ${this.getCategoryPrompt(category)}
 
 Create 5 varied questions APPROPRIATE for the specific CEFR level.
 CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
+MANDATORY: Every question MUST include a "translation" field with the Spanish translation.
 
 CEFR LEVEL ${cefrLevel} - SPECIFIC DIFFICULTY:
 ${difficultyGuidance}
@@ -336,7 +337,7 @@ Respond in JSON format:
   "questions": [
     {
       "question": "question COMPLETELY IN ESTONIAN (use _____ for blanks to complete)",
-      "translation": "translation of the question to Honduran Spanish to help the user",
+      "translation": "MANDATORY translation of the question to Honduran Spanish to help the user",
       "questionType": "multiple_choice" | "completion",
       "options": ["option1 in Estonian", "option2 in Estonian", "option3 in Estonian", "option4 in Estonian"] (only for multiple_choice),
       "correctAnswer": "correct answer in Estonian",
@@ -355,7 +356,7 @@ Respond in JSON format:
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 250,
+        max_tokens: 400,
         response_format: { type: "json_object" }
       });
 
@@ -368,12 +369,14 @@ Respond in JSON format:
       } catch (parseError) {
         console.error("JSON parsing error for quiz generation:", parseError);
         console.error("Raw content:", content);
-        // Return fallback quiz
+        // Return fallback quiz with proper structure
         return {
           questions: [
             {
               question: "Mis on 'tere' tähendus?",
+              translation: "¿Qué significa 'tere'?",
               type: "multiple_choice",
+              questionType: "multiple_choice",
               options: ["Adiós", "Hola", "Gracias", "Por favor"],
               correctAnswer: "Hola",
               explanation: "'Tere' significa 'hola' en español.",
