@@ -677,7 +677,9 @@ Responde en JSON:
 Each: "Leia lause seast grammatiline viga: [lause]" (one grammar error in sentence).
 Fields: question (Estonian), translation (Spanish, same sentence as above), options (words), correctAnswer (error word), explanation (Spanish, max 15 words)
 Only provide JSON and without markup: { "questions": [ ... ] }.
-Only grammar mistakes! No translation or vocabulary questions.`,
+Only grammar mistakes! No translation or vocabulary questions.
+The grammatical error must be possible to identify by comparing subject and verb or other grammar mistakes.
+Ensure the explanation corresponds exactly to the error in the question.`,
           user: `5 Estonian grammar error questions`,
           maxTokens: 900
         };
