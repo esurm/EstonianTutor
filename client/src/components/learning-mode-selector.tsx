@@ -42,13 +42,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Conjugaciones, casos y estructuras",
       icon: BookOpen,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-indigo-500",
-      gradientFrom: "from-indigo-50",
-      gradientTo: "to-indigo-100",
-      borderColor: "border-indigo-200",
-      hoverFrom: "hover:from-indigo-100",
-      hoverTo: "hover:to-indigo-200",
-      iconColor: "bg-indigo-500"
+      badgeColor: "bg-violet-500",
+      gradientFrom: "from-violet-50",
+      gradientTo: "to-violet-100",
+      borderColor: "border-violet-200",
+      hoverFrom: "hover:from-violet-100",
+      hoverTo: "hover:to-violet-200",
+      iconColor: "bg-violet-500"
     },
     {
       id: "quiz-conjugation",
@@ -56,13 +56,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Tiempos verbales y personas",
       icon: BookOpen,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-emerald-500",
-      gradientFrom: "from-emerald-50",
-      gradientTo: "to-emerald-100",
-      borderColor: "border-emerald-200",
-      hoverFrom: "hover:from-emerald-100",
-      hoverTo: "hover:to-emerald-200",
-      iconColor: "bg-emerald-500"
+      badgeColor: "bg-teal-500",
+      gradientFrom: "from-teal-50",
+      gradientTo: "to-teal-100",
+      borderColor: "border-teal-200",
+      hoverFrom: "hover:from-teal-100",
+      hoverTo: "hover:to-teal-200",
+      iconColor: "bg-teal-500"
     },
     {
       id: "quiz-sentence-reordering",
@@ -84,13 +84,13 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       description: "Encuentra errores gramaticales",
       icon: AlertTriangle,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-red-500",
-      gradientFrom: "from-red-50",
-      gradientTo: "to-red-100",
-      borderColor: "border-red-200",
-      hoverFrom: "hover:from-red-100",
-      hoverTo: "hover:to-red-200",
-      iconColor: "bg-red-500"
+      badgeColor: "bg-rose-500",
+      gradientFrom: "from-rose-50",
+      gradientTo: "to-rose-100",
+      borderColor: "border-rose-200",
+      hoverFrom: "hover:from-rose-100",
+      hoverTo: "hover:to-rose-200",
+      iconColor: "bg-rose-500"
     },
     {
       id: "dialogue",
@@ -160,11 +160,11 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                 onClick={() => handleModeClick(mode.id)}
                 className={`
                   group p-3 h-auto flex-col items-start space-y-0 
-                  ${mode.id === 'quiz-vocabulary' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300' : 
-                    mode.id === 'quiz-grammar' ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' :
-                    mode.id === 'quiz-conjugation' ? 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' :
-                    mode.id === 'quiz-sentence-reordering' ? 'bg-amber-50 border-amber-200 hover:bg-amber-100 hover:border-amber-300' :
-                    mode.id === 'quiz-error-detection' ? 'bg-red-50 border-red-200 hover:bg-red-100 hover:border-red-300' :
+                  ${mode.id === 'quiz-vocabulary' ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300 dark:bg-blue-950 dark:border-blue-800 dark:hover:bg-blue-900' : 
+                    mode.id === 'quiz-grammar' ? 'bg-violet-50 border-violet-200 hover:bg-violet-100 hover:border-violet-300 dark:bg-violet-950 dark:border-violet-800 dark:hover:bg-violet-900' :
+                    mode.id === 'quiz-conjugation' ? 'bg-teal-50 border-teal-200 hover:bg-teal-100 hover:border-teal-300 dark:bg-teal-950 dark:border-teal-800 dark:hover:bg-teal-900' :
+                    mode.id === 'quiz-sentence-reordering' ? 'bg-amber-50 border-amber-200 hover:bg-amber-100 hover:border-amber-300 dark:bg-amber-950 dark:border-amber-800 dark:hover:bg-amber-900' :
+                    mode.id === 'quiz-error-detection' ? 'bg-rose-50 border-rose-200 hover:bg-rose-100 hover:border-rose-300 dark:bg-rose-950 dark:border-rose-800 dark:hover:bg-rose-900' :
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
                     'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300'}
