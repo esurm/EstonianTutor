@@ -13,31 +13,36 @@ export class ErrorDetectionProfessor extends BaseProfessor {
           sentence: "Ma läheb kooli",
           error: "läheb",
           correct: "lähen",
-          explanation: "Con 'ma' (yo) se usa 'lähen', no 'läheb'"
+          explanation: "Con 'ma' (yo) se usa 'lähen', no 'läheb'",
+          translation: "Yo va a la escuela"
         },
         {
           sentence: "Ta lähen tööle", 
           error: "lähen",
           correct: "läheb",
-          explanation: "Con 'ta' (él/ella) se usa 'läheb', no 'lähen'"
+          explanation: "Con 'ta' (él/ella) se usa 'läheb', no 'lähen'",
+          translation: "Él/ella voy al trabajo"
         },
         {
           sentence: "Ma söön leiv",
           error: "leiv", 
           correct: "leiba",
-          explanation: "Después de 'söön' se usa partitivo: 'leiba'"
+          explanation: "Después de 'söön' se usa partitivo: 'leiba'",
+          translation: "Yo como pan"
         },
         {
           sentence: "See on mina raamat",
           error: "mina",
           correct: "minu", 
-          explanation: "Para posesión se usa 'minu' (mi), no 'mina' (yo)"
+          explanation: "Para posesión se usa 'minu' (mi), no 'mina' (yo)",
+          translation: "Este es yo libro"
         },
         {
           sentence: "Ma elan Tallinn",
           error: "Tallinn",
           correct: "Tallinnas",
-          explanation: "Para 'vivir en' se usa inessivo: 'Tallinnas'"
+          explanation: "Para 'vivir en' se usa inessivo: 'Tallinnas'",
+          translation: "Yo vivo Tallin"
         }
       ],
       A2: [
@@ -45,31 +50,36 @@ export class ErrorDetectionProfessor extends BaseProfessor {
           sentence: "Eile ma lähen kinno",
           error: "lähen", 
           correct: "läksin",
-          explanation: "Con 'eile' (ayer) se usa pasado: 'läksin'"
+          explanation: "Con 'eile' (ayer) se usa pasado: 'läksin'",
+          translation: "Ayer yo voy al cine"
         },
         {
           sentence: "Ma panen raamatu laud",
           error: "laud",
           correct: "lauale", 
-          explanation: "Para 'poner sobre' se usa alativo: 'lauale'"
+          explanation: "Para 'poner sobre' se usa alativo: 'lauale'",
+          translation: "Pongo el libro (sobre la) mesa"
         },
         {
           sentence: "Mul on kaks koer",
           error: "koer",
           correct: "koera",
-          explanation: "Después de números se usa partitivo: 'koera'"
+          explanation: "Después de números se usa partitivo: 'koera'",
+          translation: "Tengo dos perro"
         },
         {
-          sentence: "Ta tuleb homme Eesti",
-          error: "Eesti",
-          correct: "Eestisse",
-          explanation: "Para movimiento hacia país: 'Eestisse'"
+          sentence: "Ta sõidab homme Soome",
+          error: "Soome",
+          correct: "Soomesse",
+          explanation: "Para movimiento hacia país: 'Soomesse'",
+          translation: "Él/ella viaja mañana (a) Finlandia"
         },
         {
           sentence: "Me ei ole kodus eile",
           error: "ole",
           correct: "olnud",
-          explanation: "Negativo de pasado necesita participio: 'olnud'"
+          explanation: "Negativo de pasado necesita participio: 'olnud'",
+          translation: "Nosotros no estar en casa ayer"
         }
       ],
       B1: [
@@ -77,31 +87,36 @@ export class ErrorDetectionProfessor extends BaseProfessor {
           sentence: "Ma tahan osta uue auto",
           error: "uue",
           correct: "uus",
-          explanation: "Después de 'osta' se usa nominativo: 'uus auto'"
+          explanation: "Después de 'osta' se usa nominativo: 'uus auto'",
+          translation: "Quiero comprar nuevo carro"
         },
         {
           sentence: "Ta ootab bussis",
           error: "bussis", 
           correct: "bussi",
-          explanation: "Para 'esperar algo' se usa partitivo: 'bussi'"
+          explanation: "Para 'esperar algo' se usa partitivo: 'bussi'",
+          translation: "Él/ella espera en el autobús"
         },
         {
           sentence: "Ma tulen ilma raha",
           error: "raha",
           correct: "rahata",
-          explanation: "Con 'ilma' se usa abesivo: 'rahata'"
+          explanation: "Con 'ilma' se usa abesivo: 'rahata'",
+          translation: "Vengo sin dinero"
         },
         {
           sentence: "Professor õpetab tudengeid eesti keel",
           error: "eesti keel",
           correct: "eesti keelt", 
-          explanation: "Objeto directo en partitivo: 'eesti keelt'"
+          explanation: "Objeto directo en partitivo: 'eesti keelt'",
+          translation: "Profesor enseña a estudiantes idioma estonio"
         },
         {
           sentence: "Ma lähen tööle jalg",
           error: "jalg",
           correct: "jalgsi",
-          explanation: "Para 'a pie' se usa adverbio: 'jalgsi'"
+          explanation: "Para 'a pie' se usa adverbio: 'jalgsi'",
+          translation: "Voy al trabajo pie"
         }
       ],
       B2: [
@@ -109,31 +124,36 @@ export class ErrorDetectionProfessor extends BaseProfessor {
           sentence: "Ma arvan, et ta olevat kodus",
           error: "olevat",
           correct: "on",
-          explanation: "En discurso indirecto simple se usa indicativo: 'on'"
+          explanation: "En discurso indirecto simple se usa indicativo: 'on'",
+          translation: "Creo que él/ella estar en casa"
         },
         {
           sentence: "Kui ma oleks raha, ma ostaks auto",
           error: "oleks",
           correct: "oleksin",
-          explanation: "En condicional 1ª persona: 'oleksin'"
+          explanation: "En condicional 1ª persona: 'oleksin'",
+          translation: "Si yo tuviera dinero, compraría carro"
         },
         {
-          sentence: "Ta küsis, kas ma tulen kaasa",
+          sentence: "Ta ütles, et ma tulen homme",
           error: "tulen",
-          correct: "tulen",
-          explanation: "Esta oración es correcta"
+          correct: "tulevat",
+          explanation: "Discurso indirecto usa evidencial: 'tulevat'",
+          translation: "Él/ella dijo que yo vengo mañana"
         },
         {
-          sentence: "Raamat, mida ma lugesin, oli huvitav",
-          error: "mida",
-          correct: "mida",
-          explanation: "Esta oración es correcta"
+          sentence: "Ma pean minema tööle bus",
+          error: "bus",
+          correct: "bussiga",
+          explanation: "Medio de transporte usa comitativo: 'bussiga'",
+          translation: "Debo ir al trabajo autobús"
         },
         {
-          sentence: "Ma ei tea, miks ta ei tule",
-          error: "tule",
-          correct: "tule",
-          explanation: "Esta oración es correcta"
+          sentence: "Ta ootas mind kell viie",
+          error: "kell viie",
+          correct: "kell viis",
+          explanation: "Tiempo específico en nominativo: 'kell viis'",
+          translation: "Él/ella me esperó a las cinco"
         }
       ],
       C1: [
@@ -141,31 +161,36 @@ export class ErrorDetectionProfessor extends BaseProfessor {
           sentence: "Ekspert arutab selle küsimus üle",
           error: "küsimus",
           correct: "küsimuse",
-          explanation: "Objeto en genitivo: 'küsimuse üle'"
+          explanation: "Objeto en genitivo: 'küsimuse üle'",
+          translation: "Experto discute esta pregunta"
         },
         {
           sentence: "Professor selgitas teema huvitavalt",
           error: "teema",
           correct: "teemat", 
-          explanation: "Objeto directo parcial en partitivo: 'teemat'"
+          explanation: "Objeto directo parcial en partitivo: 'teemat'",
+          translation: "Profesor explicó tema interesantemente"
         },
         {
           sentence: "Õpilased arutasid tähtsat probleem",
           error: "probleem", 
           correct: "probleemi",
-          explanation: "Objeto directo en partitivo: 'probleemi'"
+          explanation: "Objeto directo en partitivo: 'probleemi'",
+          translation: "Estudiantes discutieron importante problema"
         },
         {
           sentence: "Uurimuse tulemus näitavad selget tendents",
           error: "tendents",
           correct: "tendentsi",
-          explanation: "Objeto directo en partitivo: 'tendentsi'"
+          explanation: "Objeto directo en partitivo: 'tendentsi'",
+          translation: "Resultados del estudio muestran clara tendencia"
         },
         {
           sentence: "Konverents toimub järgmine nädal",
           error: "järgmine nädal",
           correct: "järgmisel nädalal",
-          explanation: "Tiempo en adesivo: 'järgmisel nädalal'"
+          explanation: "Tiempo en adesivo: 'järgmisel nädalal'",
+          translation: "Conferencia tiene lugar próximo semana"
         }
       ]
     };
@@ -175,8 +200,8 @@ export class ErrorDetectionProfessor extends BaseProfessor {
 
   getSystemPrompt(): string {
     const patterns = this.getErrorPatterns();
-    const examples = patterns.map((p, i) => 
-      `"${p.sentence}" - Error: "${p.error}" - ${p.explanation}`
+    const examples = patterns.slice(0, 2).map(p => 
+      `"${p.sentence}" - Error: "${p.error}" - ${p.explanation} - Traducción: "${p.translation}"`
     ).join('\n');
     
     return `Eres un profesor de detección de errores en estonio. 
@@ -189,8 +214,9 @@ Crea exactamente 5 preguntas siguiendo este formato JSON:
   "questions": [
     {
       "question": "¿Qué palabra está incorrecta en: 'Ma läheb kooli'?",
+      "translation": "Yo va a la escuela",
       "type": "error_detection", 
-      "options": ["Ma", "läheb", "kooli"],
+      "options": ["Ma", "läheb", "kooli", "correcta"],
       "correctAnswer": "läheb",
       "explanation": "Con 'ma' (yo) se usa 'lähen', no 'läheb'",
       "cefrLevel": "${this.cefrLevel}"
@@ -198,7 +224,11 @@ Crea exactamente 5 preguntas siguiendo este formato JSON:
   ]
 }
 
-IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
+REGLAS IMPORTANTES:
+- Siempre incluye exactamente 4 opciones
+- Incluye campo "translation" con traducción al español (con el error)
+- La cuarta opción siempre es "correcta" o "sin error"
+- Devuelve SOLO JSON válido, sin texto adicional`;
   }
 
   getUserPrompt(): string {
