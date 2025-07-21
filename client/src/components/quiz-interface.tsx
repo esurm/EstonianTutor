@@ -202,13 +202,30 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   };
 
   const handleShowResults = () => {
+    console.log("🎯 Ver Resultados clicked!");
+    console.log("Quiz state:", {
+      sessionId,
+      answersLength: answers.length,
+      questionsLength: questions.length,
+      quizCompleted,
+      currentQuestionIndex,
+      isPending: submitQuizMutation.isPending
+    });
+    
     if (sessionId && answers.length === questions.length) {
-      console.log("Submitting quiz answers:", answers.length);
+      console.log("✅ Submitting quiz with all answers:", answers);
       const responseTimes = answers.map(a => a.responseTime);
       submitQuizMutation.mutate({
         sessionId,
         answers,
         responseTime: responseTimes
+      });
+    } else {
+      console.error("❌ Cannot submit quiz:", {
+        hasSessionId: !!sessionId,
+        answersCount: answers.length,
+        questionsCount: questions.length,
+        missingAnswers: questions.length - answers.length
       });
     }
   };
