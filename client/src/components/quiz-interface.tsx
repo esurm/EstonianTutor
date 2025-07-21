@@ -383,11 +383,79 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     );
   }
 
-  if (!currentQuestion) {
+  if (!currentQuestion && !quizCompleted) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center p-8">
           <p className="text-gray-600">No hay preguntas disponibles.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // If quiz is completed, show completion state instead of current question
+  if (quizCompleted && answers.length === questions.length) {
+    return (
+      <Card className="bg-gray-50">
+        <CardHeader className="bg-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <CardTitle className="text-lg">
+                {(() => {
+                  switch(category) {
+                    case "vocabulary": return "Quiz de Vocabulario";
+                    case "grammar": return "Quiz de Gramática";
+                    case "conjugation": return "Quiz de Conjugación";
+                    case "sentence_reordering": return "Quiz de Oraciones";
+                    case "error_detection": return "Quiz de Errores";
+                    default: return "Quiz de Gramática";
+                  }
+                })()} - Nivel {user?.cefrLevel || "B1"}
+              </CardTitle>
+              <p className="text-sm text-gray-600">
+                Quiz Completado - {questions.length} preguntas respondidas
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="text-lg font-semibold text-primary">
+                  {formatTime(timeElapsed)}
+                </span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onQuizClose}
+                className="w-8 h-8 p-0 hover:bg-gray-100"
+                title="Cerrar quiz"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <Progress value={100} className="h-2" />
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+            <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-green-800 mb-2">
+              ¡Quiz Completado!
+            </h3>
+            <p className="text-green-700 mb-4">
+              Has respondido todas las preguntas. Haz clic en "Ver Resultados" para ver tu puntuación.
+            </p>
+            <Button
+              onClick={handleShowResults}
+              className="w-full"
+              size="lg"
+              disabled={submitQuizMutation.isPending}
+            >
+              Ver Resultados
+              <BarChart3 className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
