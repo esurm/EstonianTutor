@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { estonianCorpus } from "./estonianCorpus";
 import { createProfessor } from "./professors";
+import { estonianValidator } from "./estonianValidator";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
@@ -363,6 +364,38 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           console.log(`✅ ${config.name} generated ${result.questions.length} quiz questions`);
           console.log(`🔍 First question preview:`, JSON.stringify(result.questions[0], null, 2));
           
+          // Validate error detection questions with Estonian validator
+          if (category === 'error_detection') {
+            try {
+              const validationResult = await estonianValidator.validateErrorDetectionQuiz(result);
+              
+              if (!validationResult.all_valid) {
+                console.log(`⚠️ Estonian validator found issues: ${validationResult.invalid_questions} invalid questions`);
+                
+                // Filter out invalid questions
+                const validQuestions = result.questions.filter((_: any, index: number) => {
+                  const detail = validationResult.details[index];
+                  return detail && detail.validation.valid;
+                });
+                
+                // If we have less than 3 valid questions, regenerate
+                if (validQuestions.length < 3) {
+                  console.log(`❌ Only ${validQuestions.length} valid questions, regenerating...`);
+                  throw new Error('Too many invalid questions detected');
+                }
+                
+                // Use only valid questions
+                result.questions = validQuestions;
+                console.log(`✅ Using ${validQuestions.length} validated questions`);
+              } else {
+                console.log(`✅ All error detection questions validated successfully`);
+              }
+            } catch (validationError) {
+              console.error('Estonian validation failed:', validationError);
+              // Continue without validation if the validator fails
+            }
+          }
+          
           // Add cefrLevel to each question for database requirements
           const questionsWithLevel = result.questions.map((q: any) => ({
             ...q,
@@ -425,7 +458,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           }
         }
         
-        throw new Error(`${professor.name} failed to generate valid quiz. Please try again.`);
+        throw new Error(`${config.name} failed to generate valid quiz. Please try again.`);
       }
     } catch (error) {
       console.error("Quiz generation error:", error);
