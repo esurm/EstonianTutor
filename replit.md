@@ -41,7 +41,7 @@ The application uses a comprehensive schema designed around language learning:
 
 **OpenAI Service**: 
 - **GPT-4.1** for conversational tutoring with specialized Estonian teaching persona
-- **GPT-4.1-mini** for quiz generation (faster, cost-effective)
+- **GPT-4.1** for quiz generation (upgraded from mini for consistency and accuracy)
 - **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
 - Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
 - **Mode-specific parameters optimized for AI behavior**:
@@ -51,15 +51,16 @@ The application uses a comprehensive schema designed around language learning:
   - Grammar exercises: temperature 0.3, max_tokens 400 (precise output)
   - Quiz generation: temperature 0.2, frequency_penalty 0.1, max_tokens 250 (reliable/regenerable)
 - **Enhanced error handling**: Robust JSON parsing with fallback responses for API failures
-- **Five-Category Quiz Generation System**: 
-  - **Vocabulary Quizzes**: Focus on word meanings, synonyms, themed vocabulary (70% multiple-choice, 30% completion)
-  - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
-  - **Conjugation Quizzes**: Focus on verb tenses and persons (40% multiple-choice, 60% completion)
-  - **Sentence Reordering**: Focus on Estonian word order and structure (20% multiple-choice, 80% completion)
-  - **Error Detection**: Focus on identifying real grammatical mistakes with Spanish explanations (fixed authentic Estonian grammar issues)
-  - Questions in Estonian with Spanish translations for comprehension
-  - Strict category separation enforced with enhanced prompts
-  - Distinct color schemes with maximum contrast: Blue (vocabulary), Purple (grammar), Emerald (conjugation), Yellow (sentence reordering), Red (error detection), Cyan (chatroom placeholder)
+- **COMPLETELY SEPARATED QUIZ SYSTEMS (Jan 2025)**: Each category has dedicated AI personality and structure
+  - **Vocabulary Expert**: 15 years experience, focused on word meanings, cognates, semantic fields
+  - **Grammar Expert**: 12 years experience, specialized in Estonian case system and rule application
+  - **Conjugation Expert**: Verbal system specialist, Estonian tenses and persons (ma/sa/ta/me/te/nad)
+  - **Structure Expert**: Word order specialist, adverb placement (tiempo-manera-lugar)
+  - **Error Detection Expert**: Real Estonian mistakes, pedagogically useful corrections
+  - Zero cross-contamination between categories through isolated prompt systems
+  - Unique answer structures: multipleChoice, wordReordering, errorIdentification
+  - Category-specific CEFR guidance and complexity levels
+- **Interactive Sentence Reordering Interface**: Word-by-word construction with click-to-add/remove functionality
 - **Streamlined quiz generation**: Single API call generating exactly 5 questions per quiz
 - **Model upgrade**: Switched from GPT-4.1-mini to full GPT-4.1 for better accuracy and Spanish-only explanations
 - **All quiz categories validated**: vocabulary, grammar, conjugation, sentence_reordering, error_detection working with real AI content (not fallback)

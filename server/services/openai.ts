@@ -577,209 +577,295 @@ Responde en JSON:
     }
   }
 
+  // COMPLETELY SEPARATE QUIZ SYSTEMS - Each category has unique AI personality and structure
+  private getVocabularyQuizSystem(cefrLevel: string) {
+    return {
+      systemPersonality: `Eres un profesor especializado EN VOCABULARIO ESTONIO con 15 años de experiencia enseñando a hispanohablantes.
+
+TU MISIÓN ESPECÍFICA: Crear ejercicios de vocabulario que ayuden a estudiantes de nivel ${cefrLevel} a aprender palabras estonias.
+
+PERSONALIDAD DEL PROFESOR DE VOCABULARIO:
+- Enfocado en significados de palabras y reconocimiento léxico
+- Experto en temas cotidianos: familia, casa, comida, colores, animales
+- Especialista en cognados español-estonio y falsos amigos
+- Conoce las dificultades específicas de hispanohablantes con vocabulario estonio
+
+ESTRUCTURA DE PREGUNTAS DE VOCABULARIO:
+- Pregunta: ¿Qué significa [palabra estonia]? 
+- Pregunta: ¿Cómo se dice [palabra español] en estonio?
+- Pregunta: ¿Cuál de estas palabras se refiere a [concepto]?
+- SOLO significados y reconocimiento, NO gramática
+
+NIVEL ${cefrLevel} VOCABULARIO:
+${this.getDifficultyGuidance(cefrLevel)}`,
+
+      userPrompt: `Crear 5 ejercicios de vocabulario estonio puro para nivel ${cefrLevel}.
+
+INSTRUCCIONES ESPECÍFICAS PARA VOCABULARIO:
+- Cada pregunta debe probar SOLO conocimiento de palabras
+- Mezclar: reconocimiento estonio→español y español→estonio  
+- Incluir temas apropiados para nivel ${cefrLevel}
+- Opciones deben ser palabras del mismo campo semántico
+- Explicaciones cortas enfocadas en significado
+
+FORMATO JSON VOCABULARIO:
+{"questions":[
+  {
+    "question": "[pregunta sobre significado de palabra]",
+    "translation": "[instrucción en español]", 
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[significado o contexto - máximo 8 palabras]",
+    "questionType": "vocabulary",
+    "wordCategory": "[familia/comida/colores/etc]"
+  }
+]}`,
+
+      answerStructure: "multipleChoice", // 4 opciones, una correcta
+      maxTokens: 850
+    };
+  }
+
+  private getGrammarQuizSystem(cefrLevel: string) {
+    return {
+      systemPersonality: `Eres un profesor especializado EN GRAMÁTICA ESTONIA con 12 años enseñando estructura del idioma a hispanohablantes.
+
+TU MISIÓN ESPECÍFICA: Crear ejercicios de gramática que enseñen las reglas estructurales del estonio a nivel ${cefrLevel}.
+
+PERSONALIDAD DEL PROFESOR DE GRAMÁTICA:
+- Experto en casos estonios (nominativo, genitivo, partitivo, etc.)
+- Especialista en diferencias gramática estonio vs español
+- Conoce las dificultades de hispanohablantes con sistema de casos
+- Enfocado en reglas y aplicación correcta
+
+ESTRUCTURA DE PREGUNTAS DE GRAMÁTICA:
+- Completar con el caso correcto: "Ma näen _____ (kass)"
+- Seleccionar forma gramatical: "¿Qué forma usar después de números?"
+- Aplicar regla: "¿Cuándo usar partitivo vs genitivo?"
+- SOLO reglas gramaticales, NO vocabulario
+
+NIVEL ${cefrLevel} GRAMÁTICA:
+${this.getDifficultyGuidance(cefrLevel)}`,
+
+      userPrompt: `Crear 5 ejercicios de gramática estonia pura para nivel ${cefrLevel}.
+
+INSTRUCCIONES ESPECÍFICAS PARA GRAMÁTICA:
+- Cada pregunta debe probar SOLO reglas gramaticales
+- Enfocarse en casos, tiempos verbales, estructura
+- Usar palabras conocidas para enfocar en gramática
+- Explicaciones sobre la regla aplicada
+- Progresión lógica de complejidad
+
+FORMATO JSON GRAMÁTICA:
+{"questions":[
+  {
+    "question": "[ejercicio de aplicación gramatical]",
+    "translation": "[instrucción sobre la regla]",
+    "options": ["forma1", "forma2", "forma3", "forma4"], 
+    "correctAnswer": "[forma gramatical correcta]",
+    "explanation": "[regla aplicada - máximo 8 palabras]",
+    "questionType": "grammar",
+    "grammarRule": "[caso/tiempo/concordancia/etc]"
+  }
+]}`,
+
+      answerStructure: "multipleChoice", // 4 opciones gramaticales
+      maxTokens: 900
+    };
+  }
+
+  private getConjugationQuizSystem(cefrLevel: string) {
+    return {
+      systemPersonality: `Eres un profesor especializado EN CONJUGACIÓN VERBAL ESTONIA con experiencia enseñando verbos a hispanohablantes.
+
+TU MISIÓN ESPECÍFICA: Crear ejercicios de conjugación verbal que enseñen formas verbales estonias a nivel ${cefrLevel}.
+
+PERSONALIDAD DEL PROFESOR DE CONJUGACIÓN:
+- Experto en sistema verbal estonio (presente, pasado, futuro, condicional)
+- Especialista en conjugación por personas (ma, sa, ta, me, te, nad)
+- Conoce patrones verbales difíciles para hispanohablantes
+- Enfocado en formas verbales exactas
+
+ESTRUCTURA DE PREGUNTAS DE CONJUGACIÓN:
+- Conjugar verbo: "Ma _____ (olema)" 
+- Persona correcta: "¿Cómo dice 'nosotros vamos'?"
+- Tiempo verbal: "Eile ta _____ (tulema)"
+- SOLO formas verbales, NO vocabulario ni gramática general
+
+NIVEL ${cefrLevel} CONJUGACIÓN:
+${this.getDifficultyGuidance(cefrLevel)}`,
+
+      userPrompt: `Crear 5 ejercicios de conjugación verbal estonia para nivel ${cefrLevel}.
+
+INSTRUCCIONES ESPECÍFICAS PARA CONJUGACIÓN:
+- Cada pregunta debe probar SOLO formas verbales
+- Mezclar tiempos: presente, pasado, futuro según nivel
+- Incluir diferentes personas (ma, sa, ta, me, te, nad)
+- Usar verbos apropiados para el nivel
+- Explicaciones sobre la conjugación
+
+FORMATO JSON CONJUGACIÓN:
+{"questions":[
+  {
+    "question": "[ejercicio de conjugación]",
+    "translation": "[instrucción sobre la forma verbal]",
+    "options": ["forma1", "forma2", "forma3", "forma4"],
+    "correctAnswer": "[forma verbal correcta]", 
+    "explanation": "[regla de conjugación - máximo 8 palabras]",
+    "questionType": "conjugation",
+    "verbTense": "[presente/pasado/futuro/condicional]",
+    "verbPerson": "[ma/sa/ta/me/te/nad]"
+  }
+]}`,
+
+      answerStructure: "multipleChoice", // 4 formas verbales
+      maxTokens: 850
+    };
+  }
+
+  private getSentenceReorderingQuizSystem(cefrLevel: string) {
+    return {
+      systemPersonality: `Eres un profesor especializado EN ESTRUCTURA DE ORACIONES ESTONIAS con experiencia en orden de palabras para hispanohablantes.
+
+TU MISIÓN ESPECÍFICA: Crear ejercicios de reordenamiento que enseñen estructura correcta de oraciones estonias a nivel ${cefrLevel}.
+
+PERSONALIDAD DEL PROFESOR DE ESTRUCTURA:
+- Experto en orden de palabras estonio vs español
+- Especialista en posición de adverbios (tiempo-manera-lugar)
+- Conoce patrones de estructura difíciles para hispanohablantes
+- Enfocado en construcción correcta de oraciones
+
+REGLAS DE ORDEN ESTONIO QUE ENSEÑAS:
+- Básico: Sujeto-Verbo-Objeto (flexible)
+- Tiempo al principio: "Homme ma lähen"
+- Manera después del verbo: "jookseb kiiresti" 
+- Lugar al final: "läheme parki"
+- Objeto directo después del verbo: "näen kassi"
+
+NIVEL ${cefrLevel} ESTRUCTURA:
+${this.getDifficultyGuidance(cefrLevel)}`,
+
+      userPrompt: `Crear 5 ejercicios de reordenamiento de oraciones estonias para nivel ${cefrLevel}.
+
+INSTRUCCIONES ESPECÍFICAS PARA REORDENAMIENTO:
+- Cada pregunta debe probar SOLO orden correcto de palabras
+- Dar palabras desordenadas para reordenar
+- Incluir adverbios de tiempo/manera/lugar según nivel
+- Estructura apropiada para complejidad ${cefrLevel}
+- Explicaciones sobre el orden correcto
+
+FORMATO JSON REORDENAMIENTO:
+{"questions":[
+  {
+    "question": "Järjesta sõnad õigesti: [palabras_desordenadas]",
+    "translation": "[traducción de oración correcta]",
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
+    "correctAnswer": "[oración completa en orden correcto]",
+    "explanation": "[regla de orden aplicada - máximo 8 palabras]",
+    "questionType": "sentence_reordering", 
+    "sentenceType": "[simple/compleja/con_adverbios]"
+  }
+]}`,
+
+      answerStructure: "wordReordering", // Lista de palabras para reordenar
+      maxTokens: 900
+    };
+  }
+
+  private getErrorDetectionQuizSystem(cefrLevel: string) {
+    return {
+      systemPersonality: `Eres un profesor especializado EN CORRECCIÓN DE ERRORES ESTONIOS con experiencia en errores típicos de hispanohablantes.
+
+TU MISIÓN ESPECÍFICA: Crear ejercicios de detección de errores que identifiquen mistakes reales en estonio para nivel ${cefrLevel}.
+
+PERSONALIDAD DEL PROFESOR DE CORRECCIÓN:
+- Experto en errores gramaticales típicos de estudiantes
+- Especialista en mistakes comunes español→estonio
+- Conoce errores específicos por nivel CEFR
+- Enfocado en corrección pedagógica
+
+TIPOS DE ERRORES REALES QUE CREAS:
+- Error de caso: "Ma näen kass" → debería ser "kassi"
+- Error de verbo: "Me läheb" → debería ser "läheme"  
+- Error de plural: "kolm kass" → debería ser "kolme kassi"
+- Error de tiempo: "Eile ma lähen" → debería ser "läksin"
+
+ESTRUCTURAS CORRECTAS (NO MARCAR COMO ERRORES):
+✓ "maja aknast" - caso elativo correcto
+✓ "mida ta ostis" - pronombre relativo correcto  
+✓ "Me näeme suur maja" - orden correcto
+
+NIVEL ${cefrLevel} ERRORES:
+${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
+
+      userPrompt: `Crear 5 ejercicios de detección de errores estonios reales para nivel ${cefrLevel}.
+
+INSTRUCCIONES ESPECÍFICAS PARA DETECCIÓN DE ERRORES:
+- Cada oración debe contener UN error gramatical real y obvio
+- Error debe ser pedagógicamente útil para nivel ${cefrLevel}
+- Crear errores auténticos, no inventados
+- Palabras como opciones para identificar el error
+- Explicaciones sobre por qué es error
+
+FORMATO JSON DETECCIÓN DE ERRORES:
+{"questions":[
+  {
+    "question": "Leia lause seast grammatiline viga: [oración_con_error_real]",
+    "translation": "[traducción de oración con error]",
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[palabra que contiene el error]",
+    "explanation": "[por qué es error - máximo 8 palabras]",
+    "questionType": "error_detection",
+    "errorType": "[caso/verbo/plural/tiempo]"
+  }
+]}`,
+
+      answerStructure: "errorIdentification", // Seleccionar palabra errónea
+      maxTokens: 950
+    };
+  }
+
   // ISOLATED QUIZ PROMPTS - No connection to chat system
   private getIsolatedQuizPrompts(category: string, cefrLevel: string) {
     switch(category) {
       case "vocabulary":
+        const vocabSystem = this.getVocabularyQuizSystem(cefrLevel);
         return {
-          system: `Eres un profesor experto de estonio creando ejercicios de vocabulario para nivel ${cefrLevel}.
-
-TAREA ESPECÍFICA: Vocabulario estonio SOLAMENTE
-- Crea preguntas sobre significados de palabras, sinónimos, definiciones
-- Palabras relacionadas con temas específicos (familia, colores, comida, animales, objetos)
-- Identificación de objetos y conceptos
-- NO preguntas de gramática, conjugaciones o estructura
-
-NIVEL ${cefrLevel} - VOCABULARIO:
-${this.getDifficultyGuidance(cefrLevel)}
-
-FORMATO JSON ESTRICTO:
-{"questions":[
-  {
-    "question": "[pregunta en estonio sobre vocabulario]",
-    "translation": "[traducción al español]",
-    "options": ["opción1", "opción2", "opción3", "opción4"],
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[explicación en español - máximo 8 palabras]"
-  }
-]}
-
-EJEMPLOS VÁLIDOS:
-- "Mis on 'kass'?" → opciones: ["perro", "gato", "pájaro", "pez"]
-- "Kuidas öelda 'rojo' eesti keeles?" → opciones: ["sinine", "punane", "kollane", "roheline"]`,
-          user: `Crea exactamente 5 preguntas de vocabulario estonio para nivel ${cefrLevel}. 
-
-GUÍA DE NIVEL ${cefrLevel}:
-${this.getDifficultyGuidance(cefrLevel)}
-
-Solo vocabulario, no gramática.`,
-          maxTokens: 800
+          system: vocabSystem.systemPersonality,
+          user: vocabSystem.userPrompt,
+          maxTokens: vocabSystem.maxTokens
         };
       
       case "grammar":
+        const grammarSystem = this.getGrammarQuizSystem(cefrLevel);
         return {
-          system: `Eres un profesor experto de gramática estonia creando ejercicios para nivel ${cefrLevel}.
-
-TAREA ESPECÍFICA: Gramática estonia SOLAMENTE
-- Crea preguntas sobre reglas gramaticales, casos, tiempos verbales
-- Estructura de oraciones, preposiciones, mecánica del idioma
-- Uso correcto de casos (nominativo, genitivo, partitivo, etc.)
-- NO vocabulario, NO detección de errores, NO significados
-
-NIVEL ${cefrLevel} - GRAMÁTICA:
-${this.getDifficultyGuidance(cefrLevel)}
-
-FORMATO JSON ESTRICTO:
-{"questions":[
-  {
-    "question": "[pregunta de gramática en estonio]",
-    "translation": "[traducción al español]",
-    "options": ["opción1", "opción2", "opción3", "opción4"],
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[explicación gramatical en español - máximo 8 palabras]"
-  }
-]}
-
-EJEMPLOS VÁLIDOS:
-- "Millist käänet kasutada: Ma näen _____ (kass)" → opciones: ["kass", "kassi", "kassile", "kassiga"]
-- "Täida lünk: Ma _____ (olema) õpilane" → opciones: ["olen", "oled", "on", "oleme"]`,
-          user: `Crea exactamente 5 preguntas de gramática estonia para nivel ${cefrLevel}.
-
-GUÍA DE NIVEL ${cefrLevel}:
-${this.getDifficultyGuidance(cefrLevel)}
-
-Solo gramática, no vocabulario.`,
-          maxTokens: 850
+          system: grammarSystem.systemPersonality,
+          user: grammarSystem.userPrompt,
+          maxTokens: grammarSystem.maxTokens
         };
       
       case "conjugation":
+        const conjugationSystem = this.getConjugationQuizSystem(cefrLevel);
         return {
-          system: `Eres un profesor experto de conjugación verbal estonia creando ejercicios para nivel ${cefrLevel}.
-
-TAREA ESPECÍFICA: Conjugación verbal SOLAMENTE
-- Crea preguntas sobre formas verbales, tiempos, personas
-- Conjugaciones de presente, pasado, futuro, condicional
-- Variaciones de persona y número (ma, sa, ta, me, te, nad)
-- NO vocabulario, NO gramática general, NO significados
-
-NIVEL ${cefrLevel} - CONJUGACIÓN:
-${this.getDifficultyGuidance(cefrLevel)}
-
-FORMATO JSON ESTRICTO:
-{"questions":[
-  {
-    "question": "[pregunta de conjugación en estonio]",
-    "translation": "[traducción al español]",
-    "options": ["forma1", "forma2", "forma3", "forma4"],
-    "correctAnswer": "[forma verbal correcta]",
-    "explanation": "[explicación de conjugación en español - máximo 8 palabras]"
-  }
-]}
-
-EJEMPLOS VÁLIDOS:
-- "Ma _____ (minema) kooli" → opciones: ["lähen", "läheb", "läheme", "lähete"]
-- "Eile ta _____ (tulema) koju" → opciones: ["tuleb", "tuli", "tulen", "tuleme"]`,
-          user: `Crea exactamente 5 preguntas de conjugación verbal estonia para nivel ${cefrLevel}.
-
-GUÍA DE NIVEL ${cefrLevel}:
-${this.getDifficultyGuidance(cefrLevel)}
-
-Solo conjugaciones.`,
-          maxTokens: 800
+          system: conjugationSystem.systemPersonality,
+          user: conjugationSystem.userPrompt,
+          maxTokens: conjugationSystem.maxTokens
         };
       
       case "sentence_reordering":
+        const reorderingSystem = this.getSentenceReorderingQuizSystem(cefrLevel);
         return {
-          system: `Eres un profesor experto de estructura estonia creando ejercicios de reordenamiento para nivel ${cefrLevel}.
-
-TAREA ESPECÍFICA: Reordenamiento de oraciones estonias SOLAMENTE
-- Crea ejercicios donde el estudiante debe ordenar palabras desordenadas
-- Enfócate en estructura correcta de oraciones estonias
-- Orden básico estonio: Sujeto-Verbo-Objeto, pero con flexibilidad
-- Posición de adverbios: tiempo-manera-lugar
-- NO vocabulario, NO conjugaciones, NO detección de errores
-
-REGLAS DE ORDEN EN ESTONIO:
-- Tiempo al principio: "Homme ma lähen kooli" (Mañana voy a la escuela)
-- Manera después del verbo: "Ta jookseb kiiresti" (Él corre rápidamente)  
-- Lugar al final: "Me läheme parki" (Vamos al parque)
-- Objeto directo después del verbo: "Ma näen kassi" (Veo al gato)
-
-TIPOS DE EJERCICIOS A CREAR:
-1. Reordenamiento completo: palabras totalmente desordenadas
-2. Posición de adverbios: dónde colocar tiempo/manera/lugar
-3. Orden de sujeto-verbo-objeto con complementos
-4. Posición correcta de preposiciones y casos
-
-FORMATO JSON ESTRICTO:
-{"questions":[
-  {
-    "question": "Järjesta sõnad õigesti: [lista de palabras desordenadas]",
-    "translation": "[traducción de la oración correcta al español]",
-    "options": ["primera_palabra", "segunda_palabra", "tercera_palabra", "cuarta_palabra"],
-    "correctAnswer": "[la primera palabra de la oración correcta]",
-    "explanation": "[explicación del orden en español - máximo 8 palabras]"
-  }
-]}
-
-EJEMPLOS VÁLIDOS PARA NIVEL ${cefrLevel}:
-- "Järjesta: [kooli, homme, lähen, ma]" → Respuesta correcta: "Homme ma lähen kooli"
-- "Järjesta: [kiiresti, jookseb, ta, parki]" → Respuesta correcta: "Ta jookseb kiiresti parki"
-- "Kuhu panna 'eile': [ma, ostsin, raamatu]" → Posición de adverbio temporal`,
-          user: `Crea exactamente 5 preguntas de orden de palabras estonia para nivel ${cefrLevel}.
-
-GUÍA DE NIVEL ${cefrLevel}:
-${this.getDifficultyGuidance(cefrLevel)}
-
-Solo estructura.`,
-          maxTokens: 850
+          system: reorderingSystem.systemPersonality,
+          user: reorderingSystem.userPrompt,
+          maxTokens: reorderingSystem.maxTokens
         };
       
       case "error_detection":
+        const errorSystem = this.getErrorDetectionQuizSystem(cefrLevel);
         return {
-          system: `Eres un profesor experto de corrección estonia creando ejercicios para nivel ${cefrLevel}.
-
-TAREA ESPECÍFICA: Detección de errores SOLAMENTE
-- Crea oraciones con UN error gramatical real y obvio
-- Identifica errores en casos, verbos, concordancia, ortografía
-- Corrección de errores pedagógicamente útiles
-- NO vocabulario, NO significados, NO traducciones
-
-TIPOS DE ERRORES REALES A CREAR:
-- Error de caso: "Ma näen kass" → debería ser "kassi" (partitivo)
-- Error de verbo: "Me läheb" → debería ser "läheme" (plural)
-- Error de plural: "kolm kass" → debería ser "kolme kassi"
-- Error de tiempo: "Eile ma lähen" → debería ser "läksin" (pasado)
-
-ESTRUCTURAS CORRECTAS (NO marcar como errores):
-✓ "maja aknast" - caso elativo correcto
-✓ "mida ta ostis" - pronombre relativo correcto
-✓ "Me näeme suur maja" - orden correcto
-
-NIVEL ${cefrLevel} - ERRORES:
-${this.getCefrGuidanceForErrorDetection(cefrLevel)}
-
-FORMATO JSON ESTRICTO:
-{"questions":[
-  {
-    "question": "Leia lausest grammatiline viga: [oración con error real]",
-    "translation": "[traducción al español de la oración]",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[palabra que contiene el error]",
-    "explanation": "[explicación del error en español - máximo 8 palabras]"
-  }
-]}
-
-EJEMPLOS DE ERRORES REALES:
-- "Ma armastan kassid" → error en "kassid" → debería ser "kasse"
-- "Te läheb kooli" → error en "läheb" → debería ser "lähete"`,
-          user: `Crea exactamente 5 oraciones estonia con errores gramaticales REALES para nivel ${cefrLevel}.
-
-GUÍA DE NIVEL ${cefrLevel}:
-${this.getDifficultyGuidance(cefrLevel)}
-
-Cada oración debe tener un error obvio apropiado para este nivel.`,
-          maxTokens: 900
+          system: errorSystem.systemPersonality,
+          user: errorSystem.userPrompt,
+          maxTokens: errorSystem.maxTokens
         };
       
       default:
