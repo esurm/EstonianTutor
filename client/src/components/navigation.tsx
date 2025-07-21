@@ -23,9 +23,9 @@ export function Navigation() {
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">AE</span>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Aprende Estonio</h1>
-                <p className="text-xs text-gray-500">Cargando...</p>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">Aprende Estonio</h1>
+                <p className="text-xs text-gray-500 hidden sm:block">Cargando...</p>
               </div>
             </div>
           </div>
@@ -44,14 +44,14 @@ export function Navigation() {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">AE</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Aprende Estonio</h1>
-              <p className="text-xs text-gray-500">Tutor Inteligente de Idiomas</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 truncate">Aprende Estonio</h1>
+              <p className="text-xs text-gray-500 hidden sm:block">Tutor Inteligente de Idiomas</p>
             </div>
           </Link>
           
           <div className="flex items-center space-x-4">
-            <div className="hidden sm:flex items-center space-x-3">
+            <div className="hidden md:flex items-center space-x-3">
               <span className="text-sm text-gray-600">Nivel Actual</span>
               {user?.profileImage && (
                 <div className="flex items-center space-x-2">

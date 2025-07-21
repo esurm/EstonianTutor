@@ -210,13 +210,11 @@ export function ChatInterface({ placeholder = "Escribir en estonio o hacer clic 
             </div>
             <div>
               <h2 className="text-black font-semibold">{title}</h2>
-              <p className="text-black text-opacity-80 text-sm">¡Listo para ayudarte!</p>
             </div>
           </div>
           
           <div className="text-right">
             <p className="text-sm opacity-90">Nivel: {(user as any)?.cefrLevel || 'B1'}</p>
-            <p className="text-xs opacity-75">Sesión Activa</p>
           </div>
         </div>
       </CardHeader>
