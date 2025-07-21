@@ -463,50 +463,72 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
                 Haz clic en la palabra o frase que contiene el error:
               </label>
               
-              {/* Error Detection Text Interface */}
-              <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                <div className="text-lg leading-relaxed">
-                  {currentQuestion.question
-                    .replace(/^Leia lause seast viga:\s*["""]/g, '')
-                    .replace(/["""]\s*$/g, '')
-                    .replace(/^Leia lause vigane osa:\s*["""]/g, '')
-                    .replace(/^Vali lause vigane osa:\s*["""]/g, '')
-                    .replace(/^Leia vigane osa:\s*["""]/g, '')
-                    .split(/(\s+)/)
-                    .map((word, index) => {
-                      if (!word.trim()) return word; // Keep spaces as-is
-                      
-                      const cleanWord = word.replace(/[.,!?;:"""]/g, '');
-                      const isSelected = selectedAnswer === cleanWord;
-                      const isCorrect = currentQuestion.correctAnswer && cleanWord.toLowerCase() === currentQuestion.correctAnswer.toLowerCase();
-                      
-                      let wordClass = "";
-                      if (showAnswerFeedback) {
-                        if (isCorrect) {
-                          wordClass = "bg-green-200 border-green-500 text-green-800";
-                        } else if (isSelected && !isCorrect) {
-                          wordClass = "bg-red-200 border-red-500 text-red-800";
-                        } else {
-                          wordClass = "hover:bg-gray-100";
-                        }
-                      } else {
-                        wordClass = isSelected 
-                          ? "bg-blue-200 border-blue-500 text-blue-800" 
-                          : "hover:bg-blue-100 cursor-pointer";
-                      }
-                      
-                      return (
-                        <span
-                          key={index}
-                          onClick={() => !showAnswerFeedback && handleAnswerSelect(cleanWord)}
-                          className={`inline-block px-1 py-0.5 m-0.5 border-2 border-transparent rounded transition-all ${wordClass}`}
-                        >
-                          {word}
-                        </span>
-                      );
-                    })}
+              {/* Error Detection - Use options array if available, otherwise click-to-select */}
+              {currentQuestion.options && currentQuestion.options.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {currentQuestion.options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => !showAnswerFeedback && handleAnswerSelect(option)}
+                      className={`p-3 border-2 rounded-lg text-left transition-all ${
+                        showAnswerFeedback
+                          ? option === currentQuestion.correctAnswer
+                            ? "border-green-500 bg-green-100 text-green-800"
+                            : selectedAnswer === option
+                            ? "border-red-500 bg-red-100 text-red-800"
+                            : "border-gray-200 bg-gray-50"
+                          : selectedAnswer === option
+                          ? "border-blue-500 bg-blue-100 text-blue-800"
+                          : "border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                  <div className="text-lg leading-relaxed">
+                    {currentQuestion.question
+                      .replace(/^Leia lause seast grammatiline viga:\s*/g, '')
+                      .replace(/^Leia lause seast viga:\s*["""]/g, '')
+                      .replace(/["""]\s*$/g, '')
+                      .split(/(\s+)/)
+                      .map((word, index) => {
+                        if (!word.trim()) return word; // Keep spaces as-is
+                        
+                        const cleanWord = word.replace(/[.,!?;:"""]/g, '');
+                        const isSelected = selectedAnswer === cleanWord;
+                        const isCorrect = currentQuestion.correctAnswer && cleanWord.toLowerCase() === currentQuestion.correctAnswer.toLowerCase();
+                        
+                        let wordClass = "";
+                        if (showAnswerFeedback) {
+                          if (isCorrect) {
+                            wordClass = "bg-green-200 border-green-500 text-green-800";
+                          } else if (isSelected && !isCorrect) {
+                            wordClass = "bg-red-200 border-red-500 text-red-800";
+                          } else {
+                            wordClass = "hover:bg-gray-100";
+                          }
+                        } else {
+                          wordClass = isSelected 
+                            ? "bg-blue-200 border-blue-500 text-blue-800" 
+                            : "hover:bg-blue-100 cursor-pointer";
+                        }
+                        
+                        return (
+                          <span
+                            key={index}
+                            onClick={() => !showAnswerFeedback && handleAnswerSelect(cleanWord)}
+                            className={`inline-block px-1 py-0.5 m-0.5 border-2 border-transparent rounded transition-all ${wordClass}`}
+                          >
+                            {word}
+                          </span>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
               
               {selectedAnswer && !showAnswerFeedback && (
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
