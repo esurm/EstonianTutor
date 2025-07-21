@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Estonian Tutor - Google OAuth Authentication Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Current User Status</h3>
+        <button onclick="checkCurrentUser()">Check Current User</button>
+        <div id="userStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Google OAuth Login</h3>
+        <button onclick="initiateGoogleLogin()">Login with Google</button>
+        <p><em>This will redirect to Google OAuth consent screen</em></p>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Test Data Persistence</h3>
+        <button onclick="updateCEFRLevel()">Update CEFR Level to A1</button>
+        <button onclick="sendTestMessage()">Send Test Chat Message</button>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. User Progress Verification</h3>
+        <button onclick="checkProgress()">Check User Progress</button>
+        <div id="progressResults"></div>
+    </div>
+
+    <script>
+        async function checkCurrentUser() {
+            try {
+                const response = await fetch('/api/user');
+                const user = await response.json();
+                
+                document.getElementById('userStatus').innerHTML = `
+                    <div class="success">
+                        <strong>Current User:</strong><br>
+                        <pre>${JSON.stringify(user, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('userStatus').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            }
+        }
+
+        function initiateGoogleLogin() {
+            window.location.href = '/auth/google';
+        }
+
+        async function updateCEFRLevel() {
+            try {
+                const response = await fetch('/api/user', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cefrLevel: 'A1' })
+                });
+                
+                const result = await response.json();
+                document.getElementById('testResults').innerHTML += `
+                    <div class="success">✓ CEFR Level updated to A1</div>
+                `;
+            } catch (error) {
+                document.getElementById('testResults').innerHTML += `
+                    <div class="error">Error updating CEFR: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function sendTestMessage() {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Tere! Kuidas läheb?',
+                        mode: 'chat'
+                    })
+                });
+                
+                const result = await response.json();
+                document.getElementById('testResults').innerHTML += `
+                    <div class="success">✓ Chat message sent and processed</div>
+                `;
+            } catch (error) {
+                document.getElementById('testResults').innerHTML += `
+                    <div class="error">Error sending message: ${error.message}</div>
+                `;
+            }
+        }
+
+        async function checkProgress() {
+            try {
+                const response = await fetch('/api/progress');
+                const progress = await response.json();
+                
+                document.getElementById('progressResults').innerHTML = `
+                    <div class="success">
+                        <strong>User Progress Data:</strong><br>
+                        <pre>${JSON.stringify(progress, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('progressResults').innerHTML = `
+                    <div class="error">Error: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Auto-check user status on load
+        window.onload = checkCurrentUser;
+    </script>
+</body>
+</html>

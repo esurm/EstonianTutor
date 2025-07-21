@@ -1,0 +1,48 @@
+Create a React (Next.js) web app named **Estonian Tutor MVP** for an intermediate Honduran Spanish speaker. Include the following:
+
+**1. Language Tutor (GPT‑4.1):**  
+- Chat interface powered by OpenAI GPT‑4.1.  
+- System persona: "You are a respectful, intermediate‑level Estonian tutor speaking in Honduran Spanish. The user already knows basic Estonian. Explain grammar without oversimplifying; use region‑specific expressions."  
+- Set temperature=0.2, top_p=0.9 for factual, concise responses.
+
+**2. Speech integration:**  
+- Use Whisper web wrapper to transcribe Spanish speech from mic.  
+- Use Azure Speech API to generate Estonian TTS responses that play automatically.
+
+**3. Interactive learning tools:**  
+- **Vocabulary & grammar quizzes**: multiple‑choice and fill‑in‑blank with instant feedback and explanations.  
+- **Dialogue simulations**: short two‑turn scenarios (e.g., café, travel) where user picks or speaks response.  
+- **Pronunciation practice**: audio prompt → user repeats → record playback.
+
+**4. AI‑powered conversation practice:**  
+- GPT‑powered dialogue mode: user can have ongoing text/speech chat in Estonian; tutor corrects mistakes, explains in Honduran Spanish, offers encouragement (“¡Muy bien!”).
+
+**5. Grammar & cultural notes:**  
+- Tutor should embed grammar explanations and cultural context in responses, comparing Estonian to Honduran Spanish usage.
+
+**6. Progress tracking & memory:**  
+- Use Firebase Firestore with schema:  
+  - Collection `sessions/{sessionId}/messages` with fields: `text`, `lang` (“es” or “et”), `source` (“user” or “assistant”), `timestamp`, `corrected` (bool), `correctionExplanation` (string optional).  
+- Track user’s quiz scores, mistake patterns, and time spent.
+
+**7. UI & UX:**  
+- Mobile‑first, responsive design with clean, accessible buttons (mic, quizzes, chat mode).  
+- Show recording indicator when transcribing.  
+- Display Estonian text, Spanish transcription, and “play audio” button for TTS.  
+- User progress dashboard with number of words learned and sessions.
+
+**8. Hosting & backend:**  
+- Use Firebase Hosting and Cloud Functions to proxy GPT, Whisper, and Azure TTS API calls.  
+- Include instructions to set up required APIs and environment variables.  
+- Use Firebase emulator for testing before deployment.
+
+---
+
+**Assistant**, please:
+1. Generate initial app scaffold for Next.js front-end + Firestore + Cloud Functions.
+2. Scaffold components for speech input/output, quiz UI, chat interface.
+3. Create backend functions for storing messages and calling GPT/Azure.
+4. Add basic styling and mobile responsiveness.
+5. Explain how to connect Whisper and Azure keys, and how to deploy.
+
+Keep the code modular, clean, and documented. Let's iterate feature by feature starting from this blueprint.

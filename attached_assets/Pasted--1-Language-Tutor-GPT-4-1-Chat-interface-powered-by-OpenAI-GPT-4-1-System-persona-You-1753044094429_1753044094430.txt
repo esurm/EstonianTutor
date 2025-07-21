@@ -1,0 +1,32 @@
+
+
+1. Language Tutor (GPT‑4.1): 
+Chat interface powered by OpenAI GPT‑4.1.  
+System persona: "You are a respectful, Estonian tutor speaking in Honduran Spanish. Explain grammar without oversimplifying; use region‑specific expressions."  
+Set temperature=0.2, top_p=0.9 for factual, concise responses.
+Also the GPT 4.1 should be able to to adjust it's tutor persona to the CEFR difficulty chosen by user (existing function)
+
+2. IMPORTANT Speech integration: 
+Use Whisper web wrapper to transcribe Spanish or Estonian user spoken speech from microphone.
+Use Azure Speech API to generate Estonian (Anu) or Honduran (Carlos) TTS responses that I can manually play and pause.
+CURRENT BUG: If I press Play button, it does not change to Pause button when message is playing but it should.
+
+3. Interactive learning tools: 
+IMPORTANT CURRENT BUG: When GPT gives answers with **word** it means it wants it to make it bold. This does not translate to current UI but TTS is reading asterisk asterisk, that should not happen.
+GPT attempts at formatting text should be shown on end-user UI properly.
+Default Tutor de Estonio window: GPT‑powered dialogue mode: user can have ongoing text/speech chat in Estonian; tutor corrects mistakes, explains in Honduran Spanish, offers encouragement when applicable.
+Auto-generated vocabulary & grammar quizzes: multiple‑choice and fill‑in‑blank with instant feedback and explanations.  
+Auto-generated dialogue simulations: User can write or describe what dialogue situation they want and app would generate it. It would change the "Tutor de Estonio" chatbox to
+"Simulación de Diálogo" and change it's title panel background color to fit the "Simulación de Diálogo" panel background color.
+Pronunciation practice: Change the Tutor de Estonio box accordingly like the dialogue practice box mentioned before.
+Workflow would be: User enters/records words or topic to practice pronounciation > AI gives pronouncation audio > user repeats > AI gives feedback and offers to try again if bad pronouncation or continue to new words.
+Ejercisios de Gramatica should be interactive dialogue with the AI to provide user with explanations about grammar as it is intended.
+
+5. Grammar & cultural notes:
+Tutor should embed grammar explanations and cultural context in responses, comparing Estonian to Honduran Spanish usage.
+
+6. Progress tracking & memory: 
+Track recent conversations to database to ensure the AI has some kind of memory. But only basic references not to overloard the input/output for API too much.
+
+Assistant, please:
+Ensure that the API usage is cost-effective, utilizing caches where needed and providing memory for conversations locally from database

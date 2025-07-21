@@ -1,0 +1,40 @@
+Create a web app named Estonian Tutor MVP for an intermediate Honduran Spanish speaker. Make absolutely sure to include the following:
+
+1. Language Tutor (GPT‑4.1): 
+Chat interface powered by OpenAI GPT‑4.1.  
+System persona: "You are a respectful, intermediate‑level Estonian tutor speaking in Honduran Spanish. The user already knows basic Estonian. Explain grammar without oversimplifying; use region‑specific expressions."  
+Set temperature=0.2, top_p=0.9 for factual, concise responses.
+
+2. IMPORTANT Speech integration: 
+Use Whisper web wrapper to transcribe Spanish speech from mic.  
+Use Azure Speech API to generate Estonian TTS responses that play automatically.
+
+3. Interactive learning tools: 
+Auto-generated vocabulary & grammar quizzes: multiple‑choice and fill‑in‑blank with instant feedback and explanations.  
+Auto-generated dialogue simulations: User can write or describe what dialogue situation they want and app would generate it.
+Pronunciation practice: audio prompt > user repeats > record playback > give feedback if needed.
+
+4. AI‑powered conversation practice: 
+GPT‑powered dialogue mode: user can have ongoing text/speech chat in Estonian; tutor corrects mistakes, explains in Honduran Spanish, offers encouragement (“¡Muy bien!”).
+
+5. Grammar & cultural notes:
+Tutor should embed grammar explanations and cultural context in responses, comparing Estonian to Honduran Spanish usage.
+
+6. Progress tracking & memory: 
+Track recent conversations.
+Track user’s quiz scores, mistake patterns, and time spent.
+
+7. UI & UX:
+Mobile‑first, responsive design with clean, accessible buttons (mic, quizzes, chat mode).  
+Show recording indicator when transcribing.  
+Display Estonian text, Spanish transcription, and “play audio” button for TTS.  
+User progress dashboard with number of words learned and sessions.
+
+
+Assistant, please:
+Ensure that the API usage is cost-effective, utilizing caches where needed and providing memory for conversations locally from database
+Create backend functions for storing messages and calling GPT/Azure.
+Add basic styling and mobile responsiveness.
+Explain how to connect Whisper and Azure keys, and how to deploy.
+
+Keep the code modular, clean, and documented. Let's iterate feature by feature starting from this blueprint.
