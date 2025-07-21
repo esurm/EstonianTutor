@@ -748,6 +748,12 @@ REALISTLIKUD VALIDEERIMISREEGLID:
 - Objekt ja koht võivad vahetuda
 - Punktuatsioon peab olema täpne
 
+KRIITILINE: SÕNAJÄRG VS GRAMMATIKAVIGU:
+- Ära märgi sõnajärje erinevusi grammatikavigu
+- Märgi ainult tegelikke grammatikavigu: vale kääne, tegusõna vorm, kooskõla
+- Näide OK: "teemasid ülikoolis" vs "ülikoolis teemasid" - mõlemad õiged
+- Näide VIGA: "teemade ülikoolis" (vale kääne) - see on grammatikaviga
+
 KVALITEEDI STANDARDID:
 - Iga lause peab olema loomulik ja tavaline
 - Verbid peavad kontekstis mõistlikud olema
@@ -765,6 +771,7 @@ KRITILISED NÕUDED:
    - Põhiline vastus + 1-2 lubatud varianti
    - Aeg-subjekt-verb on fikseeritud
    - Objekt ja koht võivad vahetuda kui grammatiliselt õige
+   - OLULINE: Ära märgi sõnajärje vahetust grammatikavigu
 
 2. SÕNADE TÄPSUS JA SEGAMINE (KRIITILINE):
    - Kasuta AINULT sõnu, mis on õiges vastuses
@@ -808,7 +815,10 @@ KRIITILISED KONTROLLID:
 4. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE`,
 
       answerStructure: "wordReordering",
-      maxTokens: 950
+      maxTokens: 950,
+      temperature: 0.2,
+      presencePenalty: 0.0,
+      frequencyPenalty: 0.1
     };
   }
 
