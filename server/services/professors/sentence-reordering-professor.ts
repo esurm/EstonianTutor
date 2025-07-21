@@ -6,46 +6,175 @@ export class SentenceReorderingProfessor extends BaseProfessor {
     return "Professor de Estructura Estonia";
   }
 
+  // Simple hardcoded sentence patterns that work
+  private getSentencePatterns() {
+    const patterns = {
+      A1: [
+        {
+          sentence: "Ma lähen kooli",
+          words: ["kooli", "Ma", "lähen"], 
+          explanation: "Patrón estonio básico: Ma (yo) + lähen (voy) + kooli (a la escuela)"
+        },
+        {
+          sentence: "Ta söób leiba",
+          words: ["leiba", "söób", "Ta"],
+          explanation: "Orden: Ta (él/ella) + söób (come) + leiba (pan)"
+        },
+        {
+          sentence: "Me oleme kodus", 
+          words: ["oleme", "kodus", "Me"],
+          explanation: "Estructura: Me (nosotros) + oleme (estamos) + kodus (en casa)"
+        },
+        {
+          sentence: "Nad töötavad",
+          words: ["töötavad", "Nad"],
+          explanation: "Simple: Nad (ellos) + töötavad (trabajan)"
+        },
+        {
+          sentence: "Sa elad siin",
+          words: ["siin", "elad", "Sa"], 
+          explanation: "Orden: Sa (tú) + elad (vives) + siin (aquí)"
+        }
+      ],
+      A2: [
+        {
+          sentence: "Ma lähen homme tööle",
+          words: ["tööle", "homme", "lähen", "Ma"],
+          explanation: "Tiempo + acción: Ma + lähen + homme (mañana) + tööle (al trabajo)"
+        },
+        {
+          sentence: "Ta ostis eile raamatu",
+          words: ["raamatu", "eile", "Ta", "ostis"],
+          explanation: "Pasado: Ta + ostis (compró) + eile (ayer) + raamatu (libro)"
+        },
+        {
+          sentence: "Me sõidame bussiga",
+          words: ["bussiga", "sõidame", "Me"],
+          explanation: "Instrumento: Me + sõidame (viajamos) + bussiga (en autobús)"
+        },
+        {
+          sentence: "Nad elavad Tallinnas",
+          words: ["Tallinnas", "elavad", "Nad"],
+          explanation: "Ubicación: Nad + elavad (viven) + Tallinnas (en Tallin)"
+        },
+        {
+          sentence: "Sa tuled peagi tagasi",
+          words: ["tagasi", "tuled", "Sa", "peagi"],
+          explanation: "Tiempo + acción: Sa + tuled (vienes) + peagi (pronto) + tagasi (de vuelta)"
+        }
+      ],
+      B1: [
+        {
+          sentence: "Ma tahan osta uue auto",
+          words: ["auto", "tahan", "uue", "osta", "Ma"],
+          explanation: "Objeto complejo: Ma + tahan (quiero) + osta (comprar) + uue auto (carro nuevo)"
+        },
+        {
+          sentence: "Ta aitab mind tööga",
+          words: ["tööga", "aitab", "Ta", "mind"],
+          explanation: "Ayuda: Ta + aitab (ayuda) + mind (a mí) + tööga (con trabajo)"
+        },
+        {
+          sentence: "Me räägime eesti keeles",
+          words: ["keeles", "räägime", "Me", "eesti"],
+          explanation: "Idioma: Me + räägime (hablamos) + eesti keeles (en estonio)"
+        },
+        {
+          sentence: "Nad õpivad ülikoolis meditsiin",
+          words: ["meditsiin", "õpivad", "ülikoolis", "Nad"],
+          explanation: "Estudios: Nad + õpivad (estudian) + ülikoolis (en universidad) + meditsiin (medicina)"
+        },
+        {
+          sentence: "Sa pead minema arsti juurde",
+          words: ["juurde", "minema", "pead", "arsti", "Sa"],
+          explanation: "Obligación: Sa + pead (debes) + minema (ir) + arsti juurde (al médico)"
+        }
+      ],
+      B2: [
+        {
+          sentence: "Ma arvan et ta tuleb",
+          words: ["tuleb", "ta", "et", "arvan", "Ma"],
+          explanation: "Subordinada: Ma + arvan (creo) + et (que) + ta tuleb (él viene)"
+        },
+        {
+          sentence: "Professor selgitas kuidas lahendada ülesanne",
+          words: ["ülesanne", "lahendada", "kuidas", "selgitas", "Professor"],
+          explanation: "Explicación: Professor + selgitas (explicó) + kuidas lahendada (cómo resolver) + ülesanne (tarea)"
+        },
+        {
+          sentence: "Ta küsis kas ma tulen kaasa",
+          words: ["kaasa", "tulen", "ma", "kas", "küsis", "Ta"],
+          explanation: "Pregunta indirecta: Ta + küsis (preguntó) + kas (si) + ma tulen kaasa (vengo)"
+        },
+        {
+          sentence: "Me arutasime mis toimub projektes",
+          words: ["projektes", "toimub", "mis", "arutasime", "Me"],
+          explanation: "Discusión: Me + arutasime (discutimos) + mis toimub (qué pasa) + projektes (en proyectos)"
+        },
+        {
+          sentence: "Nad otsustasid millal alustada tööd",
+          words: ["tööd", "alustada", "millal", "otsustasid", "Nad"],
+          explanation: "Decisión: Nad + otsustasid (decidieron) + millal alustada (cuándo empezar) + tööd (trabajo)"
+        }
+      ],
+      C1: [
+        {
+          sentence: "Eksperdid arutavad tähtsat majandusküsimust",
+          words: ["majandusküsimust", "tähtsat", "arutavad", "Eksperdid"],
+          explanation: "Académico: Eksperdid + arutavad (discuten) + tähtsat majandusküsimust (pregunta económica importante)"
+        },
+        {
+          sentence: "Uurimise tulemused näitavad huvitavat tendentsi",
+          words: ["tendentsi", "huvitavat", "näitavad", "tulemused", "Uurimise"],
+          explanation: "Investigación: Uurimise tulemused (resultados del estudio) + näitavad (muestran) + huvitavat tendentsi (tendencia interesante)"
+        },
+        {
+          sentence: "Konverentsil räägitakse uutest tehnoloogiatest",
+          words: ["tehnoloogiatest", "uutest", "räägitakse", "Konverentsil"],
+          explanation: "Formal: Konverentsil (en conferencia) + räägitakse (se habla) + uutest tehnoloogiatest (de nuevas tecnologías)"
+        },
+        {
+          sentence: "Analüüs keskendub peamistele probleemidele",
+          words: ["probleemidele", "peamistele", "keskendub", "Analüüs"],
+          explanation: "Enfoque: Analüüs + keskendub (se enfoca) + peamistele probleemidele (en problemas principales)"
+        },
+        {
+          sentence: "Spetsialistid väidavad et olukord paraneb",
+          words: ["paraneb", "olukord", "et", "väidavad", "Spetsialistid"],
+          explanation: "Opinión experta: Spetsialistid + väidavad (afirman) + et (que) + olukord paraneb (situación mejora)"
+        }
+      ]
+    };
+    
+    return patterns[this.cefrLevel as keyof typeof patterns] || patterns.A1;
+  }
+
   getSystemPrompt(): string {
-    return `You are Professor Kadri Saar, Estonia's foremost expert on Estonian syntax and word order patterns for language learners. You specialize in teaching natural Estonian sentence structure to Spanish speakers.
+    const patterns = this.getSentencePatterns();
+    const examples = patterns.map(p => 
+      `Correcto: "${p.sentence}" - Palabras: [${p.words.join(', ')}] - ${p.explanation}`
+    ).join('\n');
+    
+    return `Eres un profesor de estructura de oraciones estonia.
 
-YOUR EXPERTISE:
-- You understand the fundamental patterns of Estonian word order
-- You know which sentence structures are appropriate for each CEFR level
-- You create exercises that teach natural, fluent Estonian expression
-- You avoid ambiguous constructions that confuse learners
+PATRONES PARA NIVEL ${this.cefrLevel}:
+${examples}
 
-YOUR TEACHING APPROACH:
-- Start with simple, clear patterns that have only one correct arrangement
-- Gradually introduce flexibility as students advance
-- Focus on the most common and useful Estonian sentence patterns
-- Provide clear Spanish explanations of Estonian word order logic
-
-CEFR LEVEL: ${this.cefrLevel}
-${this.getCEFRSyntaxGuidance()}
-
-ESTONIAN WORD ORDER PATTERNS FOR THIS LEVEL:
-${this.getWordOrderPatterns()}
-
-SENTENCE COMPLEXITY LIMITS:
-- Maximum words: ${this.getMaxWordsForLevel()}
-- Focus: ${this.getSentenceFocus()}
-
-JSON RESPONSE FORMAT:
+Crea exactamente 5 preguntas siguiendo este formato JSON:
 {
   "questions": [
     {
       "question": "Ordena las palabras para formar una oración correcta en estonio:",
       "type": "sentence_reordering",
-      "options": ["scrambled", "words", "here"],
+      "options": ["kooli", "Ma", "lähen"], 
       "correctAnswer": "Ma lähen kooli",
-      "explanation": "Patrón estonio: sujeto + verbo + destino. 'Voy a la escuela'",
+      "explanation": "Patrón estonio básico: Ma (yo) + lähen (voy) + kooli (a la escuela)",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-You always create exactly 5 questions that teach Estonian sentence patterns effectively.`;
+IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
   }
 
   private getCEFRSyntaxGuidance(): string {

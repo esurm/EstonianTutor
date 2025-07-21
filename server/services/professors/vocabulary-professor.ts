@@ -6,48 +6,90 @@ export class VocabularyProfessor extends BaseProfessor {
     return "Professor de Vocabulario Estonio";
   }
 
+  // Simple hardcoded vocabulary for each level
+  private getVocabularyWords() {
+    const vocabulary = {
+      A1: [
+        { estonian: "kool", spanish: "escuela", distractors: ["casa", "trabajo", "tienda"] },
+        { estonian: "maja", spanish: "casa", distractors: ["carro", "parque", "comida"] },
+        { estonian: "auto", spanish: "carro", distractors: ["bicicleta", "casa", "libro"] },
+        { estonian: "raamat", spanish: "libro", distractors: ["mesa", "silla", "ventana"] },
+        { estonian: "söök", spanish: "comida", distractors: ["agua", "café", "leche"] },
+        { estonian: "vesi", spanish: "agua", distractors: ["té", "jugo", "cerveza"] },
+        { estonian: "kass", spanish: "gato", distractors: ["perro", "pájaro", "pez"] },
+        { estonian: "koer", spanish: "perro", distractors: ["gato", "caballo", "ratón"] }
+      ],
+      A2: [
+        { estonian: "töö", spanish: "trabajo", distractors: ["descanso", "vacaciones", "fiesta"] },
+        { estonian: "buss", spanish: "autobús", distractors: ["tren", "avión", "barco"] },
+        { estonian: "haigla", spanish: "hospital", distractors: ["escuela", "banco", "museo"] },
+        { estonian: "pood", spanish: "tienda", distractors: ["restaurante", "hotel", "oficina"] },
+        { estonian: "raha", spanish: "dinero", distractors: ["tiempo", "trabajo", "salud"] },
+        { estonian: "aeg", spanish: "tiempo", distractors: ["espacio", "lugar", "momento"] },
+        { estonian: "keek", spanish: "idioma", distractors: ["música", "arte", "deporte"] },
+        { estonian: "riik", spanish: "país", distractors: ["ciudad", "pueblo", "región"] }
+      ],
+      B1: [
+        { estonian: "haridus", spanish: "educación", distractors: ["experiencia", "conocimiento", "habilidad"] },
+        { estonian: "kultuur", spanish: "cultura", distractors: ["tradición", "costumbre", "historia"] },
+        { estonian: "loodust", spanish: "naturaleza", distractors: ["ciencia", "tecnología", "ambiente"] },
+        { estonian: "turism", spanish: "turismo", distractors: ["negocio", "comercio", "industria"] },
+        { estonian: "projekt", spanish: "proyecto", distractors: ["plan", "programa", "sistema"] },
+        { estonian: "küsimus", spanish: "pregunta", distractors: ["respuesta", "problema", "solución"] },
+        { estonian: "vastus", spanish: "respuesta", distractors: ["pregunta", "comentario", "opinión"] },
+        { estonian: "põhjus", spanish: "razón", distractors: ["resultado", "efecto", "causa"] }
+      ],
+      B2: [
+        { estonian: "majandus", spanish: "economía", distractors: ["política", "sociedad", "historia"] },
+        { estonian: "ühiskond", spanish: "sociedad", distractors: ["comunidad", "grupo", "organización"] },
+        { estonian: "valitsus", spanish: "gobierno", distractors: ["parlamento", "ministerio", "institución"] },
+        { estonian: "arendus", spanish: "desarrollo", distractors: ["crecimiento", "progreso", "mejora"] },
+        { estonian: "uurimine", spanish: "investigación", distractors: ["análisis", "estudio", "examen"] },
+        { estonian: "tulem", spanish: "resultado", distractors: ["consecuencia", "efecto", "impacto"] },
+        { estonian: "võimalus", spanish: "oportunidad", distractors: ["chance", "posibilidad", "opción"] },
+        { estonian: "probleem", spanish: "problema", distractors: ["dificultad", "obstáculo", "desafío"] }
+      ],
+      C1: [
+        { estonian: "filosoofia", spanish: "filosofía", distractors: ["psicología", "sociología", "antropología"] },
+        { estonian: "analüüs", spanish: "análisis", distractors: ["síntesis", "evaluación", "crítica"] },
+        { estonian: "kontseptsioon", spanish: "concepción", distractors: ["percepción", "interpretación", "comprensión"] },
+        { estonian: "metodoloogia", spanish: "metodología", distractors: ["técnica", "procedimiento", "enfoque"] },
+        { estonian: "tendents", spanish: "tendencia", distractors: ["dirección", "orientación", "inclinación"] },
+        { estonian: "perspektiiv", spanish: "perspectiva", distractors: ["punto de vista", "enfoque", "visión"] },
+        { estonian: "kriteerium", spanish: "criterio", distractors: ["estándar", "norma", "principio"] },
+        { estonian: "paradigma", spanish: "paradigma", distractors: ["modelo", "marco", "esquema"] }
+      ]
+    };
+    
+    return vocabulary[this.cefrLevel as keyof typeof vocabulary] || vocabulary.A1;
+  }
+
   getSystemPrompt(): string {
-    return `You are Professor Liisa Tamm, a renowned Estonian vocabulary specialist with 20 years of experience teaching Estonian to Spanish speakers. You are an expert at selecting the perfect vocabulary for each CEFR level.
+    const words = this.getVocabularyWords();
+    const examples = words.slice(0, 3).map(w => 
+      `"${w.estonian}" = "${w.spanish}" (opciones: ${[w.spanish, ...w.distractors].join(', ')})`
+    ).join('\n');
+    
+    return `Eres un profesor de vocabulario estonio.
 
-YOUR EXPERTISE:
-- You know exactly which Estonian words Spanish speakers should learn at each level
-- You understand which vocabulary is most useful for communication
-- You create engaging questions that make vocabulary memorable
-- You provide helpful Spanish explanations and mnemonics
+VOCABULARIO PARA NIVEL ${this.cefrLevel}:
+${examples}
 
-YOUR TEACHING PHILOSOPHY:
-- Build vocabulary systematically from most essential to specialized
-- Connect new words to Spanish speakers' existing knowledge
-- Use themes and contexts that matter to students' lives
-- Make vocabulary acquisition enjoyable and memorable
-
-CEFR LEVEL: ${this.cefrLevel}
-${this.getCEFRVocabularyGuidance()}
-
-VOCABULARY THEMES FOR THIS LEVEL:
-${this.getThemesForLevel()}
-
-QUESTION TYPES YOU USE:
-1. Translation (Estonian → Spanish)
-2. Translation (Spanish → Estonian)  
-3. Definition matching
-4. Category/theme grouping
-
-JSON RESPONSE FORMAT:
+Crea exactamente 5 preguntas siguiendo este formato JSON:
 {
   "questions": [
     {
       "question": "¿Qué significa 'kool'?",
       "type": "multiple_choice",
       "options": ["escuela", "casa", "trabajo", "tienda"],
-      "correctAnswer": "escuela",
-      "explanation": "'Kool' significa escuela. Es una palabra muy común en estonio.",
+      "correctAnswer": "escuela", 
+      "explanation": "'Kool' significa escuela en estonio. Palabra muy básica y útil.",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-You always create exactly 5 questions that build vocabulary effectively.`;
+IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
   }
 
   getUserPrompt(): string {

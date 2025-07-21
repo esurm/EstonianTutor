@@ -6,45 +6,225 @@ export class GrammarProfessor extends BaseProfessor {
     return "Professor de Gramática Estonia";
   }
 
+  // Simple hardcoded grammar patterns for each level
+  private getGrammarPatterns() {
+    const patterns = {
+      A1: [
+        {
+          template: "Ma lähen ___ täna",
+          word: "kool",
+          options: ["kool", "kooli", "koolis", "koolist"],
+          correct: "kooli",
+          explanation: "Para ir HACIA un lugar se usa ilativo (-sse): kooli (a la escuela)"
+        },
+        {
+          template: "Ta on ___ praegu",
+          word: "kool",
+          options: ["kool", "kooli", "koolis", "koolist"],
+          correct: "koolis",
+          explanation: "Para estar EN un lugar se usa inessivo (-s): koolis (en la escuela)"
+        },
+        {
+          template: "Ma söön ___",
+          word: "leib",
+          options: ["leib", "leiba", "leibi", "leivad"],
+          correct: "leiba",
+          explanation: "Objeto directo parcial en partitivo (-t/-d): leiba (pan)"
+        },
+        {
+          template: "See on ___ auto",
+          word: "mina",
+          options: ["mina", "minu", "minul", "mind"],
+          correct: "minu",
+          explanation: "Posesión en genitivo: minu (mi) auto"
+        },
+        {
+          template: "___ on kaks koera",
+          word: "mina",
+          options: ["Mina", "Minu", "Minul", "Mind"],
+          correct: "Minul",
+          explanation: "Posesión con 'on' usa adesivo: Minul (yo tengo)"
+        }
+      ],
+      A2: [
+        {
+          template: "Ma tulen ___ tagasi",
+          word: "kool",
+          options: ["kool", "kooli", "koolis", "koolist"],
+          correct: "koolist",
+          explanation: "Para venir DESDE un lugar se usa elativo (-st): koolist (de la escuela)"
+        },
+        {
+          template: "Ma räägin ___",
+          word: "sõber",
+          options: ["sõber", "sõbra", "sõbrad", "sõpradega"],
+          correct: "sõbra",
+          explanation: "Hablar CON alguien usa comitativo: sõbraga (con amigo)"
+        },
+        {
+          template: "Ta elab ___ Eestis",
+          word: "juba",
+          options: ["juba", "veel", "alati", "kunagi"],
+          correct: "juba",
+          explanation: "Para duración ya cumplida: juba (ya) dos años"
+        },
+        {
+          template: "Me sõidame ___",
+          word: "buss",
+          options: ["buss", "bussi", "bussiga", "bussis"],
+          correct: "bussiga",
+          explanation: "Medio de transporte en comitativo (-ga): bussiga"
+        },
+        {
+          template: "Ma ostan ___ poest",
+          word: "piim",
+          options: ["piim", "piima", "piimad", "piimaga"],
+          correct: "piima",
+          explanation: "Objeto directo líquido en partitivo: piima (leche)"
+        }
+      ],
+      B1: [
+        {
+          template: "Ma aitan ___ kodutööga",
+          word: "sina",
+          options: ["sina", "sinu", "sind", "sinul"],
+          correct: "sind",
+          explanation: "Ayudar a alguien usa partitivo: sind (a ti)"
+        },
+        {
+          template: "Raamat on ___ laual",
+          word: "suur",
+          options: ["suur", "suure", "suurt", "suurel"],
+          correct: "suurel",
+          explanation: "Adjetivo concuerda con sustantivo en caso: suurel laual"
+        },
+        {
+          template: "Ma mõtlen ___ võimalusele",
+          word: "hea",
+          options: ["hea", "hää", "head", "heale"],
+          correct: "heale",
+          explanation: "Adjetivo en alativo concuerda: heale võimalusele"
+        },
+        {
+          template: "Ta teeb tööd ___ hommikust",
+          word: "vara",
+          options: ["vara", "varase", "varast", "varasest"],
+          correct: "varasest",
+          explanation: "Tiempo desde: varasest hommikust (desde temprano)"
+        },
+        {
+          template: "Me räägime ___ projektist",
+          word: "uus",
+          options: ["uus", "uue", "uut", "uuest"],
+          correct: "uuest",
+          explanation: "Hablar SOBRE algo usa elativo: uuest projektist"
+        }
+      ],
+      B2: [
+        {
+          template: "Ma pean ___ oma plaane",
+          word: "muutma",
+          options: ["muutma", "muuta", "muutmine", "muutnud"],
+          correct: "muutma",
+          explanation: "Después de 'pean' se usa infinitivo en -ma: muutma"
+        },
+        {
+          template: "Ta soovib ___ Eestisse",
+          word: "kolima",
+          options: ["kolima", "kolida", "kolimine", "kolinud"],
+          correct: "kolida",
+          explanation: "Después de 'soovib' se usa infinitivo en -da: kolida"
+        },
+        {
+          template: "Ma olen ___ sellest raamatust",
+          word: "lugenud",
+          options: ["lugenud", "lugema", "lugeda", "lugemine"],
+          correct: "lugenud",
+          explanation: "Perfecto con 'olen' usa participio: lugenud"
+        },
+        {
+          template: "Kas sa oled kunagi ___ Rootsis?",
+          word: "käinud",
+          options: ["käinud", "käima", "käia", "käimine"],
+          correct: "käinud",
+          explanation: "Experiencia pasada usa participio: käinud"
+        },
+        {
+          template: "Ma ei ole veel ___ oma tööd",
+          word: "lõpetanud",
+          options: ["lõpetanud", "lõpetama", "lõpetada", "lõpetamine"],
+          correct: "lõpetanud",
+          explanation: "Negativo perfecto usa participio: lõpetanud"
+        }
+      ],
+      C1: [
+        {
+          template: "Arutelu ___ teemadel oli huvitav",
+          word: "keerukas",
+          options: ["keerukas", "keerukate", "keerulist", "keerukatel"],
+          correct: "keerukatel",
+          explanation: "Adjetivo plural adesivo: keerukatel teemadel"
+        },
+        {
+          template: "Eksperdid ___ et situatsioon paraneb",
+          word: "väida",
+          options: ["väidavad", "väitsid", "väidaksid", "väitnud"],
+          correct: "väidavad",
+          explanation: "Presente para hechos actuales: väidavad"
+        },
+        {
+          template: "Kui see ___ tõsi, muutuks kõik",
+          word: "olema",
+          options: ["on", "oli", "oleks", "olnud"],
+          correct: "oleks",
+          explanation: "Condicional hipotético: oleks (fuera/sería)"
+        },
+        {
+          template: "Uurimine ___ et tulemused on usaldusväärsed",
+          word: "näitama",
+          options: ["näitab", "näitas", "näitaks", "näidanud"],
+          correct: "näitas",
+          explanation: "Pasado para resultados específicos: näitas"
+        },
+        {
+          template: "Professor selgitas ___ miks see oluline on",
+          word: "detail",
+          options: ["detailselt", "detailse", "detaili", "detailides"],
+          correct: "detailselt",
+          explanation: "Adverbio de manera: detailselt (detalladamente)"
+        }
+      ]
+    };
+    
+    return patterns[this.cefrLevel as keyof typeof patterns] || patterns.A1;
+  }
+
   getSystemPrompt(): string {
-    return `You are Dr. Mart Kruus, Estonia's leading expert on Estonian grammar pedagogy for foreign learners. You have spent 25 years perfecting methods to teach the Estonian case system to Spanish speakers.
+    const patterns = this.getGrammarPatterns();
+    const examples = patterns.slice(0, 2).map(p => 
+      `"${p.template}" (${p.word}) → "${p.correct}" - ${p.explanation}`
+    ).join('\n');
+    
+    return `Eres un profesor de gramática estonia.
 
-YOUR EXPERTISE:
-- You understand exactly which Estonian cases are hardest for Spanish speakers
-- You create crystal-clear explanations of Estonian grammar patterns  
-- You sequence grammar learning from simple to complex systematically
-- You make Estonian case system accessible and logical
+PATRONES PARA NIVEL ${this.cefrLevel}:
+${examples}
 
-YOUR TEACHING METHOD:
-- Focus on the most essential cases for each CEFR level
-- Use familiar vocabulary so students focus on grammar, not new words
-- Provide clear Spanish explanations of case functions
-- Build complexity gradually to avoid overwhelming students
-
-CEFR LEVEL: ${this.cefrLevel}
-${this.getCEFRGrammarGuidance()}
-
-CASE SYSTEM FOCUS FOR THIS LEVEL:
-${this.getCasesForLevel()}
-
-PRIORITY GRAMMAR POINTS:
-${this.getPriorityCases()}
-
-JSON RESPONSE FORMAT:
+Crea exactamente 5 preguntas siguiendo este formato JSON:
 {
   "questions": [
     {
       "question": "Completa: 'Ma lähen ___ täna' (kool)",
       "type": "multiple_choice",
       "options": ["kool", "kooli", "koolis", "koolist"],
-      "correctAnswer": "kooli", 
+      "correctAnswer": "kooli",
       "explanation": "Para ir HACIA un lugar se usa ilativo: kooli (a la escuela)",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-You always create exactly 5 questions that teach Estonian grammar systematically.`;
+IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
   }
 
   getUserPrompt(): string {

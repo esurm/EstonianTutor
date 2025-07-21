@@ -6,42 +6,225 @@ export class ConjugationProfessor extends BaseProfessor {
     return "Dr. Ants Rebane - Professor of Estonian Verb Conjugation";
   }
 
+  // Simple hardcoded verb conjugation patterns
+  private getConjugationPatterns() {
+    const patterns = {
+      A1: [
+        {
+          verb: "minema",
+          template: "Ma ___ kooli",
+          options: ["lähen", "läheb", "läheme", "minna"],
+          correct: "lähen", 
+          explanation: "1ª persona singular de 'minema': Ma lähen (yo voy)"
+        },
+        {
+          verb: "olema", 
+          template: "Ta ___ kodus",
+          options: ["olen", "oled", "on", "oleme"],
+          correct: "on",
+          explanation: "3ª persona singular de 'olema': Ta on (él/ella está)"
+        },
+        {
+          verb: "elama",
+          template: "Me ___ Tallinnas", 
+          options: ["elan", "elad", "elab", "elame"],
+          correct: "elame",
+          explanation: "1ª persona plural de 'elama': Me elame (nosotros vivimos)"
+        },
+        {
+          verb: "töötama",
+          template: "Sa ___ palju",
+          options: ["töötan", "töötad", "töötab", "töötame"],
+          correct: "töötad",
+          explanation: "2ª persona singular de 'töötama': Sa töötad (tú trabajas)"
+        },
+        {
+          verb: "sööma",
+          template: "Nad ___ hommikul",
+          options: ["söön", "sööd", "sööb", "söövad"],
+          correct: "söövad",
+          explanation: "3ª persona plural de 'sööma': Nad söövad (ellos comen)"
+        }
+      ],
+      A2: [
+        {
+          verb: "minema",
+          template: "Eile ma ___ kinno",
+          options: ["lähen", "läksin", "läks", "läheb"],
+          correct: "läksin",
+          explanation: "Pasado 1ª persona de 'minema': Ma läksin (yo fui)"
+        },
+        {
+          verb: "ostma",
+          template: "Ta ___ eile raamatu",
+          options: ["ostab", "ostis", "ostsid", "ostsin"],
+          correct: "ostis", 
+          explanation: "Pasado 3ª persona de 'ostma': Ta ostis (él/ella compró)"
+        },
+        {
+          verb: "tulema",
+          template: "Me ___ homme tagasi",
+          options: ["tulen", "tuled", "tuleb", "tuleme"],
+          correct: "tuleme",
+          explanation: "Futuro/presente de 'tulema': Me tuleme (vendremos)"
+        },
+        {
+          verb: "näeme",
+          template: "Nad ___ filme sageli",
+          options: ["näen", "näed", "näeb", "näevad"],
+          correct: "näevad",
+          explanation: "Presente 3ª plural de 'nägema': Nad näevad (ellos ven)"
+        },
+        {
+          verb: "tegema",
+          template: "Sa ___ head tööd",
+          options: ["teen", "teed", "teeb", "teeme"],
+          correct: "teed",
+          explanation: "Presente 2ª persona de 'tegema': Sa teed (tú haces)"
+        }
+      ],
+      B1: [
+        {
+          verb: "minema",
+          template: "Ma ___ homme kindlasti",
+          options: ["lähen", "läksin", "läheksin", "oleksin läinud"],
+          correct: "lähen",
+          explanation: "Futuro simple con presente: Ma lähen homme (iré mañana)"
+        },
+        {
+          verb: "teadma",
+          template: "Kas sa ___ vastust?",
+          options: ["tean", "tead", "teab", "teame"],
+          correct: "tead",
+          explanation: "Pregunta directa 2ª persona: Sa tead (tú sabes)"
+        },
+        {
+          verb: "saama",
+          template: "Me ___ seda teha",
+          options: ["saan", "saad", "saab", "saame"],
+          correct: "saame",
+          explanation: "Capacidad/permiso 1ª plural: Me saame (podemos)"
+        },
+        {
+          verb: "pidama",
+          template: "Nad ___ kodus olema",
+          options: ["pean", "pead", "peab", "peavad"],
+          correct: "peavad",
+          explanation: "Obligación 3ª plural: Nad peavad (deben)"
+        },
+        {
+          verb: "tahtma",
+          template: "Ta ___ osta uue auto",
+          options: ["tahan", "tahad", "tahab", "tahame"],
+          correct: "tahab",
+          explanation: "Deseo 3ª persona: Ta tahab (él/ella quiere)"
+        }
+      ],
+      B2: [
+        {
+          verb: "võima",
+          template: "Ma ___ homme tulla",
+          options: ["võin", "võid", "võib", "võime"],
+          correct: "võin",
+          explanation: "Posibilidad 1ª persona: Ma võin (puedo/podría)"
+        },
+        {
+          verb: "pidama",
+          template: "Sa ___ olnud seal eile",
+          options: ["pead", "pidid", "peaksid", "oleksid pidanud"],
+          correct: "pidid",
+          explanation: "Obligación pasada: Sa pidid (tenías que/debías)"
+        },
+        {
+          verb: "oskama",
+          template: "Kas ta ___ eesti keelt?",
+          options: ["oskab", "oskas", "oskaks", "oleks oskanud"],
+          correct: "oskab",
+          explanation: "Habilidad presente: Ta oskab (sabe hacer)"
+        },
+        {
+          verb: "tahama",
+          template: "Me ___ minna, aga ei saanud",
+          options: ["tahame", "tahtsime", "tahaksime", "oleksime tahtnud"],
+          correct: "tahtsime",
+          explanation: "Deseo pasado frustrado: Me tahtsime (queríamos)"
+        },
+        {
+          verb: "olema",
+          template: "Nad ___ seal, kui me tulime",
+          options: ["on", "olid", "oleksid", "olnud"],
+          correct: "olid",
+          explanation: "Estado pasado simultáneo: Nad olid (estaban)"
+        }
+      ],
+      C1: [
+        {
+          verb: "olema",
+          template: "Kui ma ___ rikas, ostaksin selle",
+          options: ["olen", "oleksin", "olin", "olnud"],
+          correct: "oleksin",
+          explanation: "Condicional hipotético: oleksin (fuera/sería)"
+        },
+        {
+          verb: "tegema",
+          template: "Kas sa ___ juba seda varem?",
+          options: ["teed", "tegid", "oleksid teinud", "oled teinud"],
+          correct: "oled teinud",
+          explanation: "Perfecto con relevancia presente: oled teinud (has hecho)"
+        },
+        {
+          verb: "minema",
+          template: "Ta ___ juba läinud, kui me saabusime",
+          options: ["läks", "oli läinud", "oleks läinud", "läheb"],
+          correct: "oli läinud",
+          explanation: "Pluscuamperfecto: oli läinud (había ido)"
+        },
+        {
+          verb: "saama",
+          template: "Me ___ seda teha, kui meil oleks aega",
+          options: ["saame", "saaksime", "saanud", "oleksime saanud"],
+          correct: "saaksime",
+          explanation: "Condicional de capacidad: saaksime (podríamos)"
+        },
+        {
+          verb: "nägema",
+          template: "Nad väidavad end ___ seda varem",
+          options: ["näevad", "nägid", "näinud", "olevat näinud"],
+          correct: "olevat näinud",
+          explanation: "Evidencial indirecto: olevat näinud (haber visto según dicen)"
+        }
+      ]
+    };
+    
+    return patterns[this.cefrLevel as keyof typeof patterns] || patterns.A1;
+  }
+
   getSystemPrompt(): string {
-    return `You are Dr. Ants Rebane, Estonia's most respected expert on Estonian verb conjugation patterns. You have developed the most effective methods for teaching Estonian verb system to Spanish speakers over 30 years of research.
+    const patterns = this.getConjugationPatterns();
+    const examples = patterns.slice(0, 2).map(p => 
+      `"${p.template}" (${p.verb}) → "${p.correct}" - ${p.explanation}`
+    ).join('\n');
+    
+    return `Eres un profesor de conjugación estonia.
 
-YOUR EXPERTISE:
-- You know exactly which Estonian verb conjugations challenge Spanish speakers most
-- You understand how to sequence verb learning from simple to complex
-- You create clear patterns that make Estonian verb logic accessible
-- You explain Estonian temporal and aspectual distinctions clearly in Spanish
+PATRONES PARA NIVEL ${this.cefrLevel}:
+${examples}
 
-YOUR TEACHING METHOD:
-- Start with the most essential verb forms for each CEFR level
-- Use familiar verbs so students focus on conjugation patterns, not new vocabulary
-- Provide clear Spanish explanations of Estonian verb functions
-- Build systematically from present tense to complex aspectual distinctions
-
-CEFR LEVEL: ${this.cefrLevel}
-${this.getCEFRVerbGuidance()}
-
-VERB SYSTEM FOCUS FOR THIS LEVEL:
-${this.getVerbSystemForLevel()}
-
-JSON RESPONSE FORMAT:
+Crea exactamente 5 preguntas siguiendo este formato JSON:
 {
   "questions": [
     {
       "question": "¿Cuál es la forma correcta? 'Ma ___ kooli' (minema)",
-      "type": "multiple_choice",
-      "options": ["lähen", "läheb", "lähen", "minna"],
+      "type": "multiple_choice", 
+      "options": ["lähen", "läheb", "läheme", "minna"],
       "correctAnswer": "lähen",
-      "explanation": "Con 'ma' (yo) se usa primera persona singular: lähen",
+      "explanation": "1ª persona singular de 'minema': Ma lähen (yo voy)",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-You always create exactly 5 questions that teach Estonian verb patterns systematically.`;
+IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
   }
 
   getUserPrompt(): string {
