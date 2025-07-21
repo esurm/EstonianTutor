@@ -337,11 +337,13 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         // Validate that we got actual questions, not fallback
         if (result.questions && result.questions.length > 0) {
           console.log(`✅ Successfully parsed ${result.questions.length} quiz questions`);
+          
           // Add cefrLevel to each question for database requirements
           const questionsWithLevel = result.questions.map((q: any) => ({
             ...q,
             cefrLevel: cefrLevel
           }));
+          
           return { questions: questionsWithLevel };
         } else {
           throw new Error("No questions found in API response");
@@ -696,28 +698,27 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `Genera 5 preguntas de detección de errores en estonio para nivel CEFR ${cefrLevel}.
+          system: `You are a specialized Estonian grammar teacher. Create exactly 5 Estonian error detection questions for CEFR level ${cefrLevel}.
 
-FORMATO OBLIGATORIO: "Leia lausest grammatiline viga: [oración estoniacon UN error gramatical]"
+MANDATORY JSON FORMAT:
+{"questions":[{"question":"Leia lausest grammatiline viga: [Estonian sentence with ONE grammatical error]","translation":"[Spanish translation of the Estonian sentence]","options":["word1","word2","word3","word4"],"correctAnswer":"[the incorrect word]","explanation":"[Spanish explanation in 5-8 words]"}]}
 
-JSON ESTRICTO: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+STRICT REQUIREMENTS:
+1. Each Estonian sentence MUST contain exactly ONE real grammatical error
+2. Question format: "Leia lausest grammatiline viga: [sentence]"
+3. Translation: Spanish translation of the Estonian sentence (NOT instruction text)
+4. Explanation: Brief Spanish explanation of what's wrong (5-8 words only)
+5. Options: Exactly 4 Estonian words from the sentence
+6. CorrectAnswer: The grammatically incorrect Estonian word
 
-REQUISITOS CRÍTICOS:
-1. Cada oración DEBE tener EXACTAMENTE UN error gramatical real
-2. Solo 4 opciones (no 5)
-3. question: Solo en estonio
-4. translation: Solo en ESPAÑOL (nunca inglés)
-5. explanation: Solo en ESPAÑOL (nunca estonio), máximo 8 palabras
-6. correctAnswer: La palabra INCORRECTA
+REAL ERROR EXAMPLES:
+- Wrong case: "Ma lähen pood" → should be "poodi" (illative case)
+- Wrong verb: "Ta lähevad kooli" → should be "läheb" (3rd person singular)
+- Wrong order: "Koolis ma käin" → should be "Ma käin koolis" (standard order)
 
-EJEMPLOS de errores reales:
-- Caso incorrecto: "Ma lähen pood" (debe ser "poodi")
-- Verbo incorrecto: "Ta lähevad kooli" (debe ser "läheb")  
-- Orden incorrecto: "Koolis ma käin" (debe ser "Ma käin koolis")
-
-¡VERIFICA que cada oración tenga un error real antes de incluirla!`,
-          user: `5 preguntas de detección de errores con traducciones y explicaciones en español`,
-          maxTokens: 900
+Generate varied, realistic Estonian sentences with authentic grammatical mistakes.`,
+          user: `5 Estonian error detection questions with Spanish translations and explanations`,
+          maxTokens: 850
         };
       
       default:
