@@ -306,62 +306,25 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} EXCLUSIVELY focused on ${this.getCategoryFocus(category)}.
+            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. ALL questions in Estonian, explanations in Spanish. Include "translation" field.
 
-${this.getCategoryPrompt(category)}
+${category === 'vocabulary' ? 'Focus: word meanings, definitions, basic vocabulary' : 'Focus: grammar, verb forms, sentence structure'}
 
-Create exactly 5 varied questions APPROPRIATE for the specific CEFR level.
-CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
-MANDATORY: Every question MUST include a "translation" field with the Spanish translation.
-
-CEFR LEVEL ${cefrLevel} - SPECIFIC DIFFICULTY:
-${difficultyGuidance}
-
-CORRECT FORMAT EXAMPLES:
-
-MULTIPLE CHOICE (vocabulary):
-- Question: "Mis värvi on meri?"
-- Translation: "¿De qué color es el mar?"
-- Options: ["sinine", "roheline", "punane", "kollane"]
-- Correct: "sinine"
-- Explanation: "'Sinine' significa 'azul' en español. El mar es azul."
-
-COMPLETION (grammar):
-- Question: "Ma _____ kooli iga päev."
-- Translation: "Voy a la escuela todos los días"
-- Correct: "lähen"
-- Explanation: "'Lähen' es la forma presente del verbo 'ir' en primera persona."
-
-Respond in JSON format:
-{
-  "questions": [
-    {
-      "question": "question COMPLETELY IN ESTONIAN (use _____ for blanks to complete)",
-      "translation": "MANDATORY translation of the question to Honduran Spanish to help the user",
-      "questionType": "multiple_choice" | "completion",
-      "options": ["option1 in Estonian", "option2 in Estonian", "option3 in Estonian", "option4 in Estonian"] (only for multiple_choice),
-      "correctAnswer": "correct answer in Estonian",
-      "explanation": "clear explanation in Honduran Spanish about meaning and grammar",
-      "cefrLevel": "${cefrLevel}"
-    }
-  ]
-}`
+JSON format:
+{"questions": [{"question": "Estonian question", "translation": "Spanish translation", "questionType": "multiple_choice|completion", "options": ["A","B","C","D"], "correctAnswer": "answer", "explanation": "Spanish explanation", "cefrLevel": "${cefrLevel}"}]}`
           },
           {
             role: "user",
-            content: `Generate exactly 5 ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'} questions for CEFR level ${cefrLevel}. CRITICAL: Only create ${category} questions, no mixing allowed. Must include Spanish translations for all questions.`
+            content: `Create 5 ${category} questions for level ${cefrLevel}`
           }
         ],
-        temperature: 0.2,
-        top_p: 1.0,
-        frequency_penalty: 0.1,
-        presence_penalty: 0,
-        max_tokens: 1500,
+        temperature: 0.3,
+        max_tokens: 800,
         response_format: { type: "json_object" }
       });
 
       const endTime = Date.now();
-      console.log(`Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini`);
+      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini (optimized prompt)`);
       
       const content = response.choices[0].message.content || "{}";
       try {
