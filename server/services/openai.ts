@@ -802,11 +802,11 @@ ESTRUCTURAS CORRECTAS (NO MARCAR COMO ERRORES):
 REGLA CRÍTICA PARA EXPLICACIONES:
 - TODAS las explicaciones deben estar en ESPAÑOL únicamente
 - NUNCA uses palabras en estonio en las explicaciones
-- Explica los errores en términos que entienda un hispanohablante
-- INCLUYE la respuesta correcta en la explicación
+- SIEMPRE menciona la palabra correcta específica en la explicación
+- Formato obligatorio: "Error de [tipo], debería ser '[palabra_correcta]'"
 - Máximo 12 palabras en español por explicación
-- PROHIBIDO: "oleks vale", "peaks olema", términos técnicos estonios
-- OBLIGATORIO: "debería ser [palabra_correcta]", "error de caso, usar [forma_correcta]"
+- PROHIBIDO: explicaciones vagas como "pronombre incorrecto"
+- OBLIGATORIO: mencionar la palabra exacta que debería usarse
 
 NIVEL ${cefrLevel} ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
@@ -818,7 +818,8 @@ INSTRUCCIONES ESPECÍFICAS PARA DETECCIÓN DE ERRORES:
 - Error debe ser pedagógicamente útil para nivel ${cefrLevel}
 - Crear errores auténticos, no inventados
 - Palabras como opciones para identificar el error
-- Explicaciones SOLAMENTE en ESPAÑOL sobre por qué es error
+- En las explicaciones SIEMPRE incluir la palabra correcta específica
+- NO usar explicaciones vagas, mencionar la forma exacta correcta
 
 FORMATO JSON DETECCIÓN DE ERRORES:
 {"questions":[
@@ -827,7 +828,7 @@ FORMATO JSON DETECCIÓN DE ERRORES:
     "translation": "[traducción de oración con error]",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
     "correctAnswer": "[palabra que contiene el error]",
-    "explanation": "[explicación en ESPAÑOL con respuesta correcta - máximo 12 palabras]",
+    "explanation": "Error de [tipo], debería ser '[palabra_exacta]' ([razón_breve])",
     "questionType": "error_detection",
     "errorType": "[caso/verbo/plural/tiempo]"
   }
@@ -835,11 +836,17 @@ FORMATO JSON DETECCIÓN DE ERRORES:
 
 EJEMPLOS DE EXPLICACIONES CORRECTAS EN ESPAÑOL:
 ✓ "Error de caso, debería ser 'kassi' (partitivo)"
-✓ "Verbo incorrecto, usar 'läheme' (primera persona plural)"
-✓ "Tiempo pasado incorrecto, debería ser 'läksin'"
-✓ "Error de número, usar 'kolme kassi'"
-✓ "Caso genitivo incorrecto, debería ser 'linna'"
-✓ "Concordancia errónea, usar 'suured majad'"
+✓ "Error de verbo, debería ser 'läheme' (primera persona)"
+✓ "Error de tiempo, debería ser 'läksin' (pasado)"
+✓ "Error de número, debería ser 'kolme kassi' (plural)"
+✓ "Error de caso, debería ser 'linna' (illativo)"
+✓ "Error de pronombre, debería ser 'keda' (acusativo)"
+
+EJEMPLOS PROHIBIDOS (demasiado vagos):
+✗ "Pronombre relativo incorrecto en contexto"
+✗ "Error de tiempo verbal"
+✗ "Caso incorrecto"
+✗ Cualquier explicación sin la palabra correcta específica
 
 EJEMPLOS PROHIBIDOS (NUNCA USAR):
 ✗ "Kaudne kõneviis vale tuleviku korral"
