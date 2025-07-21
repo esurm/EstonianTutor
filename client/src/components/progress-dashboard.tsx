@@ -237,19 +237,19 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("quiz-sentence-reordering")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-amber-600 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-900">Reordenamiento de Oraciones</span>
+              <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Quiz de Oraciones</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-error-detection")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-pink-50 border border-pink-200 rounded-lg hover:bg-pink-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-900">Detección de Errores</span>
+              <div className="w-3 h-3 bg-pink-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Quiz de Errores</span>
             </Button>
           </div>
         </div>

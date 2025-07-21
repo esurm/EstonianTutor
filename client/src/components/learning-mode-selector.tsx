@@ -66,31 +66,31 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
     },
     {
       id: "quiz-sentence-reordering",
-      title: "Reordenamiento de Oraciones",
+      title: "Quiz de Oraciones",
       description: "Orden de palabras en estonio",
       icon: ArrowUpDown,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-amber-500",
-      gradientFrom: "from-amber-50",
-      gradientTo: "to-amber-100",
-      borderColor: "border-amber-200",
-      hoverFrom: "hover:from-amber-100",
-      hoverTo: "hover:to-amber-200",
-      iconColor: "bg-amber-500"
+      badgeColor: "bg-yellow-500",
+      gradientFrom: "from-yellow-50",
+      gradientTo: "to-yellow-100",
+      borderColor: "border-yellow-200",
+      hoverFrom: "hover:from-yellow-100",
+      hoverTo: "hover:to-yellow-200",
+      iconColor: "bg-yellow-500"
     },
     {
       id: "quiz-error-detection",
-      title: "Detección de Errores",
+      title: "Quiz de Errores",
       description: "Encuentra errores gramaticales",
       icon: AlertTriangle,
       badge: "AUTO-GENERADO",
-      badgeColor: "bg-red-500",
-      gradientFrom: "from-red-50",
-      gradientTo: "to-red-100",
-      borderColor: "border-red-200",
-      hoverFrom: "hover:from-red-100",
-      hoverTo: "hover:to-red-200",
-      iconColor: "bg-red-500"
+      badgeColor: "bg-pink-500",
+      gradientFrom: "from-pink-50",
+      gradientTo: "to-pink-100",
+      borderColor: "border-pink-200",
+      hoverFrom: "hover:from-pink-100",
+      hoverTo: "hover:to-pink-200",
+      iconColor: "bg-pink-500"
     },
     {
       id: "dialogue",
@@ -163,8 +163,8 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
                   ${mode.id === 'quiz-vocabulary' ? 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300' : 
                     mode.id === 'quiz-grammar' ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' :
                     mode.id === 'quiz-conjugation' ? 'bg-rose-50 border-rose-200 hover:bg-rose-100 hover:border-rose-300' :
-                    mode.id === 'quiz-sentence-reordering' ? 'bg-amber-50 border-amber-200 hover:bg-amber-100 hover:border-amber-300' :
-                    mode.id === 'quiz-error-detection' ? 'bg-red-50 border-red-200 hover:bg-red-100 hover:border-red-300' :
+                    mode.id === 'quiz-sentence-reordering' ? 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100 hover:border-yellow-300' :
+                    mode.id === 'quiz-error-detection' ? 'bg-pink-50 border-pink-200 hover:bg-pink-100 hover:border-pink-300' :
                     mode.id === 'dialogue' ? 'bg-purple-50 border-purple-200 hover:bg-purple-100 hover:border-purple-300' :
                     mode.id === 'pronunciation' ? 'bg-green-50 border-green-200 hover:bg-green-100 hover:border-green-300' :
                     'bg-orange-50 border-orange-200 hover:bg-orange-100 hover:border-orange-300'}
