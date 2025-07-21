@@ -174,9 +174,9 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("chat")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Conversación General</span>
             </Button>
             
@@ -210,9 +210,9 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("quiz-vocabulary")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg hover:bg-cyan-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-cyan-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Vocabulario</span>
             </Button>
             
@@ -228,27 +228,27 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("quiz-conjugation")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-rose-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-emerald-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Conjugación</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-sentence-reordering")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-amber-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Oraciones</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-error-detection")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-pink-50 border border-pink-200 rounded-lg hover:bg-pink-100 transition-colors h-auto"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors h-auto"
             >
-              <div className="w-3 h-3 bg-pink-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Errores</span>
             </Button>
           </div>
