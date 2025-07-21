@@ -196,8 +196,12 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     }
 
     // Check if answer is correct
-    const userAnswer = category === "sentence_reordering" ? selectedAnswer.trim() : selectedAnswer.toLowerCase().trim();
-    const correctAnswer = category === "sentence_reordering" ? currentQuestion.correctAnswer.trim() : currentQuestion.correctAnswer.toLowerCase().trim();
+    const userAnswer = category === "sentence_reordering" 
+      ? selectedAnswer.trim().replace(/[.,!?;:]$/, '') // Remove punctuation for sentence reordering
+      : selectedAnswer.toLowerCase().trim();
+    const correctAnswer = category === "sentence_reordering" 
+      ? currentQuestion.correctAnswer.trim().replace(/[.,!?;:]$/, '') // Remove punctuation for sentence reordering
+      : currentQuestion.correctAnswer.toLowerCase().trim();
     
     console.log('🔍 Answer comparison:', {
       userAnswer: `"${userAnswer}"`,
@@ -212,7 +216,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     // Check alternative answers if available
     if (!isCorrect && category === "sentence_reordering" && currentQuestion.alternativeAnswers) {
       isCorrect = currentQuestion.alternativeAnswers.some((alt: string) => 
-        userAnswer.trim() === alt.trim()
+        userAnswer === alt.trim().replace(/[.,!?;:]$/, '') // Remove punctuation for alternatives too
       );
     }
     

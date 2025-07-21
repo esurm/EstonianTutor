@@ -40,27 +40,27 @@ export class SentenceReorderingProfessor extends BaseProfessor {
         {
           sentence: "Ma lähen homme tööle",
           words: ["tööle", "homme", "lähen", "Ma"],
-          explanation: "Tiempo + acción: Ma + lähen + homme (mañana) + tööle (al trabajo)"
+          explanation: "Orden estonio: Ma (yo) + lähen (voy) + homme (mañana) + tööle (al trabajo)"
+        },
+        {
+          sentence: "Me läheme õhtul kinno",
+          words: ["kinno", "õhtul", "läheme", "Me"],
+          explanation: "Patrón: Me (nosotros) + läheme (vamos) + õhtul (por la tarde) + kinno (al cine)"
         },
         {
           sentence: "Ta ostis eile raamatu",
-          words: ["raamatu", "eile", "Ta", "ostis"],
-          explanation: "Pasado: Ta + ostis (compró) + eile (ayer) + raamatu (libro)"
-        },
-        {
-          sentence: "Me sõidame bussiga",
-          words: ["bussiga", "sõidame", "Me"],
-          explanation: "Instrumento: Me + sõidame (viajamos) + bussiga (en autobús)"
+          words: ["raamatu", "eile", "ostis", "Ta"],
+          explanation: "Pasado: Ta (él/ella) + ostis (compró) + eile (ayer) + raamatu (libro)"
         },
         {
           sentence: "Nad elavad Tallinnas",
           words: ["Tallinnas", "elavad", "Nad"],
-          explanation: "Ubicación: Nad + elavad (viven) + Tallinnas (en Tallin)"
+          explanation: "Ubicación: Nad (ellos) + elavad (viven) + Tallinnas (en Tallin)"
         },
         {
           sentence: "Sa tuled peagi tagasi",
-          words: ["tagasi", "tuled", "Sa", "peagi"],
-          explanation: "Tiempo + acción: Sa + tuled (vienes) + peagi (pronto) + tagasi (de vuelta)"
+          words: ["tagasi", "peagi", "tuled", "Sa"],
+          explanation: "Orden: Sa (tú) + tuled (vienes) + peagi (pronto) + tagasi (de vuelta)"
         }
       ],
       B1: [
@@ -151,7 +151,7 @@ export class SentenceReorderingProfessor extends BaseProfessor {
 
   getSystemPrompt(): string {
     const patterns = this.getSentencePatterns();
-    const examples = patterns.map(p => 
+    const examples = patterns.slice(0, 2).map(p => 
       `Correcto: "${p.sentence}" - Palabras: [${p.words.join(', ')}] - ${p.explanation}`
     ).join('\n');
     
@@ -174,7 +174,11 @@ Crea exactamente 5 preguntas siguiendo este formato JSON:
   ]
 }
 
-IMPORTANTE: Devuelve SOLO JSON válido, sin texto adicional.`;
+REGLAS IMPORTANTES:
+- correctAnswer NO debe tener punto final
+- options debe contener exactamente las palabras de la oración
+- explanation debe explicar el orden de palabras estonio
+- Devuelve SOLO JSON válido, sin texto adicional`;
   }
 
   private getCEFRSyntaxGuidance(): string {
