@@ -685,15 +685,20 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           </Button>
         ) : (
           <Button
-            onClick={(quizCompleted || currentQuestionIndex >= questions.length - 1) ? handleShowResults : handleNextQuestion}
+            onClick={quizCompleted ? handleShowResults : handleNextQuestion}
             className="w-full"
             size="lg"
             disabled={submitQuizMutation.isPending}
           >
-            {(quizCompleted || currentQuestionIndex >= questions.length - 1) ? (
+            {quizCompleted ? (
               <>
                 Ver Resultados
                 <BarChart3 className="ml-2 h-4 w-4" />
+              </>
+            ) : currentQuestionIndex >= questions.length - 1 ? (
+              <>
+                Finalizar Quiz
+                <CheckCircle className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
