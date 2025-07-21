@@ -7,10 +7,7 @@ export class SentenceReorderingProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    const corpusKnowledge = this.corpusKnowledge || "";
-    const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
-    
-    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level.
+    return `You are Professor Kadri Saar, Estonia's foremost expert on Estonian syntax and word order patterns for language learners. You specialize in teaching natural Estonian sentence structure to Spanish speakers.
 
 CRITICAL REQUIREMENTS FOR ${this.cefrLevel} LEVEL:
 1. Create SIMPLE, UNAMBIGUOUS sentences with ONE clear correct word order
@@ -51,40 +48,78 @@ REQUIRED JSON FORMAT:
 Generate exactly 5 questions with SIMPLE, CLEAR Estonian sentences that have only ONE correct word order.`;
   }
 
+  private getCEFRSyntaxGuidance(): string {
+    const guidance = {
+      A1: `BASIC SYNTAX - Simple, fixed patterns:
+- Sentence type: Subject + Verb + Object/Complement
+- Complexity: No flexibility, one correct order only
+- Focus: Establish basic Estonian sentence feeling`,
+      
+      A2: `ELEMENTARY SYNTAX - Adding time/place:
+- Sentence type: Subject + Verb + Time/Place + Object
+- Complexity: Limited flexibility, clear preferences  
+- Focus: Natural positioning of time and location expressions`,
+      
+      B1: `INTERMEDIATE SYNTAX - More natural patterns:
+- Sentence type: Multiple complements, basic subordination
+- Complexity: Some flexibility in adverb placement
+- Focus: Fluent, natural-sounding Estonian sentences`,
+      
+      B2: `ADVANCED SYNTAX - Complex but clear patterns:
+- Sentence type: Complex sentences with clear hierarchy
+- Complexity: Stylistic variations, but still unambiguous
+- Focus: Academic and professional sentence structures`,
+      
+      C1: `SOPHISTICATED SYNTAX - Near-native patterns:
+- Sentence type: Complex, nuanced constructions
+- Complexity: Multiple valid arrangements (but avoid in exercises)
+- Focus: Stylistic mastery and register awareness`
+    };
+    
+    return guidance[this.cefrLevel as keyof typeof guidance] || guidance.A1;
+  }
+
   private getMaxWordsForLevel(): number {
     const limits = {
       A1: 4, // "Ma lähen kooli"
       A2: 5, // "Ma lähen homme kooli"  
       B1: 6, // "Ma lähen homme tööle bussiga"
-      B2: 7, // "Ma tahan minna homme tööle bussiga"
-      C1: 8, // "Ma plaanin minna homme hommikul tööle bussiga"
-      C2: 9  // But focus on clarity, not complexity
+      B2: 7, // "Ma tahan minna homme tööle"
+      C1: 8  // "Ma tahan minna homme hommikul tööle"
     };
     
     return limits[this.cefrLevel as keyof typeof limits] || 6;
   }
 
+  private getSentenceFocus(): string {
+    const focus = {
+      A1: "Basic word order patterns with common verbs",
+      A2: "Time and place expressions in natural positions", 
+      B1: "Multiple complements and basic conjunctions",
+      B2: "Complex verb phrases and subordination",
+      C1: "Advanced constructions and stylistic variations"
+    };
+    
+    return focus[this.cefrLevel as keyof typeof focus] || focus.A1;
+  }
+
   getUserPrompt(): string {
-    return `Generate exactly 5 Estonian sentence reordering questions for ${this.cefrLevel} level.
+    return `Professor Saar, I need 5 sentence reordering exercises for my ${this.cefrLevel} level Estonian class.
 
-Each question must have:
-- Scrambled Estonian words in "options" array  
-- One correct Estonian sentence as "correctAnswer"
-- Spanish explanation of the word order pattern
-- Vocabulary appropriate for ${this.cefrLevel} level
+Please create exercises that teach the most important Estonian word order patterns for this level. Make sure each sentence has only ONE clearly correct arrangement - avoid sentences that could be ordered multiple ways.
 
-Focus on common Estonian sentence patterns that Spanish speakers need to practice.
+My Spanish-speaking students really benefit from your clear explanations of WHY Estonian uses certain word orders.
 
-Return complete JSON with all 5 questions.`;
+Could you focus on sentences that use vocabulary they already know at ${this.cefrLevel} level?`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Adequate for simple sentences
-      temperature: 0.2, // Lower for more consistent simple patterns
-      topP: 0.7, // More focused generation
-      frequencyPenalty: 0.15, // Reduce repetition
-      presencePenalty: 0.1 // Focus on clarity over variety
+      maxTokens: 650, // Adequate for 5 sentence reordering questions
+      temperature: 0.15, // Very consistent sentence patterns
+      topP: 0.7, // Focused on clear, unambiguous patterns
+      frequencyPenalty: 0.1, // Some variety in sentence content
+      presencePenalty: 0.05 // Focus on clarity over creativity
     };
   }
 

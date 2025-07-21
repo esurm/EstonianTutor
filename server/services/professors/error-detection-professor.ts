@@ -8,61 +8,54 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `Generate exactly 5 Estonian grammar error questions for ${this.cefrLevel} level.
+    return `You are Dr. Kersti Kask, an expert Estonian grammar instructor specializing in error detection for Spanish-speaking students. You have 15 years of experience teaching Estonian to native Spanish speakers and understand exactly what mistakes they make.
 
-COPY THESE EXACT PATTERNS:
+YOUR EXPERTISE:
+- You identify the most common Estonian grammar errors Spanish speakers make
+- You create educational examples that teach specific grammar points
+- You explain errors clearly in Spanish that students can understand
+- You match error complexity to student's CEFR level
 
-VERB AGREEMENT ERRORS:
-❌ "Ma läheb kooli" → Error word: "läheb" → Should be: "lähen"  
-❌ "Ta lähen tööle" → Error word: "lähen" → Should be: "läheb"
-❌ "Me olen kodus" → Error word: "olen" → Should be: "oleme"
+YOUR TEACHING APPROACH:
+- Focus on ONE clear grammar error per sentence
+- Use natural Estonian word order (never artificial scrambling)
+- Create errors that Spanish speakers actually make
+- Provide helpful Spanish explanations that teach the grammar rule
 
-CASE ERRORS:
-❌ "Ma söön leiv" → Error word: "leiv" → Should be: "leiba" 
-❌ "Ma elan Tallinn" → Error word: "Tallinn" → Should be: "Tallinnas"
+CEFR LEVEL: ${this.cefrLevel}
+${this.getCEFRTeachingGuidance()}
 
-RULES:
-1. Keep word order normal (Subject-Verb-Object)
-2. Only change ONE word to make it grammatically wrong
-3. Use simple 3-4 word sentences
-4. Explanations in Spanish only
+ERROR TYPES YOU TEACH:
+${this.getErrorTypesByLevel()}
 
-JSON FORMAT:
+JSON RESPONSE FORMAT:
 {
   "questions": [
     {
-      "question": "¿Qué palabra está incorrecta en: 'Ma läheb kooli'?",
+      "question": "¿Qué palabra está incorrecta en: '[Estonian sentence with one error]'?",
       "type": "error_detection",
-      "options": ["Ma", "läheb", "kooli"],
-      "correctAnswer": "läheb", 
-      "explanation": "Con 'Ma' se usa 'lähen', no 'läheb'",
+      "options": ["word1", "ERROR_WORD", "word3", "word4"],
+      "correctAnswer": "ERROR_WORD",
+      "explanation": "[Spanish explanation of the grammar rule]",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate 5 questions following these exact patterns.`;
+You always create exactly 5 questions that teach Estonian grammar effectively.`;
   }
 
   getUserPrompt(): string {
-    return `Create 5 questions like these examples:
+    return `Dr. Kask, please create 5 error detection questions for my ${this.cefrLevel} level Estonian class.
 
-EXAMPLE 1:
-Sentence with error: "Ma läheb kooli"
-Wrong word: "läheb" 
-Explanation: "Con 'Ma' se usa 'lähen', no 'läheb'"
+Focus on the grammar errors that Spanish speakers at ${this.cefrLevel} level typically make. Use vocabulary and sentence structures appropriate for this level.
 
-EXAMPLE 2: 
-Sentence with error: "Ta lähen tööle"
-Wrong word: "lähen"
-Explanation: "Con 'Ta' se usa 'läheb', no 'lähen'"
+Each question should:
+- Have exactly ONE grammatical error in a natural Estonian sentence
+- Include 3-4 answer options with the incorrect word
+- Provide a clear Spanish explanation of the grammar rule
 
-EXAMPLE 3:
-Sentence with error: "Ma söön leiv"  
-Wrong word: "leiv"
-Explanation: "Después de 'söön' se usa 'leiba', no 'leiv'"
-
-Make 5 similar questions with simple grammar errors. Return JSON format.`;
+Please make sure the errors are realistic mistakes that help students learn Estonian grammar patterns.`;
   }
 
   /**
@@ -152,40 +145,52 @@ Make 5 similar questions with simple grammar errors. Return JSON format.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 600, // Sufficient for 5 simple questions
-      temperature: 0.1, // Very low for consistent patterns
-      topP: 0.7, // Focused generation
-      frequencyPenalty: 0, // No penalty - follow examples exactly
-      presencePenalty: 0 // No penalty - copy patterns
+      maxTokens: 700, // Sufficient for 5 complete questions with explanations
+      temperature: 0.1, // Very consistent error patterns
+      topP: 0.7, // Focused on established patterns
+      frequencyPenalty: 0.05, // Slight variety in vocabulary
+      presencePenalty: 0.05 // Slight variety in error types
     };
   }
 
-  private getRealGrammarErrors(): string {
+  private getCEFRTeachingGuidance(): string {
+    const guidance = {
+      A1: `BEGINNER LEVEL - Focus on basic survival grammar:
+- Sentence length: 3-4 words maximum
+- Vocabulary: Family, daily activities, basic nouns (kool, maja, auto)
+- Grammar focus: Present tense verbs, basic cases (nominative, partitive)`,
+      
+      A2: `ELEMENTARY LEVEL - Expand basic grammar:
+- Sentence length: 4-5 words maximum  
+- Vocabulary: Work, travel, everyday activities
+- Grammar focus: Past tense, location cases (illative, inessive, elative)`,
+      
+      B1: `INTERMEDIATE LEVEL - Complex situations:
+- Sentence length: 5-6 words maximum
+- Vocabulary: Abstract concepts, relationships, opinions
+- Grammar focus: All locative cases, conditional mood, complex objects`,
+      
+      B2: `UPPER-INTERMEDIATE LEVEL - Academic/professional:
+- Sentence length: 6-7 words maximum
+- Vocabulary: Academic, professional, analytical terms
+- Grammar focus: Advanced cases, reported speech, complex subordination`,
+      
+      C1: `ADVANCED LEVEL - Near-native complexity:
+- Sentence length: 7-8 words maximum
+- Vocabulary: Sophisticated, nuanced, specialized terms
+- Grammar focus: Stylistic variations, advanced mood distinctions`
+    };
+    
+    return guidance[this.cefrLevel as keyof typeof guidance] || guidance.A1;
+  }
+
+  private getErrorTypesByLevel(): string {
     const errorTypes = {
-      A1: `
-VERB CONJUGATION ERRORS:
-- "Ma läheb kooli" → ERROR: "läheb" | CORRECT: "lähen" (1st person needs -n)
-- "Ta lähen tööle" → ERROR: "lähen" | CORRECT: "läheb" (3rd person needs -b) 
-- "Me olen kodus" → ERROR: "olen" | CORRECT: "oleme" (we are)
-
-BASIC CASE ERRORS:
-- "Ma söön leiv" → ERROR: "leiv" | CORRECT: "leiba" (partitive object)
-- "Kaks koer" → ERROR: "koer" | CORRECT: "koera" (after number = partitive)`,
-      
-      A2: `
-CASE ERRORS:
-- "Ma elan Tallinn" → ERROR: "Tallinn" | CORRECT: "Tallinnas" (living IN = inessive)
-- "Ma lähen kool" → ERROR: "kool" | CORRECT: "kooli" (going TO = illative)
-- "See on mina auto" → ERROR: "mina" | CORRECT: "minu" (possessive = genitive)
-
-VERB ERRORS:
-- "Me lähen koju" → ERROR: "lähen" | CORRECT: "läheme" (we go)`,
-      
-      B1: `
-CASE ERRORS:
-- "Ma panen raamat laud" → ERROR: "laud" | CORRECT: "lauale" (put ON = allative)
-- "Ta võtab laualt raamat" → ERROR: "raamat" | CORRECT: "raamatu" (object = genitive/partitive)
-- "Mul on palju raamat" → ERROR: "raamat" | CORRECT: "raamatuid" (many books = partitive plural)`
+      A1: `Present tense verb agreement, basic partitive/nominative confusion, simple word forms`,
+      A2: `Past tense errors, basic locative cases, possessive genitive mistakes`,  
+      B1: `Complex case usage, conditional mood, partitive plural errors`,
+      B2: `Advanced case distinctions, reported speech, complex verb forms`,
+      C1: `Subtle case nuances, stylistic mood usage, complex grammatical constructions`
     };
     
     return errorTypes[this.cefrLevel as keyof typeof errorTypes] || errorTypes.A1;

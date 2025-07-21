@@ -7,57 +7,63 @@ export class GrammarProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `You are an Estonian GRAMMAR expert for ${this.cefrLevel} level.
+    return `You are Dr. Mart Kruus, Estonia's leading expert on Estonian grammar pedagogy for foreign learners. You have spent 25 years perfecting methods to teach the Estonian case system to Spanish speakers.
 
-Create 5 grammar questions focusing on Estonian case system. NO vocabulary meanings.
+YOUR EXPERTISE:
+- You understand exactly which Estonian cases are hardest for Spanish speakers
+- You create crystal-clear explanations of Estonian grammar patterns  
+- You sequence grammar learning from simple to complex systematically
+- You make Estonian case system accessible and logical
 
-CASES FOR ${this.cefrLevel} LEVEL: ${this.getCasesForLevel()}
+YOUR TEACHING METHOD:
+- Focus on the most essential cases for each CEFR level
+- Use familiar vocabulary so students focus on grammar, not new words
+- Provide clear Spanish explanations of case functions
+- Build complexity gradually to avoid overwhelming students
 
-QUESTION TYPES:
-1. Fill in the blank with correct case form
-2. Choose correct case form from options
-3. Identify which case is used in a word
-4. Transform word to required case
+CEFR LEVEL: ${this.cefrLevel}
+${this.getCEFRGrammarGuidance()}
 
-PRIORITY FOCUS: ${this.getPriorityCases()}
+CASE SYSTEM FOCUS FOR THIS LEVEL:
+${this.getCasesForLevel()}
 
-REQUIRED JSON FORMAT:
+PRIORITY GRAMMAR POINTS:
+${this.getPriorityCases()}
+
+JSON RESPONSE FORMAT:
 {
   "questions": [
     {
-      "question": "Completa la oración: 'Ma lähen ___ täna' (kool)",
-      "type": "multiple_choice", 
+      "question": "Completa: 'Ma lähen ___ täna' (kool)",
+      "type": "multiple_choice",
       "options": ["kool", "kooli", "koolis", "koolist"],
-      "correctAnswer": "kooli",
-      "explanation": "Dirección hacia un lugar usa el caso ilativo (-i)",
+      "correctAnswer": "kooli", 
+      "explanation": "Para ir HACIA un lugar se usa ilativo: kooli (a la escuela)",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate exactly 5 questions using simple, common Estonian words (kass, maja, laps, kool, auto, etc.).`;
+You always create exactly 5 questions that teach Estonian grammar systematically.`;
   }
 
   getUserPrompt(): string {
-    return `Generate exactly 5 Estonian grammar questions for ${this.cefrLevel} level.
+    return `Dr. Kruus, I need 5 Estonian grammar questions for my ${this.cefrLevel} level class.
 
-Each question must have:
-- Focus on Estonian case system (not vocabulary)
-- Use simple, common words (kass, maja, laps, kool, auto)
-- 4 multiple choice options showing different case forms
-- One correct answer with proper case
-- Brief explanation of which case is used and why
+Please focus on the Estonian case system - the grammar points that are most important for Spanish speakers at this level to master. Use simple vocabulary they already know so they can focus on learning the grammar patterns.
 
-Return complete JSON with all 5 questions.`;
+Your clear explanations in Spanish really help my students understand WHY Estonian uses different case forms.
+
+Could you create questions that teach the essential case usage for ${this.cefrLevel} level?`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Increased for complete 5-question JSON
-      temperature: 0.25, // Slightly more creative while staying accurate
-      topP: 0.8,
-      frequencyPenalty: 0.1, // Some variety in word selection
-      presencePenalty: 0.1 // Encourage different case types
+      maxTokens: 700, // Adequate for 5 grammar questions with explanations
+      temperature: 0.15, // Very systematic for grammar patterns
+      topP: 0.75, // Focused on established grammatical patterns
+      frequencyPenalty: 0.05, // Minimal variety in core grammar words
+      presencePenalty: 0.1 // Encourage different case types within level
     };
   }
 
@@ -93,15 +99,45 @@ Return complete JSON with all 5 questions.`;
     return cases[this.cefrLevel as keyof typeof cases] || cases.B1;
   }
 
+  private getCEFRGrammarGuidance(): string {
+    const guidance = {
+      A1: `FOUNDATIONAL GRAMMAR - Basic case distinctions:
+- Complexity: 3 cases maximum (nominative, genitive, partitive)
+- Focus: Subject vs object, basic possession
+- Sentence length: 3-4 words maximum`,
+      
+      A2: `PRACTICAL GRAMMAR - Essential case functions:
+- Complexity: 6 cases (+ illative, inessive, elative)  
+- Focus: Location and movement, basic spatial relationships
+- Sentence length: 4-5 words maximum`,
+      
+      B1: `EXPANDED GRAMMAR - Full locative system:
+- Complexity: 9 cases (+ allative, adessive, ablative)
+- Focus: Complete spatial case system, complex objects
+- Sentence length: 5-6 words maximum`,
+      
+      B2: `SOPHISTICATED GRAMMAR - Advanced case usage:
+- Complexity: 12 cases (+ translative, terminative, essive)
+- Focus: State changes, temporal expressions, advanced functions
+- Sentence length: 6-7 words maximum`,
+      
+      C1: `MASTERY GRAMMAR - Complete case system:
+- Complexity: All 14 cases (+ comitative, abessive)
+- Focus: Nuanced case selection, stylistic variations
+- Sentence length: 7-8 words maximum`
+    };
+    
+    return guidance[this.cefrLevel as keyof typeof guidance] || guidance.A1;
+  }
+
   private getPriorityCases(): string {
     const priority = {
-      A1: "Nominativo vs Partitivo (ma joon vett), Genitivo para posesión",
-      A2: "Casos locales internos (kooli/koolis/koolist)",
-      B1: "Casos locales externos (lauale/laual/laualt), objeto total vs parcial",
-      B2: "Translativo para cambios, casos con preposiciones",
-      C1: "Todos los casos, énfasis en comitativo/abesivo/esivo",
-      C2: "Sutilezas y excepciones de todos los casos"
+      A1: "Nominativo (sujeto), Partitivo (objeto), Genitivo (posesión básica)",
+      A2: "Ilativo (kooli), Inesivo (koolis), Elativo (koolist) - movimiento y ubicación",
+      B1: "Alativo (lauale), Adesivo (laual), Ablativo (laualt) - superficie y contacto",
+      B2: "Translativo (muutmine), Terminativo (kuni), Esivo (ajutine olek)",
+      C1: "Komitativo (kaaslus), Abesivo (ilma), matices avanzados de todos los casos"
     };
-    return priority[this.cefrLevel as keyof typeof priority] || priority.B1;
+    return priority[this.cefrLevel as keyof typeof priority] || priority.A1;
   }
 }
