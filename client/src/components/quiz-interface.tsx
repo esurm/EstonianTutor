@@ -185,12 +185,26 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     const userAnswer = selectedAnswer.toLowerCase().trim();
     const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim();
     
+    console.log('🔍 Answer comparison:', {
+      userAnswer: `"${userAnswer}"`,
+      correctAnswer: `"${correctAnswer}"`,
+      category,
+      exactMatch: userAnswer === correctAnswer
+    });
+    
     // For sentence reordering, be more flexible with Estonian word order
     let isCorrect = userAnswer === correctAnswer;
-    if (category === "sentence_reordering" && !isCorrect) {
+    if (category === "sentence_reordering") {
       // Check if all words are present and properly arranged (flexible Estonian order)
       const userWords = userAnswer.split(' ').filter(w => w.length > 0);
       const correctWords = correctAnswer.split(' ').filter(w => w.length > 0);
+      
+      console.log('🔍 Word comparison:', {
+        userWords,
+        correctWords,
+        sameLength: userWords.length === correctWords.length,
+        allWordsPresent: userWords.every(word => correctWords.includes(word))
+      });
       
       // Basic check: same words count and all words present
       const hasSameWords = userWords.length === correctWords.length && 
@@ -776,8 +790,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           )}
         </div>
 
-        {/* Answer Feedback */}
-        {showAnswerFeedback && (
+        {/* Answer Feedback - only for non-sentence reordering */}
+        {showAnswerFeedback && category !== "sentence_reordering" && (
           <div className={`border rounded-lg p-4 ${isAnswerCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
             <div className="flex items-center space-x-2 mb-2">
               {isAnswerCorrect ? (
@@ -799,6 +813,41 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             <p className="text-sm text-gray-700">
               {currentQuestion.explanation}
             </p>
+          </div>
+        )}
+
+        {/* Sentence Reordering Specific Feedback */}
+        {showAnswerFeedback && category === "sentence_reordering" && (
+          <div className={`border rounded-lg p-4 ${isAnswerCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+            <div className="flex items-center space-x-2 mb-2">
+              {isAnswerCorrect ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-600" />
+              )}
+              <span className={`font-medium ${isAnswerCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                {isAnswerCorrect ? '¡Correcto!' : 'Incorrecto'}
+              </span>
+            </div>
+            
+            {!isAnswerCorrect && (
+              <div className="text-sm space-y-2">
+                <div>
+                  <span className="text-gray-600">Tu respuesta:</span>
+                  <span className="ml-2 text-red-700 font-medium">{selectedAnswer}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Respuesta correcta:</span>
+                  <span className="ml-2 text-green-700 font-medium">{currentQuestion.correctAnswer}</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-3">
+              <p className="text-blue-800 text-sm">
+                <span className="font-medium">Explicación:</span> {currentQuestion.explanation}
+              </p>
+            </div>
           </div>
         )}
 
