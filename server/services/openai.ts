@@ -803,9 +803,10 @@ REGLA CRÍTICA PARA EXPLICACIONES:
 - TODAS las explicaciones deben estar en ESPAÑOL únicamente
 - NUNCA uses palabras en estonio en las explicaciones
 - Explica los errores en términos que entienda un hispanohablante
-- Máximo 8 palabras en español por explicación
+- INCLUYE la respuesta correcta en la explicación
+- Máximo 12 palabras en español por explicación
 - PROHIBIDO: "oleks vale", "peaks olema", términos técnicos estonios
-- OBLIGATORIO: "debería ser", "error de", "modo incorrecto"
+- OBLIGATORIO: "debería ser [palabra_correcta]", "error de caso, usar [forma_correcta]"
 
 NIVEL ${cefrLevel} ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
@@ -826,19 +827,19 @@ FORMATO JSON DETECCIÓN DE ERRORES:
     "translation": "[traducción de oración con error]",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
     "correctAnswer": "[palabra que contiene el error]",
-    "explanation": "[explicación en ESPAÑOL únicamente - máximo 8 palabras]",
+    "explanation": "[explicación en ESPAÑOL con respuesta correcta - máximo 12 palabras]",
     "questionType": "error_detection",
     "errorType": "[caso/verbo/plural/tiempo]"
   }
 ]}
 
 EJEMPLOS DE EXPLICACIONES CORRECTAS EN ESPAÑOL:
-✓ "Debería usar modo indicativo, no condicional"
-✓ "Error de caso, necesita partitivo"
-✓ "Verbo incorrecto para primera persona plural"
-✓ "Falta concordancia en número"
-✓ "Tiempo verbal incorrecto para pasado"
-✓ "Concordancia errónea de adjetivo"
+✓ "Error de caso, debería ser 'kassi' (partitivo)"
+✓ "Verbo incorrecto, usar 'läheme' (primera persona plural)"
+✓ "Tiempo pasado incorrecto, debería ser 'läksin'"
+✓ "Error de número, usar 'kolme kassi'"
+✓ "Caso genitivo incorrecto, debería ser 'linna'"
+✓ "Concordancia errónea, usar 'suured majad'"
 
 EJEMPLOS PROHIBIDOS (NUNCA USAR):
 ✗ "Kaudne kõneviis vale tuleviku korral"
@@ -847,7 +848,7 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
 ✗ Cualquier palabra en estonio en las explicaciones`,
 
       answerStructure: "errorIdentification", // Seleccionar palabra errónea
-      maxTokens: 950
+      maxTokens: 1000
     };
   }
 
