@@ -306,20 +306,18 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. ALL questions in Estonian, explanations in Spanish. Respond in JSON format.
-
-JSON: {"questions": [{"question": "Q", "translation": "T", "questionType": "multiple_choice", "options": ["A","B","C","D"], "correctAnswer": "A", "explanation": "E", "cefrLevel": "${cefrLevel}"}]}`
+            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. Questions in Estonian, explanations in Spanish. Return valid JSON with questions array.`
           },
           {
             role: "user",
-            content: `Create 5 ${category} questions for level ${cefrLevel}. Return JSON format.`
+            content: `Create 5 ${category} questions for level ${cefrLevel}.`
           }
         ],
         temperature: 0.2,
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 600,
+        max_tokens: 500,
         response_format: { type: "json_object" }
       });
 
