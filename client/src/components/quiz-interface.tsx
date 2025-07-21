@@ -207,21 +207,37 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const handleShowResults = () => {
     console.log("🎯 Ver Resultados clicked!");
     
-    // Force check current state after potential state updates
-    const currentAnswerCount = answers.length;
-    const needsAnswerCount = questions.length;
-    
-    console.log("Quiz state:", {
-      sessionId,
-      answersLength: currentAnswerCount,
-      questionsLength: needsAnswerCount,
-      quizCompleted,
-      currentQuestionIndex,
-      isPending: submitQuizMutation.isPending
-    });
-    
-    if (sessionId && currentAnswerCount === needsAnswerCount) {
-      console.log("✅ Submitting quiz with all answers:", answers);
+    // If this is the last question and quiz isn't completed yet, save the final answer first
+    if (!quizCompleted && currentQuestionIndex === questions.length - 1) {
+      console.log("💾 Saving final answer before submitting quiz");
+      
+      const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
+      const finalAnswerData: QuizAnswer = {
+        question: currentQuestion.question,
+        type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
+        options: currentQuestion.options,
+        correctAnswer: currentQuestion.correctAnswer,
+        userAnswer: selectedAnswer,
+        explanation: currentQuestion.explanation,
+        cefrLevel: currentQuestion.cefrLevel,
+        responseTime
+      };
+
+      const allAnswers = [...answers, finalAnswerData];
+      console.log("✅ Final quiz submission with all", allAnswers.length, "answers");
+      
+      // Submit immediately with all answers
+      if (sessionId) {
+        const responseTimes = allAnswers.map(a => a.responseTime);
+        submitQuizMutation.mutate({
+          sessionId,
+          answers: allAnswers,
+          responseTime: responseTimes
+        });
+      }
+    } else if (quizCompleted && answers.length === questions.length) {
+      // Quiz already completed, just submit
+      console.log("✅ Submitting completed quiz with", answers.length, "answers");
       const responseTimes = answers.map(a => a.responseTime);
       submitQuizMutation.mutate({
         sessionId,
@@ -229,13 +245,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
         responseTime: responseTimes
       });
     } else {
-      console.error("❌ Cannot submit quiz:", {
-        hasSessionId: !!sessionId,
-        answersCount: currentAnswerCount,
-        questionsCount: needsAnswerCount,
-        missingAnswers: needsAnswerCount - currentAnswerCount,
-        lastAnswerData: answers[answers.length - 1]
-      });
+      console.error("❌ Invalid quiz state for submission");
     }
   };
 
@@ -685,20 +695,15 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           </Button>
         ) : (
           <Button
-            onClick={quizCompleted ? handleShowResults : handleNextQuestion}
+            onClick={currentQuestionIndex >= questions.length - 1 || quizCompleted ? handleShowResults : handleNextQuestion}
             className="w-full"
             size="lg"
             disabled={submitQuizMutation.isPending}
           >
-            {quizCompleted ? (
+            {currentQuestionIndex >= questions.length - 1 || quizCompleted ? (
               <>
                 Ver Resultados
                 <BarChart3 className="ml-2 h-4 w-4" />
-              </>
-            ) : currentQuestionIndex >= questions.length - 1 ? (
-              <>
-                Finalizar Quiz
-                <CheckCircle className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
