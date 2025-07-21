@@ -786,6 +786,12 @@ KVALITEEDI STANDARDID:
 - Mitte kunstlikke ega võõraid kombinatsioone
 - Igapäevaelu situatsioonid
 
+SELGITUSTE KEELE NÕUE (ABSOLUUTSELT KOHUSTUSLIK):
+- KÕIK explanation väljad peavad olema AINULT hispaania keeles
+- KEELATUD: eesti keele kasutamine explanation väljades
+- KEELATUD: segakeelsed selgitused
+- KOHUSTUSLIK: ainult hispaania sõnad explanation tekstis
+
 ${cefrLevel} TASEME NÕUDED:
 ${this.getDifficultyGuidance(cefrLevel)}`,
 
@@ -828,7 +834,7 @@ JSON FORMAAT:
     "options": ["sõna1", "sõna2", "sõna3", "sõna4", "sõna5", "sõna6"],
     "correctAnswer": "[Põhiline õige vastus täpse punktuatsiooniga]",
     "alternativeAnswers": ["[Alternatiivne õige vastus]", "[Teine variant kui on]"],
-    "explanation": "[Maksimaalselt 6 sõna selgitus]",
+    "explanation": "[AINULT hispaania keeles, maksimaalselt 6 sõna]",
     "questionType": "sentence_reordering"
   }
 ]}
@@ -838,8 +844,14 @@ KRIITILISED KONTROLLID:
 2. Ära kasuta sõnu mis ei ole vastuses  
 3. KÕIK sõnad peavad olema grammatiliselt õiged
 4. KÕIK alternativeAnswers peavad olema loomulikud ja grammatiliselt korrektsed
-5. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
-6. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE
+5. KÕIK explanation peavad olema AINULT hispaania keeles
+6. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
+7. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE
+
+SELGITUSTE KEEL (KOHUSTUSLIK):
+- AINULT hispaania keel explanation väljades
+- MITTE KUNAGI eesti keelt selgitustes
+- Näited: "Tiempo + sujeto + verbo", "Orden académico básico"
 
 PUNKTUATSIOONI REEGLID:
 - Alati lõpeta punktiga
