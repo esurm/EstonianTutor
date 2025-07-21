@@ -673,9 +673,17 @@ Responde en JSON:
       
       case "error_detection":
         return {
-          system: `Create 5 Estonian error detection questions (${cefrLevel}). Show incorrect sentences, users find the error word. Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 error detection questions. Format: "Leia lause seast viga: [sentence with 1 error]". correctAnswer is the error word only.`,
-          maxTokens: 550
+          system: `You are an Estonian teacher. Create 5 error detecting questions for CEFR ${cefrLevel}
+Output JSON only:
+Each object in "questions" array:
+question (Estonian)
+translation (Spanish)
+correctAnswer
+explanation (Spanish)
+cefrLevel
+No extra text. JSON only.`,
+          user: `5 error detection questions`,
+          maxTokens: 700
         };
       
       default:
