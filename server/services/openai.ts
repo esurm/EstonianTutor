@@ -682,7 +682,8 @@ Each question object:
 - options: 4 words from the sentence
 - correctAnswer: the single incorrect word
 - explanation: in Spanish (max 12 words)
-Only grammar errors. No translation or vocabulary questions. Only one word should be incorrect.`,
+Only grammar errors. No translation or vocabulary questions. Only one word should be incorrect.
+Do NOT mix subject-verb errors where more than one word could be considered wrong!`,
           user: `5 Estonian grammar error questions`,
           maxTokens: 500
         };
