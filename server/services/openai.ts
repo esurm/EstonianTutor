@@ -673,16 +673,12 @@ Responde en JSON:
       
       case "error_detection":
         return {
-          system: `Create 5 Estonian grammar error questions for CEFR ${cefrLevel}.
-Each Estonian sentence has ONE grammar mistake.
-JSON format:
-question: Estonian sentence with grammar error
-translation: Spanish meaning
-options: 4 words from sentence
-correctAnswer: wrong word
-explanation: Spanish (10 words max)
-JSON only.`,
-          user: `5 Estonian grammar errors`,
+          system: `Generate 5 CEFR ${cefrLevel} grammar error detection questions for Estonian learners.
+Each: "Leia lause seast grammatiline viga: [lause]" (one grammar error in sentence).
+Fields: question (Estonian), translation (Spanish, same sentence as above), options (words), correctAnswer (error word), explanation (Spanish, max 15 words)
+Only provide JSON and without markup: { "questions": [ ... ] }.
+Only grammar mistakes! No translation or vocabulary questions.`,
+          user: `5 Estonian grammar error questions`,
           maxTokens: 900
         };
       
