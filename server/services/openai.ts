@@ -31,7 +31,7 @@ export interface CEFRAssessment {
 export interface QuizGeneration {
   questions: {
     question: string;
-    type: "multiple_choice" | "fill_blank";
+    type: "multiple_choice" | "fill_blank" | "sentence_reordering" | "error_detection";
     options?: string[];
     correctAnswer: string;
     explanation: string;
@@ -299,11 +299,13 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     }
   }
 
-  // QUIZ GENERATION - COMPLETELY ISOLATED FROM CHAT SYSTEM
+  // SPECIALIZED QUIZ GENERATION WITH CORPUS INTEGRATION
   async generateQuiz(cefrLevel: string, category?: string): Promise<QuizGeneration> {
     try {
-      // ISOLATED QUIZ PROMPTS - No chat system interference whatsoever
-      const prompts = this.getIsolatedQuizPrompts(category, cefrLevel);
+      console.log(`🎓 Activating ${category?.toUpperCase() || 'VOCABULARY'} Professor for CEFR level ${cefrLevel}`);
+      
+      // Get specialized professor with corpus knowledge
+      const professor = this.getSpecializedProfessor(category || 'vocabulary', cefrLevel);
       
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
@@ -311,23 +313,23 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: prompts.system
+            content: professor.systemPrompt
           },
           {
             role: "user",
-            content: prompts.user
+            content: professor.userPrompt
           }
         ],
-        temperature: prompts.temperature,
-        top_p: prompts.topP,
-        frequency_penalty: prompts.frequencyPenalty,
-        presence_penalty: prompts.presencePenalty,
-        max_tokens: prompts.maxTokens,
+        temperature: professor.settings.temperature,
+        top_p: professor.settings.topP,
+        frequency_penalty: professor.settings.frequencyPenalty,
+        presence_penalty: professor.settings.presencePenalty,
+        max_tokens: professor.settings.maxTokens,
         response_format: { type: "json_object" }
       });
 
       const endTime = Date.now();
-      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1 (${category} optimized)`);
+      console.log(`⚡ ${professor.name} generated quiz in ${endTime - startTime}ms with gpt-4.1`);
       
       const content = response.choices[0].message.content || "{}";
       try {
@@ -335,21 +337,10 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         const cleanContent = content.replace(/^```json\s*\n?/g, '').replace(/\n?```$/g, '').trim();
         const result = JSON.parse(cleanContent);
         
-        // Validate that we got actual questions, not fallback
+        // Validate that we got actual questions from AI professor
         if (result.questions && result.questions.length > 0) {
-          console.log(`✅ Successfully parsed ${result.questions.length} quiz questions`);
+          console.log(`✅ ${professor.name} generated ${result.questions.length} quiz questions`);
           console.log(`🔍 First question preview:`, JSON.stringify(result.questions[0], null, 2));
-          
-          // Validate sentence_reordering specific fields
-          if (category === "sentence_reordering") {
-            const hasRequiredFields = result.questions.every((q: any) => 
-              q.options && q.correctAnswer && q.explanation
-            );
-            if (!hasRequiredFields) {
-              console.error("❌ Missing required fields in sentence_reordering questions");
-              throw new Error("Invalid sentence_reordering question structure");
-            }
-          }
           
           // Add cefrLevel to each question for database requirements
           const questionsWithLevel = result.questions.map((q: any) => ({
@@ -359,76 +350,15 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           
           return { questions: questionsWithLevel };
         } else {
-          throw new Error("No questions found in API response");
+          throw new Error(`${professor.name} generated no questions`);
         }
       } catch (parseError) {
-        console.error("❌ JSON parsing error for quiz generation:", parseError);
+        console.error(`❌ ${professor.name} JSON parsing failed:`, parseError);
         console.error("Raw content length:", content.length);
         console.error("Raw content preview:", content.substring(0, 500) + "...");
-        console.error("Raw content end:", "..." + content.substring(content.length - 200));
-        console.error("JSON truncation detected - content ends mid-string");
-        console.error("Category:", category, "CEFR Level:", cefrLevel);
-        console.error("Temperature used:", prompts.temperature);
-        console.error("🚨 FALLING BACK TO HARDCODED QUESTIONS - THIS SHOULDN'T HAPPEN");
-        // Return fallback quiz appropriate for the category
-        if (category === "sentence_reordering") {
-          // Use CEFR-appropriate fallback sentences
-          const cefrFallbacks = this.getCefrFallbackSentences(cefrLevel);
-          return {
-            questions: cefrFallbacks.map((fallback, index) => ({
-              question: "Järjesta sõnad õigesti:",
-              type: "sentence_reordering",
-              options: fallback.options,
-              correctAnswer: fallback.correctAnswer,
-              explanation: fallback.explanation,
-              cefrLevel: cefrLevel
-            }))
-          };
-        } else {
-          return {
-            questions: [
-              {
-                question: "Mis on 'tere' tähendus?",
-                type: "multiple_choice",
-                options: ["Adiós", "Hola", "Gracias", "Por favor"],
-                correctAnswer: "Hola",
-                explanation: "'Tere' significa 'hola' en español.",
-                cefrLevel: cefrLevel
-            },
-            {
-              question: "Kuidas öelda 'tänan' inglise keeles?",
-              type: "multiple_choice", 
-              options: ["Hello", "Thank you", "Goodbye", "Please"],
-              correctAnswer: "Thank you",
-              explanation: "'Tänan' significa 'gracias' en español y 'thank you' en inglés.",
-              cefrLevel: cefrLevel
-            },
-            {
-              question: "Millal kasutatakse sõna 'nägemist'?",
-              type: "multiple_choice",
-              options: ["Hommikul", "Lahkudes", "Söögiajal", "Magama minnes"],
-              correctAnswer: "Lahkudes", 
-              explanation: "'Nägemist' tähendab 'adiós' ja kasutatakse lahkudes.",
-              cefrLevel: cefrLevel
-            },
-            {
-              question: "Täida lünk: 'Ma _____ eesti keelt.'",
-              type: "fill_blank",
-              correctAnswer: "õpin",
-              explanation: "'Õpin' tähendab 'estoy aprendiendo' - Ma õpin eesti keelt = Estoy aprendiendo estonio.",
-              cefrLevel: cefrLevel
-            },
-            {
-              question: "Mis on 'kool' tähendus?",
-              type: "multiple_choice",
-              options: ["Casa", "Escuela", "Tienda", "Parque"],
-              correctAnswer: "Escuela",
-              explanation: "'Kool' significa 'escuela' en español.",
-              cefrLevel: cefrLevel
-            }
-          ]
-        };
-        }
+        console.error("Temperature used:", professor.settings.temperature);
+        console.error("MaxTokens used:", professor.settings.maxTokens);
+        throw new Error(`${professor.name} failed to generate valid quiz. Please try again.`);
       }
     } catch (error) {
       console.error("Quiz generation error:", error);
@@ -437,101 +367,6 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
   }
 
 
-
-  private getDifficultyGuidance(cefrLevel: string): string {
-    const guidance = {
-      A1: `Vocabulario básico (saludos, números 1-10, colores básicos, familia inmediata). 
-           Frases muy simples de 3-5 palabras. Presente simple solamente.
-           Ejemplos: "Tere!" (Hola), "Mul on..." (Yo tengo...), números, días de la semana.`,
-      
-      A2: `Vocabulario cotidiano (100-200 palabras: comida, ropa, transporte, trabajo básico). 
-           Oraciones simples, presente y pasado simple. Preguntas básicas con küsisõnad.
-           Ejemplos: compras, describir rutina diaria, experiencias pasadas simples.`,
-      
-      B1: `Vocabulario intermedio (500+ palabras). Temas familiares: viajes, hobbies, planes futuros.
-           Usa tiempo futuro, condicional básico. Conectores simples (ja, aga, või, sest).
-           Ejemplos: expresar opiniones, hablar de experiencias, hacer planes.`,
-      
-      B2: `Vocabulario expandido (1000+ palabras). Temas abstractos: cultura estonia, sociedad, trabajo.
-           Estructuras complejas, casos gramaticales avanzados. Subjuntivo ocasional.
-           Ejemplos: argumentar puntos de vista, discutir problemas sociales.`,
-      
-      C1: `Vocabulario especializado (2000+ palabras). Temas complejos: política, filosofía, historia estonia.
-           Matices de significado, expresiones idiomáticas estonias. Registro formal.
-           Ejemplos: literatura estonia, debates académicos, cultura profesional.`,
-      
-      C2: `Dominio casi nativo (3000+ palabras). Sutilezas culturales específicas de Estonia.
-           Registro formal e informal fluido. Referencias a literatura y cultura estonia.
-           Ejemplos: textos literarios, humor estonio, dialectos regionales.`
-    };
-    return guidance[cefrLevel as keyof typeof guidance] || guidance.B1;
-  }
-
-  private getCategoryFocus(category?: string): string {
-    const focuses = {
-      vocabulary: 'VOCABULARY ONLY',
-      grammar: 'GRAMMAR ONLY',
-      conjugation: 'VERB CONJUGATION ONLY',
-      sentence_reordering: 'SENTENCE STRUCTURE ONLY',
-      error_detection: 'ERROR DETECTION ONLY'
-    };
-    return focuses[category as keyof typeof focuses] || focuses.vocabulary;
-  }
-
-  private getCategoryPrompt(category?: string): string {
-    const prompts = {
-      vocabulary: `
-STRICT VOCABULARY FOCUS - NO GRAMMAR ALLOWED:
-- ONLY questions about word meanings, definitions, and vocabulary recognition
-- ONLY synonyms, antonyms, and word relationships
-- ONLY words related to specific themes (family, colors, food, animals, objects, etc.)
-- ONLY object and concept identification
-- NO grammar questions, NO verb conjugations, NO sentence structure
-- 70% multiple-choice questions, 30% completion questions (word completion, not sentence)
-- Example: "What does 'kass' mean?" or "Complete: The animal that says 'mjau' is a ____"`,
-      
-      grammar: `
-STRICT GRAMMAR FOCUS - NO VOCABULARY ALLOWED:
-- ONLY verb conjugations (present, past, future tenses)
-- ONLY grammatical cases (nominative, genitive, partitive, etc.)
-- ONLY sentence structure, word order, and prepositions
-- ONLY grammatical rules and language mechanics
-- NO vocabulary meanings, NO word definitions, NO translation questions
-- 30% multiple-choice questions, 70% completion questions (grammar completion)
-- Example: "Complete the verb: Ma _____ (to go) kooli" or "Which case: Ma näen ____ (kass)"`,
-
-      conjugation: `
-STRICT CONJUGATION FOCUS - VERB TENSES AND PERSONS ONLY:
-- ONLY verb conjugation questions (present, past, future, conditional)
-- ONLY person and number variations (ma, sa, ta, me, te, nad)
-- ONLY verb forms and tense transformations
-- Focus on common Estonian verbs: olema, minema, tulema, tegema, ütlema
-- NO vocabulary meanings, NO word order, NO cases
-- 40% multiple-choice questions, 60% completion questions (verb conjugation)
-- Example: "Complete: Ma _____ (olema) õpilane" or "Choose: Ta _____ (minema) kooli (läks/läheb/läheks)"`,
-
-      sentence_reordering: `
-STRICT SENTENCE STRUCTURE FOCUS - WORD ORDER ONLY:
-- ONLY Estonian word order questions (SVO, time-manner-place)
-- ONLY sentence reordering and structure questions
-- ONLY questions about proper Estonian sentence construction
-- Focus on time expressions first, then manner, then place
-- NO vocabulary meanings, NO verb conjugations, NO translations
-- 20% multiple-choice questions, 80% completion questions (sentence ordering)
-- Example: "Reorder: [kooli, ma, homme, lähen]" or "Correct order: [kiiresti, jookseb, ta, parki]"`,
-
-      error_detection: `
-STRICT ERROR DETECTION FOCUS - MISTAKE IDENTIFICATION ONLY:
-- ONLY questions identifying grammar or spelling mistakes in Estonian sentences
-- ONLY error spotting in verb forms, cases, word order, or spelling
-- ONLY correction of grammatical and orthographic errors
-- Focus on common Estonian mistakes: case endings, verb agreement, word order
-- NO vocabulary meanings, NO translations, NO definitions
-- 60% multiple-choice questions, 40% completion questions (error correction)
-- Example: "Find the error: 'Ma näen kassa parkis'" or "Correct: 'Ta läheb kooli kiiresti'"`,
-    };
-    return prompts[category as keyof typeof prompts] || prompts.vocabulary;
-  }
 
   async generateDialogue(scenario: string, cefrLevel: string): Promise<DialogueGeneration> {
     try {
@@ -976,79 +811,366 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
   }
 
   // ISOLATED QUIZ PROMPTS - No connection to chat system
-  private getIsolatedQuizPrompts(category: string, cefrLevel: string) {
+  /**
+   * Get specialized quiz professor with corpus integration and optimized settings
+   */
+  private getSpecializedProfessor(category: string, cefrLevel: string) {
+    const corpusKnowledge = this.getCorpusKnowledge(cefrLevel);
+    
     switch(category) {
       case "vocabulary":
-        const vocabSystem = this.getVocabularyQuizSystem(cefrLevel);
-        return {
-          system: vocabSystem.systemPersonality,
-          user: vocabSystem.userPrompt,
-          maxTokens: vocabSystem.maxTokens,
-          temperature: vocabSystem.temperature,
-          topP: vocabSystem.topP,
-          presencePenalty: vocabSystem.presencePenalty,
-          frequencyPenalty: vocabSystem.frequencyPenalty
-        };
-      
+        return this.createVocabularyProfessor(cefrLevel, corpusKnowledge);
       case "grammar":
-        const grammarSystem = this.getGrammarQuizSystem(cefrLevel);
-        return {
-          system: grammarSystem.systemPersonality,
-          user: grammarSystem.userPrompt,
-          maxTokens: grammarSystem.maxTokens,
-          temperature: grammarSystem.temperature,
-          topP: grammarSystem.topP,
-          presencePenalty: grammarSystem.presencePenalty,
-          frequencyPenalty: grammarSystem.frequencyPenalty
-        };
-      
+        return this.createGrammarProfessor(cefrLevel, corpusKnowledge);
       case "conjugation":
-        const conjugationSystem = this.getConjugationQuizSystem(cefrLevel);
-        return {
-          system: conjugationSystem.systemPersonality,
-          user: conjugationSystem.userPrompt,
-          maxTokens: conjugationSystem.maxTokens,
-          temperature: conjugationSystem.temperature,
-          topP: conjugationSystem.topP,
-          presencePenalty: conjugationSystem.presencePenalty,
-          frequencyPenalty: conjugationSystem.frequencyPenalty
-        };
-      
+        return this.createConjugationProfessor(cefrLevel, corpusKnowledge);
       case "sentence_reordering":
-        const reorderingSystem = this.getSentenceReorderingQuizSystem(cefrLevel);
-        return {
-          system: reorderingSystem.systemPersonality,
-          user: reorderingSystem.userPrompt,
-          maxTokens: reorderingSystem.maxTokens,
-          temperature: reorderingSystem.temperature,
-          topP: reorderingSystem.topP,
-          presencePenalty: reorderingSystem.presencePenalty,
-          frequencyPenalty: reorderingSystem.frequencyPenalty
-        };
-      
+        return this.createSentenceReorderingProfessor(cefrLevel, corpusKnowledge);
       case "error_detection":
-        const errorSystem = this.getErrorDetectionQuizSystem(cefrLevel);
-        return {
-          system: errorSystem.systemPersonality,
-          user: errorSystem.userPrompt,
-          maxTokens: errorSystem.maxTokens,
-          temperature: errorSystem.temperature,
-          topP: errorSystem.topP,
-          presencePenalty: errorSystem.presencePenalty,
-          frequencyPenalty: errorSystem.frequencyPenalty
-        };
-      
+        return this.createErrorDetectionProfessor(cefrLevel, corpusKnowledge);
       default:
-        return {
-          system: `Create 5 Estonian questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 questions with options, correct answer, explanation.`,
-          maxTokens: 700,
-          temperature: 0.3,
-          topP: 1.0,
-          presencePenalty: 0.0,
-          frequencyPenalty: 0.0
-        };
+        return this.createVocabularyProfessor(cefrLevel, corpusKnowledge);
     }
+  }
+
+  /**
+   * Create specialized Vocabulary Professor
+   */
+  private createVocabularyProfessor(cefrLevel: string, corpusKnowledge: string) {
+    const vocabulary = estonianCorpus.getVocabularyByLevel(cefrLevel);
+    
+    return {
+      name: "Professor de Vocabulario Estonio",
+      systemPrompt: `Eres el PROFESOR DE VOCABULARIO ESTONIO más experto del mundo, especializado en enseñar a hablantes de español hondureño.
+
+EXPERIENCIA: 15 años enseñando vocabulario estonio, experto en cognados y campos semánticos.
+
+TU ESPECIALIDAD EXCLUSIVA: VOCABULARIO ESTONIO
+- SOLO preguntas sobre significados de palabras, definiciones, sinónimos
+- SOLO identificación de objetos, conceptos, categorías semánticas
+- SOLO relaciones entre palabras (familia, comida, colores, animales, profesiones)
+- PROHIBIDO: gramática, conjugaciones, estructura de oraciones
+
+${corpusKnowledge}
+
+VOCABULARIO NIVEL ${cefrLevel}:
+${vocabulary.slice(0, 15).join(", ")}
+
+RESPUESTA OBLIGATORIA EN JSON:
+{"questions":[
+  {
+    "question": "[Pregunta en estonio sobre vocabulario]",
+    "translation": "[Traducción exacta al español]", 
+    "type": "multiple_choice",
+    "options": ["opción1", "opción2", "opción3", "opción4"],
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[SOLO español, máximo 8 palabras]",
+    "cefrLevel": "${cefrLevel}"
+  }
+]}
+
+INSTRUCCIONES CRÍTICAS:
+- EXACTAMENTE 5 preguntas de vocabulario
+- TODAS las explicaciones en español ÚNICAMENTE
+- NO incluir gramática, conjugaciones, o estructura
+- Usar vocabulario auténtico del corpus EstUD
+- Enfocarse en palabras de frecuencia apropiada para ${cefrLevel}`,
+
+      userPrompt: `Genera 5 preguntas de vocabulario estonio nivel ${cefrLevel} para hispanohablantes hondureños. 
+      
+ENFOQUE: significados de palabras, definiciones, identificación de objetos.
+FORMATO: JSON con structure exacta mostrada arriba.
+PROHIBIDO: preguntas de gramática o conjugación.`,
+
+      settings: {
+        maxTokens: 650,
+        temperature: 0.2,
+        topP: 1.0,
+        frequencyPenalty: 0.1,
+        presencePenalty: 0.0
+      }
+    };
+  }
+
+  /**
+   * Create specialized Grammar Professor
+   */
+  private createGrammarProfessor(cefrLevel: string, corpusKnowledge: string) {
+    return {
+      name: "Professor de Gramática Estonia",
+      systemPrompt: `Eres el PROFESOR DE GRAMÁTICA ESTONIA más experto del mundo, especializado en sistema de casos y estructura estonia.
+
+EXPERIENCIA: 12 años enseñando gramática estonia, experto en sistema de 14 casos y morfología.
+
+TU ESPECIALIDAD EXCLUSIVA: GRAMÁTICA ESTONIA
+- SOLO preguntas sobre casos gramaticales (nominativo, partitivo, genitivo, etc.)
+- SOLO reglas gramaticales, concordancia, estructura sintáctica
+- SOLO formación de casos, uso correcto de preposiciones
+- PROHIBIDO: vocabulario básico, conjugaciones verbales
+
+${corpusKnowledge}
+
+CASOS ESTONIOS NIVEL ${cefrLevel}:
+${this.getCasesForLevel(cefrLevel)}
+
+RESPUESTA OBLIGATORIA EN JSON:
+{"questions":[
+  {
+    "question": "[Pregunta en estonio sobre gramática]",
+    "translation": "[Traducción exacta al español]",
+    "type": "multiple_choice", 
+    "options": ["opción1", "opción2", "opción3", "opción4"],
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[SOLO español, máximo 8 palabras]",
+    "cefrLevel": "${cefrLevel}"
+  }
+]}
+
+INSTRUCCIONES CRÍTICAS:
+- EXACTAMENTE 5 preguntas de gramática
+- Enfocarse en casos apropiados para nivel ${cefrLevel}
+- TODAS las explicaciones en español ÚNICAMENTE
+- NO incluir vocabulario básico o conjugaciones
+- Usar ejemplos auténticos del corpus`,
+
+      userPrompt: `Genera 5 preguntas de gramática estonia nivel ${cefrLevel} sobre sistema de casos.
+      
+ENFOQUE: casos gramaticales, reglas sintácticas, concordancia.
+FORMATO: JSON con estructura exacta mostrada arriba.`,
+
+      settings: {
+        maxTokens: 700,
+        temperature: 0.1,
+        topP: 1.0,
+        frequencyPenalty: 0.0,
+        presencePenalty: 0.0
+      }
+    };
+  }
+
+  /**
+   * Create specialized Conjugation Professor  
+   */
+  private createConjugationProfessor(cefrLevel: string, corpusKnowledge: string) {
+    return {
+      name: "Professor de Conjugación Estonia",
+      systemPrompt: `Eres el PROFESOR DE CONJUGACIÓN ESTONIA más experto del mundo, especializado en sistema verbal estonio.
+
+EXPERIENCIA: 10 años enseñando conjugaciones estonias, experto en personas (ma/sa/ta/me/te/nad) y tiempos.
+
+TU ESPECIALIDAD EXCLUSIVA: CONJUGACIÓN VERBAL ESTONIA
+- SOLO preguntas sobre formas verbales (presente, pasado, futuro)
+- SOLO personas gramaticales (1ª, 2ª, 3ª persona singular/plural)
+- SOLO formación correcta de verbos: olema, minema, tegema, etc.
+- PROHIBIDO: vocabulario, gramática general, estructura oracional
+
+${corpusKnowledge}
+
+VERBOS ESENCIALES NIVEL ${cefrLevel}:
+${this.getVerbsForLevel(cefrLevel)}
+
+RESPUESTA OBLIGATORIA EN JSON:
+{"questions":[
+  {
+    "question": "[Pregunta en estonio sobre conjugación]",
+    "translation": "[Traducción exacta al español]",
+    "type": "multiple_choice",
+    "options": ["opción1", "opción2", "opción3", "opción4"], 
+    "correctAnswer": "[respuesta correcta]",
+    "explanation": "[SOLO español, máximo 8 palabras]",
+    "cefrLevel": "${cefrLevel}"
+  }
+]}
+
+INSTRUCCIONES CRÍTICAS:
+- EXACTAMENTE 5 preguntas de conjugación
+- Enfocarse en personas y tiempos apropiados para ${cefrLevel}
+- TODAS las explicaciones en español ÚNICAMENTE
+- NO incluir vocabulario o gramática general
+- Usar conjugaciones auténticas del corpus`,
+
+      userPrompt: `Genera 5 preguntas de conjugación verbal estonia nivel ${cefrLevel}.
+      
+ENFOQUE: formas verbales correctas, personas gramaticales, tiempos.
+FORMATO: JSON con estructura exacta mostrada arriba.`,
+
+      settings: {
+        maxTokens: 650,
+        temperature: 0.1,
+        topP: 1.0,
+        frequencyPenalty: 0.0,
+        presencePenalty: 0.0
+      }
+    };
+  }
+
+  /**
+   * Create specialized Sentence Reordering Professor
+   */
+  private createSentenceReorderingProfessor(cefrLevel: string, corpusKnowledge: string) {
+    return {
+      name: "Professor de Estructura Oracional Estonia",
+      systemPrompt: `Eres el PROFESOR DE ESTRUCTURA ORACIONAL ESTONIA más experto del mundo, especializado en orden de palabras estonio.
+
+EXPERIENCIA: 8 años enseñando estructura oracional estonia, experto en patrones SVO y colocación de adverbios.
+
+TU ESPECIALIDAD EXCLUSIVA: ORDEN DE PALABRAS ESTONIO
+- SOLO preguntas de reordenamiento de palabras para formar oraciones
+- SOLO estructura correcta con orden estonio auténtico
+- SOLO patrones del corpus EstUD: tiempo-sujeto-verbo-objeto-lugar
+- PROHIBIDO: vocabulario, gramática general, conjugaciones
+
+${corpusKnowledge}
+
+PATRONES ESTRUCTURALES ${cefrLevel}:
+${this.getSentencePatternsForLevel(cefrLevel)}
+
+RESPUESTA OBLIGATORIA EN JSON:
+{"questions":[
+  {
+    "question": "Järjesta sõnad õigesti:",
+    "translation": "Ordena las palabras correctamente:",
+    "type": "sentence_reordering",
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[Oración completa con punto final]",
+    "alternativeAnswers": ["[Alternativa válida si existe]"],
+    "explanation": "[SOLO español, máximo 6 palabras]",
+    "cefrLevel": "${cefrLevel}"
+  }
+]}
+
+LONGITUD DE ORACIONES ${cefrLevel}:
+${this.getCefrSentenceLengthGuidance(cefrLevel)}
+
+INSTRUCCIONES CRÍTICAS:
+- EXACTAMENTE 5 preguntas de reordenamiento
+- TODAS las palabras en 'options' deben aparecer en 'correctAnswer'
+- Longitud apropiada para nivel ${cefrLevel}
+- TODAS las explicaciones en español ÚNICAMENTE
+- Usar patrones auténticos del corpus EstUD
+- Punto final obligatorio en respuestas`,
+
+      userPrompt: `Genera 5 preguntas de reordenamiento de oraciones estonias nivel ${cefrLevel}.
+      
+ENFOQUE: orden correcto de palabras, estructura oracional auténtica.
+FORMATO: JSON con estructura exacta mostrada arriba.
+CRÍTICO: Verificar que options contenga exactamente las palabras de correctAnswer.`,
+
+      settings: {
+        maxTokens: 750,
+        temperature: 0.0,
+        topP: 1.0,
+        frequencyPenalty: 0.0,
+        presencePenalty: 0.0
+      }
+    };
+  }
+
+  /**
+   * Create specialized Error Detection Professor
+   */
+  private createErrorDetectionProfessor(cefrLevel: string, corpusKnowledge: string) {
+    return {
+      name: "Professor de Detección de Errores Estonia",
+      systemPrompt: `Eres el PROFESOR DE DETECCIÓN DE ERRORES ESTONIA más experto del mundo, especializado en errores típicos de hispanohablantes.
+
+EXPERIENCIA: 20 años identificando errores específicos de estudiantes hispanohablantes de estonio.
+
+TU ESPECIALIDAD EXCLUSIVA: DETECCIÓN DE ERRORES ESTONIOS
+- SOLO preguntas con oraciones que contienen UN error gramática
+- SOLO errores reales: casos incorrectos, concordancia, orden de palabras
+- SOLO errores que cometen hispanohablantes aprendiendo estonio
+- PROHIBIDO: vocabulario, conjugaciones básicas, definiciones
+
+${corpusKnowledge}
+
+ERRORES TÍPICOS NIVEL ${cefrLevel}:
+${this.getTypicalErrorsForLevel(cefrLevel)}
+
+RESPUESTA OBLIGATORIA EN JSON:
+{"questions":[
+  {
+    "question": "[Oración estonia con UN error]",
+    "translation": "[Traducción de la oración al español]",
+    "type": "error_detection",
+    "correctAnswer": "[Palabra/frase incorrecta que debe corregirse]",
+    "explanation": "[SOLO español, máximo 8 palabras]",
+    "cefrLevel": "${cefrLevel}"
+  }
+]}
+
+INSTRUCCIONES CRÍTICAS:
+- EXACTAMENTE 5 preguntas de detección de errores
+- Cada oración debe tener EXACTAMENTE un error
+- Errores apropiados para nivel ${cefrLevel}
+- TODAS las explicaciones en español ÚNICAMENTE
+- Usar errores pedagógicamente útiles
+- correctAnswer debe ser la parte incorrecta para corregir`,
+
+      userPrompt: `Genera 5 preguntas de detección de errores estonios nivel ${cefrLevel}.
+      
+ENFOQUE: oraciones con un error cada una, errores típicos de hispanohablantes.
+FORMATO: JSON con estructura exacta mostrada arriba.`,
+
+      settings: {
+        maxTokens: 650,
+        temperature: 0.1,
+        topP: 1.0,
+        frequencyPenalty: 0.1,
+        presencePenalty: 0.0
+      }
+    };
+  }
+
+  /**
+   * Helper methods for specialized content
+   */
+  private getCasesForLevel(cefrLevel: string): string {
+    const cases = {
+      A1: "nominativo, partitivo (ma, sa, ta + objetos básicos)",
+      A2: "nominativo, partitivo, genitivo (posesión básica)",
+      B1: "nominativo, partitivo, genitivo, ilativo (hacia), inesesivo (en)",
+      B2: "todos los casos locales + aditivo, komutativos",
+      C1: "sistema completo de 14 casos con matices",
+      C2: "casos en contextos complejos y registros especializados"
+    };
+    return cases[cefrLevel as keyof typeof cases] || cases.B1;
+  }
+
+  private getVerbsForLevel(cefrLevel: string): string {
+    const verbs = {
+      A1: "olema (olen, oled, on), minema (lähen), tulema (tulen)",
+      A2: "tegema, söõma, jõõma, magama, ütlema",
+      B1: "rääkima, õppima, töötama, elama, mängima",
+      B2: "analüüsima, uurima, võrdlema, selgitama",
+      C1: "kontseptualiseerima, sünteetisema, problematiseerima",
+      C2: "dialektiliselt mõistma, hermeneutiliselt tõlgendama"
+    };
+    return verbs[cefrLevel as keyof typeof verbs] || verbs.B1;
+  }
+
+  private getSentencePatternsForLevel(cefrLevel: string): string {
+    const patterns = {
+      A1: "SVO põhiline: Ma lähen kooli. Ta tuleb koju.",
+      A2: "Aeg + SVO: Täna ma lähen tööle. Homme ta tuleb.",
+      B1: "Adverbid + kompleksid: Ta räägib hästi eesti keelt.",
+      B2: "Akadeemiline: Professor seletas täna uut teemat.",
+      C1: "Keerukad: Eksperdid analüüsivad süstemaatiliselt probleeme.",
+      C2: "Abstraktsed: Intellektuaalid kontseptualiseerivad metafüüsilisi dimensioone."
+    };
+    return patterns[cefrLevel as keyof typeof patterns] || patterns.B1;
+  }
+
+  private getTypicalErrorsForLevel(cefrLevel: string): string {
+    const errors = {
+      A1: "vale kääne: *mul on kool (õige: ma lähen kooli)",
+      A2: "partitivi segadus: *ma söön leiva (õige: ma söön leiba)",
+      B1: "koht vs suund: *ma olen koolis minemas (segane)",
+      B2: "kompleksne konkordi: *suured majad on kaunis (õige: ilusad)",
+      C1: "akadeemiline register: vale sõnajärg analüütilistes lausetes",
+      C2: "stilistiline ebatäpsus: vale register formaalsetees kontekstides"
+    };
+    return errors[cefrLevel as keyof typeof errors] || errors.B1;
   }
 
   /**
@@ -1068,66 +1190,7 @@ AUTHENTIC ESTONIAN PATTERNS (${cefrLevel} level):
 - Morphology: Use authentic case endings from corpus data`;
   }
 
-  private getCefrFallbackSentences(cefrLevel: string) {
-    switch (cefrLevel) {
-      case "A1":
-        return [
-          { options: ["Ma", "lähen", "kooli"], correctAnswer: "Ma lähen kooli.", explanation: "Básico: sujeto + verbo + lugar" },
-          { options: ["Täna", "on", "päike"], correctAnswer: "Täna on päike.", explanation: "Tiempo + verbo + sujeto" },
-          { options: ["Ta", "sööb", "õunu"], correctAnswer: "Ta sööb õunu.", explanation: "Sujeto + verbo + objeto" },
-          { options: ["Me", "õpime", "eesti"], correctAnswer: "Me õpime eesti.", explanation: "Pronombre + verbo + objeto" },
-          { options: ["Homme", "tuleb", "sõber"], correctAnswer: "Homme tuleb sõber.", explanation: "Tiempo + verbo + sujeto" }
-        ];
-      case "A2":
-        return [
-          { options: ["Ma", "lähen", "kiiresti", "kooli"], correctAnswer: "Ma lähen kiiresti kooli.", explanation: "Sujeto + verbo + adverbio + lugar" },
-          { options: ["Eile", "ta", "ostis", "raamatu"], correctAnswer: "Eile ta ostis raamatu.", explanation: "Tiempo + sujeto + verbo + objeto" },
-          { options: ["Me", "sõime", "kodus", "õhtul"], correctAnswer: "Me sõime kodus õhtul.", explanation: "Sujeto + verbo + lugar + tiempo" },
-          { options: ["Homme", "ma", "lähen", "tööle"], correctAnswer: "Homme ma lähen tööle.", explanation: "Tiempo + sujeto + verbo + lugar" },
-          { options: ["Ta", "räägib", "hästi", "eesti"], correctAnswer: "Ta räägib hästi eesti.", explanation: "Sujeto + verbo + adverbio + objeto" }
-        ];
-      case "B1":
-        return [
-          { options: ["Ma", "õpin", "ülikoolis", "eesti", "keelt"], correctAnswer: "Ma õpin ülikoolis eesti keelt.", explanation: "Sujeto + verbo + lugar + objeto directo" },
-          { options: ["Professor", "seletas", "täna", "uut", "teemat"], correctAnswer: "Professor seletas täna uut teemat.", explanation: "Sujeto + verbo + tiempo + objeto" },
-          { options: ["Tudengid", "arutasid", "aktiivselt", "kultuurilisi", "teemasid"], correctAnswer: "Tudengid arutasid aktiivselt kultuurilisi teemasid.", explanation: "Sujeto + verbo + adverbio + objeto complejo" },
-          { options: ["Me", "külastasime", "eile", "muuseumi", "linna"], correctAnswer: "Me külastasime eile muuseumi linna.", explanation: "Sujeto + verbo + tiempo + objeto + lugar" },
-          { options: ["Ta", "kirjutas", "hoolikalt", "oma", "esseesid"], correctAnswer: "Ta kirjutas hoolikalt oma esseesid.", explanation: "Sujeto + verbo + adverbio + posesivo + objeto" }
-        ];
-      case "B2":
-        return [
-          { options: ["Ekspert", "analüüsis", "põhjalikult", "keelelisi", "nähtusi"], correctAnswer: "Ekspert analüüsis põhjalikult keelelisi nähtusi.", explanation: "Sujeto especializado + verbo + adverbio + objeto complejo" },
-          { options: ["Teadlased", "uurisid", "sügavalt", "kultuurilisi", "traditsioone"], correctAnswer: "Teadlased uurisid sügavalt kultuurilisi traditsioone.", explanation: "Sujeto + verbo + adverbio + objeto académico" },
-          { options: ["Professor", "käsitles", "loengus", "keerulisi", "teemasid"], correctAnswer: "Professor käsitles loengus keerulisi teemasid.", explanation: "Sujeto + verbo + lugar + objeto complejo" },
-          { options: ["Kirjanikud", "kirjeldasid", "detailselt", "ühiskondlikke", "probleeme"], correctAnswer: "Kirjanikud kirjeldasid detailselt ühiskondlikke probleeme.", explanation: "Sujeto + verbo + adverbio + objeto social" },
-          { options: ["Ajakirjanikud", "kajastasid", "objektiivselt", "poliitilisi", "sündmusi"], correctAnswer: "Ajakirjanikud kajastasid objektiivselt poliitilisi sündmusi.", explanation: "Sujeto + verbo + adverbio + objeto político" }
-        ];
-      case "C1":
-        return [
-          { options: ["Akadeemikud", "diskuteerivad", "intensiivselt", "filosoofiliste", "kontseptsioonide", "üle"], correctAnswer: "Akadeemikud diskuteerivad intensiivselt filosoofiliste kontseptsioonide üle.", explanation: "Sujeto académico + verbo + adverbio + objeto filosófico" },
-          { options: ["Eksperdid", "analüüsivad", "süstemaatiliselt", "keeruliste", "probleemide", "olemust"], correctAnswer: "Eksperdid analüüsivad süstemaatiliselt keeruliste probleemide olemust.", explanation: "Sujeto + verbo + adverbio + objeto complejo + esencia" },
-          { options: ["Teadlased", "käsitlevad", "põhjalikult", "interdistsiplinaarseid", "uurimusi"], correctAnswer: "Teadlased käsitlevad põhjalikult interdistsiplinaarseid uurimusi.", explanation: "Sujeto + verbo + adverbio + objeto interdisciplinario" },
-          { options: ["Kirjanikud", "reflekteerivad", "sügavalt", "eksistentsiaalseid", "küsimusi"], correctAnswer: "Kirjanikud reflekteerivad sügavalt eksistentsiaalseid küsimusi.", explanation: "Sujeto + verbo + adverbio + objeto existencial" },
-          { options: ["Filosoofid", "vaatlevad", "kriitiliselt", "kaasaegseid", "väärtussüsteeme"], correctAnswer: "Filosoofid vaatlevad kriitiliselt kaasaegseid väärtussüsteeme.", explanation: "Sujeto + verbo + adverbio + objeto contemporáneo" }
-        ];
-      case "C2":
-        return [
-          { options: ["Intellektuaalid", "kontseptualiseerivad", "abstraktselt", "metafüüsiliste", "dimensioonide", "keerukust"], correctAnswer: "Intellektuaalid kontseptualiseerivad abstraktselt metafüüsiliste dimensioonide keerukust.", explanation: "Sujeto intelectual + verbo + adverbio + objeto metafísico complejo" },
-          { options: ["Mõtlejad", "dekonstrueerivad", "süstemaatiliselt", "ontoloogiliste", "kategooriate", "hierarhiat"], correctAnswer: "Mõtlejad dekonstrueerivad süstemaatiliselt ontoloogiliste kategooriate hierarhiat.", explanation: "Sujeto + verbo + adverbio + objeto ontológico + estructura" },
-          { options: ["Teoreetikud", "sintetiseerivad", "innovaatiliselt", "epistemoloogiliste", "paradigmade", "ristumispunkte"], correctAnswer: "Teoreetikud sintetiseerivad innovaatiliselt epistemoloogiliste paradigmade ristumispunkte.", explanation: "Sujeto + verbo + adverbio + objeto epistemológico + intersecciones" },
-          { options: ["Akadeemikud", "problematiseerivad", "dialektiliselt", "hermeneutiliste", "tõlgendusmustrite", "ambivalentsust"], correctAnswer: "Akadeemikud problematiseerivad dialektiliselt hermeneutiliste tõlgendusmustrite ambivalentsust.", explanation: "Sujeto + verbo + adverbio + objeto hermenéutico + ambivalencia" },
-          { options: ["Teadlased", "kontekstualiseerivad", "transdistsiplinaarselt", "fenomenoloogiliste", "uurimismeetodite", "potentsiaali"], correctAnswer: "Teadlased kontekstualiseerivad transdistsiplinaarselt fenomenoloogiliste uurimismeetodite potentsiaali.", explanation: "Sujeto + verbo + adverbio + objeto fenomenológico + potencial" }
-        ];
-      default:
-        return [
-          { options: ["Ma", "lähen", "kooli"], correctAnswer: "Ma lähen kooli.", explanation: "Estructura básica" },
-          { options: ["Ta", "õpib", "eesti"], correctAnswer: "Ta õpib eesti.", explanation: "Sujeto + verbo + objeto" },
-          { options: ["Me", "räägime", "eesti"], correctAnswer: "Me räägime eesti.", explanation: "Pronombre + verbo + objeto" },
-          { options: ["Homme", "tuleb", "sõber"], correctAnswer: "Homme tuleb sõber.", explanation: "Tiempo + verbo + sujeto" },
-          { options: ["Täna", "on", "ilus"], correctAnswer: "Täna on ilus.", explanation: "Tiempo + verbo + adjetivo" }
-        ];
-    }
-  }
+
 
   private getCefrSentenceLengthGuidance(cefrLevel: string): string {
     switch (cefrLevel) {

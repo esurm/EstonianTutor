@@ -47,7 +47,7 @@ export const quizzes = pgTable("quizzes", {
   sessionId: integer("session_id").references(() => sessions.id),
   question: text("question").notNull(),
   translation: text("translation"), // Spanish translation of the question
-  questionType: text("question_type").notNull(), // "multiple_choice", "fill_blank"
+  questionType: text("question_type").notNull(), // "multiple_choice", "fill_blank", "sentence_reordering", "error_detection"
   options: jsonb("options").$type<string[]>(),
   correctAnswer: text("correct_answer").notNull(),
   userAnswer: text("user_answer"),

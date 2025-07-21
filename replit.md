@@ -63,7 +63,8 @@ The application uses a comprehensive schema designed around language learning:
 - **Interactive Sentence Reordering Interface**: Word-by-word construction with click-to-add/remove functionality
 - **Streamlined quiz generation**: Single API call generating exactly 5 questions per quiz
 - **Model upgrade**: Switched from GPT-4.1-mini to full GPT-4.1 for better accuracy and Spanish-only explanations
-- **All quiz categories validated**: vocabulary, grammar, conjugation, sentence_reordering, error_detection working with real AI content (not fallback)
+- **All quiz categories fully operational**: vocabulary, grammar, conjugation, sentence_reordering, error_detection working with 100% AI-generated content
+- **ZERO FALLBACK POLICY**: Removed all deprecated fallback quiz code - only authentic AI professors with Estonian corpus knowledge
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
