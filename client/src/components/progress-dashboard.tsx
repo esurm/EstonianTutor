@@ -172,7 +172,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <h4 className="font-medium text-gray-900">Modos de Aprendizaje</h4>
           </div>
           
-          <div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+          <div className="space-y-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1">
             <Button
               onClick={() => onModeSelect?.("chat")}
               variant="ghost"
@@ -254,14 +254,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Errores</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              disabled
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg transition-colors h-auto dark:bg-cyan-950 dark:border-cyan-800 opacity-60 cursor-not-allowed"
-            >
-              <div className="w-3 h-3 bg-cyan-600 rounded-full dark:bg-cyan-400"></div>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Chatear</span>
-            </Button>
+
           </div>
         </div>
 
