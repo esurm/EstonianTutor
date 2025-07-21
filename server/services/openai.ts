@@ -698,8 +698,12 @@ CRITICAL: Each sentence must have ONE real grammar error. Examples:
 - Wrong case: "Ma lähen pood" (needs "poodi")
 - Wrong verb: "Ta lähevad" (needs "läheb")
 - Bad order: "Koolis ma käin" (needs "Ma käin koolis")
-correctAnswer = the INCORRECT word. Explanation in Spanish, under 8 words.`,
-          user: `5 error detection questions`,
+LANGUAGE REQUIREMENTS:
+- question: Estonian only
+- translation: SPANISH only (not English)
+- explanation: SPANISH only (not Estonian), under 8 words
+correctAnswer = the INCORRECT word.`,
+          user: `5 error detection questions with Spanish translations and explanations`,
           maxTokens: 900
         };
       
