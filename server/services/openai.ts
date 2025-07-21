@@ -408,79 +408,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     }
   }
 
-  async generateBatchQuizzes(requests: Array<{cefrLevel: string, category: string}>): Promise<QuizGeneration[]> {
-    try {
-      console.log(`🔄 Generating ${requests.length} quizzes in batch mode to save tokens`);
-      const startTime = Date.now();
-      
-      // Create batch request
-      const batchPrompts = requests.map((req, index) => {
-        const difficultyGuidance = this.getDifficultyGuidance(req.cefrLevel);
-        return {
-          custom_id: `quiz-${index}`,
-          method: "POST",
-          url: "/v1/chat/completions",
-          body: {
-            model: "gpt-4.1", // Full model for better accuracy
-            messages: [
-              {
-                role: "system",
-                content: `Generate an Estonian language quiz for CEFR level ${req.cefrLevel} EXCLUSIVELY focused on ${req.category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'}.
 
-${req.category === 'vocabulary' ? `
-STRICT VOCABULARY FOCUS - NO GRAMMAR ALLOWED:
-- ONLY questions about word meanings, definitions, and vocabulary recognition
-- ONLY synonyms, antonyms, and word relationships
-- ONLY words related to specific themes (family, colors, food, animals, objects, etc.)
-- ONLY object and concept identification
-- NO grammar questions, NO verb conjugations, NO sentence structure
-- 70% multiple-choice questions, 30% completion questions (word completion, not sentence)
-` : `
-STRICT GRAMMAR FOCUS - NO VOCABULARY ALLOWED:
-- ONLY verb conjugations (present, past, future tenses)
-- ONLY grammatical cases (nominative, genitive, partitive, etc.)
-- ONLY sentence structure, word order, and prepositions
-- ONLY grammatical rules and language mechanics
-- NO vocabulary meanings, NO word definitions, NO translation questions
-- 30% multiple-choice questions, 70% completion questions (grammar completion)
-`}
-
-Create 5 varied questions APPROPRIATE for the specific CEFR level.
-CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
-
-CEFR LEVEL ${req.cefrLevel} - SPECIFIC DIFFICULTY:
-${difficultyGuidance}
-
-Respond in JSON format with questions array.`
-              },
-              {
-                role: "user", 
-                content: `Generate ${req.category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'} quiz for CEFR level ${req.cefrLevel}.`
-              }
-            ],
-            temperature: 0.2,
-            top_p: 1.0,
-            frequency_penalty: 0.1,
-            presence_penalty: 0,
-            max_tokens: 800,
-            response_format: { type: "json_object" }
-          }
-        };
-      });
-
-      // Use Promise.all for parallel generation instead of sequential
-      const results = await Promise.all(
-        requests.map(request => this.generateQuiz(request.cefrLevel, request.category))
-      );
-
-      const endTime = Date.now();
-      console.log(`✅ Batch quiz generation completed in ${endTime - startTime}ms`);
-      return results;
-    } catch (error) {
-      console.error("Batch quiz generation error:", error);
-      throw new Error("Failed to generate batch quizzes");
-    }
-  }
 
   private getDifficultyGuidance(cefrLevel: string): string {
     const guidance = {

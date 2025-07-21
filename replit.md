@@ -60,7 +60,8 @@ The application uses a comprehensive schema designed around language learning:
   - Questions in Estonian with Spanish translations for comprehension
   - Strict category separation enforced with enhanced prompts
   - Distinct color schemes with maximum contrast: Blue (vocabulary), Purple (grammar), Emerald (conjugation), Yellow (sentence reordering), Red (error detection), Cyan (chatroom placeholder)
-- **Optimized quiz generation**: Single API call with 5-9 second generation time (down from 16+ seconds)
+- **Streamlined quiz generation**: Single API call generating exactly 5 questions per quiz
+- **Model upgrade**: Switched from GPT-4.1-mini to full GPT-4.1 for better accuracy and Spanish-only explanations
 - **All quiz categories validated**: vocabulary, grammar, conjugation, sentence_reordering, error_detection working with real AI content (not fallback)
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
