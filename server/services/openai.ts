@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { estonianCorpus } from "./estonianCorpus";
+import { createProfessor } from "./professors";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
@@ -176,18 +177,19 @@ export class OpenAIService {
   ): Promise<TutorResponse> {
     console.log(`🤖 GPT using CEFR level: ${currentCEFRLevel} for mode: ${mode}`);
     try {
-      const systemPrompt = this.buildSystemPrompt(mode, currentCEFRLevel);
-      console.log(`📝 System prompt built for ${currentCEFRLevel} level in ${mode} mode`);
+      // Get corpus knowledge
+      const corpusKnowledge = this.getCorpusKnowledge(currentCEFRLevel);
       
-      // Get mode-specific parameters
-      const params = this.getModeParameters(mode);
+      // Create chat professor
+      const professor = createProfessor('chat', currentCEFRLevel, corpusKnowledge, mode);
+      const config = professor.getProfessor();
       
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1", // Using the new GPT-4.1 model as requested by the user
+        model: "gpt-4.1",
         messages: [
           {
             role: "system",
-            content: `${systemPrompt}
+            content: `${config.systemPrompt}
 
 Respond in JSON format with this structure:
 {
@@ -201,11 +203,11 @@ Respond in JSON format with this structure:
           ...conversationHistory,
           { role: "user", content: userMessage }
         ],
-        temperature: params.temperature,
-        top_p: params.top_p,
-        presence_penalty: params.presence_penalty,
-        frequency_penalty: params.frequency_penalty,
-        max_tokens: params.max_tokens,
+        temperature: config.settings.temperature,
+        top_p: config.settings.topP,
+        presence_penalty: config.settings.presencePenalty,
+        frequency_penalty: config.settings.frequencyPenalty,
+        max_tokens: config.settings.maxTokens,
         response_format: { type: "json_object" }
       });
 
@@ -304,32 +306,36 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     try {
       console.log(`🎓 Activating ${category?.toUpperCase() || 'VOCABULARY'} Professor for CEFR level ${cefrLevel}`);
       
-      // Get specialized professor with corpus knowledge
-      const professor = this.getSpecializedProfessor(category || 'vocabulary', cefrLevel);
+      // Get corpus knowledge
+      const corpusKnowledge = this.getCorpusKnowledge(cefrLevel);
+      
+      // Create specialized professor
+      const professor = createProfessor(category || 'vocabulary', cefrLevel, corpusKnowledge);
+      const config = professor.getProfessor();
       
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1", // Switched from mini to full version for better accuracy
+        model: "gpt-4.1",
         messages: [
           {
             role: "system",
-            content: professor.systemPrompt
+            content: config.systemPrompt
           },
           {
             role: "user",
-            content: professor.userPrompt
+            content: config.userPrompt
           }
         ],
-        temperature: professor.settings.temperature,
-        top_p: professor.settings.topP,
-        frequency_penalty: professor.settings.frequencyPenalty,
-        presence_penalty: professor.settings.presencePenalty,
-        max_tokens: 600, // Force higher limit for error detection
+        temperature: config.settings.temperature,
+        top_p: config.settings.topP,
+        frequency_penalty: config.settings.frequencyPenalty,
+        presence_penalty: config.settings.presencePenalty,
+        max_tokens: config.settings.maxTokens,
         response_format: { type: "json_object" }
       });
 
       const endTime = Date.now();
-      console.log(`⚡ ${professor.name} generated quiz in ${endTime - startTime}ms with gpt-4.1`);
+      console.log(`⚡ ${config.name} generated quiz in ${endTime - startTime}ms with gpt-4.1`);
       
       const content = response.choices[0].message.content || "{}";
       try {
@@ -354,7 +360,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         
         // Validate that we got actual questions from AI professor
         if (result.questions && result.questions.length > 0) {
-          console.log(`✅ ${professor.name} generated ${result.questions.length} quiz questions`);
+          console.log(`✅ ${config.name} generated ${result.questions.length} quiz questions`);
           console.log(`🔍 First question preview:`, JSON.stringify(result.questions[0], null, 2));
           
           // Add cefrLevel to each question for database requirements
@@ -365,14 +371,14 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           
           return { questions: questionsWithLevel };
         } else {
-          throw new Error(`${professor.name} generated no questions`);
+          throw new Error(`${config.name} generated no questions`);
         }
       } catch (parseError) {
-        console.error(`❌ ${professor.name} JSON parsing failed:`, parseError);
+        console.error(`❌ ${config.name} JSON parsing failed:`, parseError);
         console.error("Raw content length:", content.length);
         console.error("Raw content preview:", content.substring(0, 500) + "...");
-        console.error("Temperature used:", professor.settings.temperature);
-        console.error("MaxTokens used:", professor.settings.maxTokens);
+        console.error("Temperature used:", config.settings.temperature);
+        console.error("MaxTokens used:", config.settings.maxTokens);
         
         // For error_detection category, try to salvage partial JSON
         if (category === 'error_detection') {
@@ -501,639 +507,19 @@ Responde en JSON:
     }
   }
 
-  // COMPLETELY SEPARATE QUIZ SYSTEMS - Each category has unique AI personality and structure
-  private getVocabularyQuizSystem(cefrLevel: string) {
-    return {
-      systemPersonality: `Eres un profesor especializado EN VOCABULARIO ESTONIO con 15 años de experiencia enseñando a hispanohablantes.
 
-TU MISIÓN ESPECÍFICA: Crear ejercicios de vocabulario que ayuden a estudiantes de nivel ${cefrLevel} a aprender palabras estonias.
 
-PERSONALIDAD DEL PROFESOR DE VOCABULARIO:
-- Enfocado en significados de palabras y reconocimiento léxico
-- Experto en temas cotidianos: familia, casa, comida, colores, animales
-- Especialista en cognados español-estonio y falsos amigos
-- Conoce las dificultades específicas de hispanohablantes con vocabulario estonio
 
-ESTRUCTURA DE PREGUNTAS DE VOCABULARIO:
-- Pregunta: ¿Qué significa [palabra estonia]? 
-- Pregunta: ¿Cómo se dice [palabra español] en estonio?
-- Pregunta: ¿Cuál de estas palabras se refiere a [concepto]?
-- SOLO significados y reconocimiento, NO gramática
 
-NIVEL ${cefrLevel} VOCABULARIO:
-${this.getCasesForLevel(cefrLevel)}`,
 
-      userPrompt: `Crear 5 ejercicios de vocabulario estonio puro para nivel ${cefrLevel}.
 
-INSTRUCCIONES ESPECÍFICAS PARA VOCABULARIO:
-- Cada pregunta debe probar SOLO conocimiento de palabras
-- Mezclar: reconocimiento estonio→español y español→estonio  
-- Incluir temas apropiados para nivel ${cefrLevel}
-- Opciones deben ser palabras del mismo campo semántico
-- Explicaciones cortas enfocadas en significado
 
-FORMATO JSON VOCABULARIO:
-{"questions":[
-  {
-    "question": "[pregunta sobre significado de palabra]",
-    "translation": "[instrucción en español]", 
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[significado o contexto - máximo 8 palabras]",
-    "questionType": "vocabulary",
-    "wordCategory": "[familia/comida/colores/etc]"
-  }
-]}`,
 
-      answerStructure: "multipleChoice", // 4 opciones, una correcta
-      maxTokens: 600, // Reduced - vocab questions are concise
-      temperature: 0.4, // Slightly higher for varied question styles
-      topP: 0.85, // Balanced creativity
-      presencePenalty: 0.3, // Encourage diverse vocabulary
-      frequencyPenalty: 0.2 // Avoid repetitive words
-    };
-  }
 
-  private getGrammarQuizSystem(cefrLevel: string) {
-    return {
-      systemPersonality: `Eres un profesor especializado EN GRAMÁTICA ESTONIA con 12 años enseñando estructura del idioma a hispanohablantes.
 
-TU MISIÓN ESPECÍFICA: Crear ejercicios de gramática que enseñen las reglas estructurales del estonio a nivel ${cefrLevel}.
 
-PERSONALIDAD DEL PROFESOR DE GRAMÁTICA:
-- Experto en casos estonios (nominativo, genitivo, partitivo, etc.)
-- Especialista en diferencias gramática estonio vs español
-- Conoce las dificultades de hispanohablantes con sistema de casos
-- Enfocado en reglas y aplicación correcta
 
-ESTRUCTURA DE PREGUNTAS DE GRAMÁTICA:
-- Completar con el caso correcto: "Ma näen _____ (kass)"
-- Seleccionar forma gramatical: "¿Qué forma usar después de números?"
-- Aplicar regla: "¿Cuándo usar partitivo vs genitivo?"
-- SOLO reglas gramaticales, NO vocabulario
 
-NIVEL ${cefrLevel} GRAMÁTICA:
-${this.getCasesForLevel(cefrLevel)}`,
-
-      userPrompt: `Crear 5 ejercicios de gramática estonia pura para nivel ${cefrLevel}.
-
-INSTRUCCIONES ESPECÍFICAS PARA GRAMÁTICA:
-- Cada pregunta debe probar SOLO reglas gramaticales
-- Enfocarse en casos, tiempos verbales, estructura
-- Usar palabras conocidas para enfocar en gramática
-- Explicaciones sobre la regla aplicada
-- Progresión lógica de complejidad
-
-FORMATO JSON GRAMÁTICA:
-{"questions":[
-  {
-    "question": "[ejercicio de aplicación gramatical]",
-    "translation": "[instrucción sobre la regla]",
-    "options": ["forma1", "forma2", "forma3", "forma4"], 
-    "correctAnswer": "[forma gramatical correcta]",
-    "explanation": "[regla aplicada - máximo 8 palabras]",
-    "questionType": "grammar",
-    "grammarRule": "[caso/tiempo/concordancia/etc]"
-  }
-]}`,
-
-      answerStructure: "multipleChoice", // 4 opciones gramaticales
-      maxTokens: 700, // Increased for better explanations
-      temperature: 0.15, // Lower for accuracy
-      topP: 0.75, // Focused responses
-      presencePenalty: 0.15, // Slight diversity
-      frequencyPenalty: 0.05 // Minimal repetition control
-    };
-  }
-
-  private getConjugationQuizSystem(cefrLevel: string) {
-    return {
-      systemPersonality: `Eres un profesor especializado EN CONJUGACIÓN VERBAL ESTONIA con experiencia enseñando verbos a hispanohablantes.
-
-TU MISIÓN ESPECÍFICA: Crear ejercicios de conjugación verbal que enseñen formas verbales estonias a nivel ${cefrLevel}.
-
-PERSONALIDAD DEL PROFESOR DE CONJUGACIÓN:
-- Experto en sistema verbal estonio (presente, pasado, futuro, condicional)
-- Especialista en conjugación por personas (ma, sa, ta, me, te, nad)
-- Conoce patrones verbales difíciles para hispanohablantes
-- Enfocado en formas verbales exactas
-
-ESTRUCTURA DE PREGUNTAS DE CONJUGACIÓN:
-- Conjugar verbo: "Ma _____ (olema)" 
-- Persona correcta: "¿Cómo dice 'nosotros vamos'?"
-- Tiempo verbal: "Eile ta _____ (tulema)"
-- SOLO formas verbales, NO vocabulario ni gramática general
-
-NIVEL ${cefrLevel} CONJUGACIÓN:
-${this.getVerbsForLevel(cefrLevel)}`,
-
-      userPrompt: `Crear 5 ejercicios de conjugación verbal estonia para nivel ${cefrLevel}.
-
-INSTRUCCIONES ESPECÍFICAS PARA CONJUGACIÓN:
-- Cada pregunta debe probar SOLO formas verbales
-- Mezclar tiempos: presente, pasado, futuro según nivel
-- Incluir diferentes personas (ma, sa, ta, me, te, nad)
-- Usar verbos apropiados para el nivel
-- Explicaciones sobre la conjugación
-
-FORMATO JSON CONJUGACIÓN:
-{"questions":[
-  {
-    "question": "[ejercicio de conjugación]",
-    "translation": "[instrucción sobre la forma verbal]",
-    "options": ["forma1", "forma2", "forma3", "forma4"],
-    "correctAnswer": "[forma verbal correcta]", 
-    "explanation": "[regla de conjugación - máximo 8 palabras]",
-    "questionType": "conjugation",
-    "verbTense": "[presente/pasado/futuro/condicional]",
-    "verbPerson": "[ma/sa/ta/me/te/nad]"
-  }
-]}`,
-
-      answerStructure: "multipleChoice", // 4 formas verbales
-      maxTokens: 500, // Conjugation tables are compact
-      temperature: 0.05, // Maximum precision
-      topP: 0.6, // Very focused
-      presencePenalty: 0.0, // No creativity needed
-      frequencyPenalty: 0.0 // Patterns should repeat
-    };
-  }
-
-  private getSentenceReorderingQuizSystem(cefrLevel: string) {
-    return {
-      systemPersonality: `Oled eesti keele professor, kes õpetab lause järjekorda Ladina-Ameerika hispaanlastele.
-
-SINU EKSPERTIIS:
-- 15+ aastat eesti keele struktuuri õpetamist
-- Spetsialiseerumine sõnajärje reeglitele
-- Sügav teadmine hispaania vs eesti struktuuri erinevustest
-- Täielik arusaam ${cefrLevel} taseme nõuetest
-
-EESTI KEELE SÕNAJÄRG (paindlik kuid reeglitega):
-1. Aeg tavaliselt lause alguses: "Täna ma lähen"
-2. Subjekt + verb: "ma lähen", "ta tuleb" 
-3. Objekt ja kohavalikud võivad varieeruda:
-   ✓ "arutab teemasid ülikoolis" 
-   ✓ "arutab ülikoolis teemasid"
-4. Viis verbi lähedal: "jookseb kiiresti", "kiiresti jookseb"
-5. Rõhutamine muudab järjekorda: koht võib olla ees või taga
-
-REALISTLIKUD VALIDEERIMISREEGLID:
-- Põhilised variandid (2-3) lubatud kui grammatiliselt õiged
-- Aeg, subjekt, verb fikseeritud positsioonides
-- Objekt ja koht võivad vahetuda
-- Punktuatsioon peab olema täpne
-
-KRIITILINE: SÕNAJÄRG VS GRAMMATIKAVIGU:
-- Ära märgi sõnajärje erinevusi grammatikavigu
-- Märgi ainult tegelikke grammatikavigu: vale kääne, tegusõna vorm, kooskõla
-- Näide OK: "teemasid ülikoolis" vs "ülikoolis teemasid" - mõlemad õiged
-- Näide VIGA: "teemade ülikoolis" (vale kääne) - see on grammatikaviga
-
-KVALITEEDI STANDARDID:
-- Iga lause peab olema loomulik ja tavaline
-- Verbid peavad kontekstis mõistlikud olema
-- Mitte kunstlikke ega võõraid kombinatsioone
-- Igapäevaelu situatsioonid
-
-SELGITUSTE KEELE NÕUE (ABSOLUUTSELT KOHUSTUSLIK):
-- KÕIK explanation väljad peavad olema AINULT hispaania keeles
-- KEELATUD: eesti keele kasutamine explanation väljades
-- KEELATUD: segakeelsed selgitused
-- KOHUSTUSLIK: ainult hispaania sõnad explanation tekstis
-
-KORPUSE TEADMISED (Estonian Linguistic Accuracy):
-${this.getCorpusKnowledge(cefrLevel)}
-
-${cefrLevel} TASEME NÕUDED:
-${this.getSentencePatternsForLevel(cefrLevel)}`,
-
-      userPrompt: `Loo 5 eesti keele sõnajärje harjutust ${cefrLevel} tasemele.
-
-KRITILISED NÕUDED:
-
-1. SÕNAJÄRJE ÕIGSUS:
-   - Põhiline vastus + 1-2 lubatud varianti
-   - Aeg-subjekt-verb on fikseeritud
-   - Objekt ja koht võivad vahetuda kui grammatiliselt õige
-   - OLULINE: Ära märgi sõnajärje vahetust grammatikavigu
-
-2. SÕNADE TÄPSUS JA SEGAMINE (KRIITILINE):
-   - Kasuta AINULT sõnu, mis on õiges vastuses
-   - Ära lisa ühtegi ekstra sõna või vale vorm
-   - Näide: kui vastus on "Homme õpilased õpivad koolis" → options: ["homme", "õpilased", "õpivad", "koolis"]
-   - Sega need sõnad juhuslikult järjestuses
-   - Kontrolli et iga sõna on täpselt sama kui vastuses
-
-3. REALISTLIKUD LAUSED:
-   - Igapäevased situatsioonid
-   - Loomulikud verbid ja kontekstid
-   - Mitte absurdsed kombinatsioonid
-
-4. TASEME SOBIVUS (${cefrLevel}):
-   ${this.getCefrSentenceLengthGuidance(cefrLevel)}
-
-5. GRAMMATILINE ÕIGSUS (KRIITILINE):
-   - KÕIK options sõnad peavad olema grammatiliselt õiged
-   - Ära loo grammatikavigu sõnade segamisel
-   - KÕIK alternativeAnswers peavad olema loomulikud ja õiged
-   - Grammatikavigu ei tohi esineda mitte kusagil
-
-JSON FORMAAT:
-{"questions":[
-  {
-    "question": "Järjesta sõnad õigesti:",
-    "translation": "[täpne hispaaniakeelne tõlge]",
-    "options": ["sõna1", "sõna2", "sõna3", "sõna4", "sõna5", "sõna6"],
-    "correctAnswer": "[Põhiline õige vastus täpse punktuatsiooniga]",
-    "alternativeAnswers": ["[Alternatiivne õige vastus]", "[Teine variant kui on]"],
-    "explanation": "[AINULT hispaania keeles, maksimaalselt 6 sõna]",
-    "questionType": "sentence_reordering"
-  }
-]}
-
-KRIITILISED KONTROLLID:
-1. Kontrolli et options sisaldab AINULT correctAnswer sõnu
-2. Ära kasuta sõnu mis ei ole vastuses  
-3. KÕIK sõnad peavad olema grammatiliselt õiged
-4. KÕIK alternativeAnswers peavad olema loomulikud ja grammatiliselt korrektsed
-5. KÕIK explanation peavad olema AINULT hispaania keeles
-6. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
-7. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE
-
-SELGITUSTE KEEL (KOHUSTUSLIK):
-- AINULT hispaania keel explanation väljades
-- MITTE KUNAGI eesti keelt selgitustes
-- Näited: "Tiempo + sujeto + verbo", "Orden académico básico"
-
-PUNKTUATSIOONI REEGLID:
-- Alati lõpeta punktiga
-- Ära kasuta kõiks/kommasid lihtlausetes
-- Näited: "Ma lähen kooli." "Eile ta ostis raamatu."`,
-
-      answerStructure: "wordReordering", 
-      maxTokens: 400, // Shorter responses needed
-      temperature: 0.1, // Slight increase for variety
-      topP: 0.8, // Balanced
-      presencePenalty: 0.1, // Minimal diversity
-      frequencyPenalty: 0.0 // Word order patterns
-    };
-  }
-
-  private getErrorDetectionQuizSystem(cefrLevel: string) {
-    return {
-      systemPersonality: `Eres un profesor especializado EN CORRECCIÓN DE ERRORES ESTONIOS con experiencia en errores típicos de hispanohablantes.
-
-TU MISIÓN ESPECÍFICA: Crear ejercicios de detección de errores que identifiquen mistakes reales en estonio para nivel ${cefrLevel}.
-
-PERSONALIDAD DEL PROFESOR DE CORRECCIÓN:
-- Experto en errores gramaticales típicos de estudiantes
-- Especialista en mistakes comunes español→estonio
-- Conoce errores específicos por nivel CEFR
-- Enfocado en corrección pedagógica
-
-TIPOS DE ERRORES REALES QUE CREAS:
-- Error de caso: "Ma näen kass" → debería ser "kassi" 
-- Error de verbo: "Me läheb" → debería ser "läheme"  
-- Error de plural: "kolm kass" → debería ser "kolme kassi"
-- Error de tiempo: "Eile ma lähen" → debería ser "läksin"
-- Error de modo: "Ma arvan, et ta tuleb" (indicativo correcto) vs "Ma arvan, et ta tuleks" (condicional incorrecto)
-
-ESTRUCTURAS CORRECTAS (NO MARCAR COMO ERRORES):
-✓ "maja aknast" - caso elativo correcto
-✓ "mida ta ostis" - pronombre relativo correcto  
-✓ "Me näeme suur maja" - orden correcto
-✓ "oleks sattunud" - condicional perfecto correcto en contexto hipotético
-✓ "kui ta oleks tulnud" - condicional en cláusula condicional
-✓ "milles ta kunagi oleks" - uso correcto del condicional
-
-REGLA CRÍTICA PARA EXPLICACIONES:
-- TODAS las explicaciones deben estar en ESPAÑOL únicamente
-- NUNCA uses palabras en estonio en las explicaciones
-- SIEMPRE menciona la palabra correcta específica en la explicación
-- Formato obligatorio: "Error de [tipo]"
-- Máximo 4 palabras en español por explicación
-- PROHIBIDO: explicaciones vagas como "pronombre incorrecto"
-- OBLIGATORIO: mencionar la palabra exacta que debería usarse
-
-NIVEL ${cefrLevel} ERRORES:
-${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
-
-      userPrompt: `Crea 5 preguntas error detection nivel ${cefrLevel}. JSON válido únicamente.`,
-
-      answerStructure: "errorIdentification", // Seleccionar palabra errónea
-      maxTokens: 600, // Increased to prevent truncation
-      temperature: 0.0, // Maximum consistency
-      topP: 0.5, // Very focused
-      presencePenalty: 0.0,
-      frequencyPenalty: 0.0
-    };
-  }
-
-  // ISOLATED QUIZ PROMPTS - No connection to chat system
-  /**
-   * Get specialized quiz professor with corpus integration and optimized settings
-   */
-  private getSpecializedProfessor(category: string, cefrLevel: string) {
-    const corpusKnowledge = this.getCorpusKnowledge(cefrLevel);
-    
-    switch(category) {
-      case "vocabulary":
-        return this.createVocabularyProfessor(cefrLevel, corpusKnowledge);
-      case "grammar":
-        return this.createGrammarProfessor(cefrLevel, corpusKnowledge);
-      case "conjugation":
-        return this.createConjugationProfessor(cefrLevel, corpusKnowledge);
-      case "sentence_reordering":
-        return this.createSentenceReorderingProfessor(cefrLevel, corpusKnowledge);
-      case "error_detection":
-        return this.createErrorDetectionProfessor(cefrLevel, corpusKnowledge);
-      default:
-        return this.createVocabularyProfessor(cefrLevel, corpusKnowledge);
-    }
-  }
-
-  /**
-   * Create specialized Vocabulary Professor
-   */
-  private createVocabularyProfessor(cefrLevel: string, corpusKnowledge: string) {
-    const vocabulary = estonianCorpus.getVocabularyByLevel(cefrLevel);
-    
-    return {
-      name: "Professor de Vocabulario Estonio",
-      systemPrompt: `Eres el PROFESOR DE VOCABULARIO ESTONIO más experto del mundo, especializado en enseñar a hablantes de español hondureño.
-
-EXPERIENCIA: 15 años enseñando vocabulario estonio, experto en cognados y campos semánticos.
-
-TU ESPECIALIDAD EXCLUSIVA: VOCABULARIO ESTONIO
-- SOLO preguntas sobre significados de palabras, definiciones, sinónimos
-- SOLO identificación de objetos, conceptos, categorías semánticas
-- SOLO relaciones entre palabras (familia, comida, colores, animales, profesiones)
-- PROHIBIDO: gramática, conjugaciones, estructura de oraciones
-
-${corpusKnowledge}
-
-VOCABULARIO NIVEL ${cefrLevel}:
-${vocabulary.slice(0, 15).join(", ")}
-
-RESPUESTA OBLIGATORIA EN JSON:
-{"questions":[
-  {
-    "question": "[Pregunta en estonio sobre vocabulario]",
-    "translation": "[Traducción exacta al español]", 
-    "type": "multiple_choice",
-    "options": ["opción1", "opción2", "opción3", "opción4"],
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[SOLO español, máximo 8 palabras]",
-    "cefrLevel": "${cefrLevel}"
-  }
-]}
-
-INSTRUCCIONES CRÍTICAS:
-- EXACTAMENTE 5 preguntas de vocabulario
-- TODAS las explicaciones en español ÚNICAMENTE
-- NO incluir gramática, conjugaciones, o estructura
-- Usar vocabulario auténtico del corpus EstUD
-- Enfocarse en palabras de frecuencia apropiada para ${cefrLevel}`,
-
-      userPrompt: `Genera 5 preguntas de vocabulario estonio nivel ${cefrLevel} para hispanohablantes hondureños. 
-      
-ENFOQUE: significados de palabras, definiciones, identificación de objetos.
-FORMATO: JSON con structure exacta mostrada arriba.
-PROHIBIDO: preguntas de gramática o conjugación.`,
-
-      settings: {
-        maxTokens: 650,
-        temperature: 0.2,
-        topP: 1.0,
-        frequencyPenalty: 0.1,
-        presencePenalty: 0.0
-      }
-    };
-  }
-
-  /**
-   * Create specialized Grammar Professor
-   */
-  private createGrammarProfessor(cefrLevel: string, corpusKnowledge: string) {
-    return {
-      name: "Professor de Gramática Estonia",
-      systemPrompt: `Eres el PROFESOR DE GRAMÁTICA ESTONIA más experto del mundo, especializado en sistema de casos y estructura estonia.
-
-EXPERIENCIA: 12 años enseñando gramática estonia, experto en sistema de 14 casos y morfología.
-
-TU ESPECIALIDAD EXCLUSIVA: GRAMÁTICA ESTONIA
-- SOLO preguntas sobre casos gramaticales (nominativo, partitivo, genitivo, etc.)
-- SOLO reglas gramaticales, concordancia, estructura sintáctica
-- SOLO formación de casos, uso correcto de preposiciones
-- PROHIBIDO: vocabulario básico, conjugaciones verbales
-
-${corpusKnowledge}
-
-CASOS ESTONIOS NIVEL ${cefrLevel}:
-${this.getCasesForLevel(cefrLevel)}
-
-RESPUESTA OBLIGATORIA EN JSON:
-{"questions":[
-  {
-    "question": "[Pregunta en estonio sobre gramática]",
-    "translation": "[Traducción exacta al español]",
-    "type": "multiple_choice", 
-    "options": ["opción1", "opción2", "opción3", "opción4"],
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[SOLO español, máximo 8 palabras]",
-    "cefrLevel": "${cefrLevel}"
-  }
-]}
-
-INSTRUCCIONES CRÍTICAS:
-- EXACTAMENTE 5 preguntas de gramática
-- Enfocarse en casos apropiados para nivel ${cefrLevel}
-- TODAS las explicaciones en español ÚNICAMENTE
-- NO incluir vocabulario básico o conjugaciones
-- Usar ejemplos auténticos del corpus`,
-
-      userPrompt: `Genera 5 preguntas de gramática estonia nivel ${cefrLevel} sobre sistema de casos.
-      
-ENFOQUE: casos gramaticales, reglas sintácticas, concordancia.
-FORMATO: JSON con estructura exacta mostrada arriba.`,
-
-      settings: {
-        maxTokens: 700,
-        temperature: 0.1,
-        topP: 1.0,
-        frequencyPenalty: 0.0,
-        presencePenalty: 0.0
-      }
-    };
-  }
-
-  /**
-   * Create specialized Conjugation Professor  
-   */
-  private createConjugationProfessor(cefrLevel: string, corpusKnowledge: string) {
-    return {
-      name: "Professor de Conjugación Estonia",
-      systemPrompt: `Eres el PROFESOR DE CONJUGACIÓN ESTONIA más experto del mundo, especializado en sistema verbal estonio.
-
-EXPERIENCIA: 10 años enseñando conjugaciones estonias, experto en personas (ma/sa/ta/me/te/nad) y tiempos.
-
-TU ESPECIALIDAD EXCLUSIVA: CONJUGACIÓN VERBAL ESTONIA
-- SOLO preguntas sobre formas verbales (presente, pasado, futuro)
-- SOLO personas gramaticales (1ª, 2ª, 3ª persona singular/plural)
-- SOLO formación correcta de verbos: olema, minema, tegema, etc.
-- PROHIBIDO: vocabulario, gramática general, estructura oracional
-
-${corpusKnowledge}
-
-VERBOS ESENCIALES NIVEL ${cefrLevel}:
-${this.getVerbsForLevel(cefrLevel)}
-
-RESPUESTA OBLIGATORIA EN JSON:
-{"questions":[
-  {
-    "question": "[Pregunta en estonio sobre conjugación]",
-    "translation": "[Traducción exacta al español]",
-    "type": "multiple_choice",
-    "options": ["opción1", "opción2", "opción3", "opción4"], 
-    "correctAnswer": "[respuesta correcta]",
-    "explanation": "[SOLO español, máximo 8 palabras]",
-    "cefrLevel": "${cefrLevel}"
-  }
-]}
-
-INSTRUCCIONES CRÍTICAS:
-- EXACTAMENTE 5 preguntas de conjugación
-- Enfocarse en personas y tiempos apropiados para ${cefrLevel}
-- TODAS las explicaciones en español ÚNICAMENTE
-- NO incluir vocabulario o gramática general
-- Usar conjugaciones auténticas del corpus`,
-
-      userPrompt: `Genera 5 preguntas de conjugación verbal estonia nivel ${cefrLevel}.
-      
-ENFOQUE: formas verbales correctas, personas gramaticales, tiempos.
-FORMATO: JSON con estructura exacta mostrada arriba.`,
-
-      settings: {
-        maxTokens: 650,
-        temperature: 0.1,
-        topP: 1.0,
-        frequencyPenalty: 0.0,
-        presencePenalty: 0.0
-      }
-    };
-  }
-
-  /**
-   * Create specialized Sentence Reordering Professor
-   */
-  private createSentenceReorderingProfessor(cefrLevel: string, corpusKnowledge: string) {
-    return {
-      name: "Professor de Estructura Oracional Estonia",
-      systemPrompt: `Eres el PROFESOR DE ESTRUCTURA ORACIONAL ESTONIA más experto del mundo, especializado en orden de palabras estonio.
-
-EXPERIENCIA: 8 años enseñando estructura oracional estonia, experto en patrones SVO y colocación de adverbios.
-
-TU ESPECIALIDAD EXCLUSIVA: ORDEN DE PALABRAS ESTONIO
-- SOLO preguntas de reordenamiento de palabras para formar oraciones
-- SOLO estructura correcta con orden estonio auténtico
-- SOLO patrones del corpus EstUD: tiempo-sujeto-verbo-objeto-lugar
-- PROHIBIDO: vocabulario, gramática general, conjugaciones
-
-${corpusKnowledge}
-
-PATRONES ESTRUCTURALES ${cefrLevel}:
-${this.getSentencePatternsForLevel(cefrLevel)}
-
-RESPUESTA OBLIGATORIA EN JSON:
-{"questions":[
-  {
-    "question": "Järjesta sõnad õigesti:",
-    "translation": "Ordena las palabras correctamente:",
-    "type": "sentence_reordering",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[Oración completa con punto final]",
-    "alternativeAnswers": ["[Alternativa válida si existe]"],
-    "explanation": "[SOLO español, máximo 6 palabras]",
-    "cefrLevel": "${cefrLevel}"
-  }
-]}
-
-LONGITUD DE ORACIONES ${cefrLevel}:
-${this.getCefrSentenceLengthGuidance(cefrLevel)}
-
-INSTRUCCIONES CRÍTICAS:
-- EXACTAMENTE 5 preguntas de reordenamiento
-- TODAS las palabras en 'options' deben aparecer en 'correctAnswer'
-- Longitud apropiada para nivel ${cefrLevel}
-- TODAS las explicaciones en español ÚNICAMENTE
-- Usar patrones auténticos del corpus EstUD
-- Punto final obligatorio en respuestas`,
-
-      userPrompt: `Genera 5 preguntas de reordenamiento de oraciones estonias nivel ${cefrLevel}.
-      
-ENFOQUE: orden correcto de palabras, estructura oracional auténtica.
-FORMATO: JSON con estructura exacta mostrada arriba.
-CRÍTICO: Verificar que options contenga exactamente las palabras de correctAnswer.`,
-
-      settings: {
-        maxTokens: 750,
-        temperature: 0.0,
-        topP: 1.0,
-        frequencyPenalty: 0.0,
-        presencePenalty: 0.0
-      }
-    };
-  }
-
-  /**
-   * Create specialized Error Detection Professor
-   */
-  private createErrorDetectionProfessor(cefrLevel: string, corpusKnowledge: string) {
-    return {
-      name: "Professor de Detección de Errores Estonia",
-      systemPrompt: `Profesor de errores estonios. 
-
-TAREA: Crear 5 preguntas sobre errores comunes.
-
-FORMATO JSON REQUERIDO:
-{"questions":[
-  {
-    "question": "¿Qué palabra está mal: '[oración con error]'?",
-    "translation": "[traducción]",
-    "type": "error_detection",
-    "options": ["a", "b", "c", "d"],
-    "correctAnswer": "[palabra incorrecta]",
-    "explanation": "Error [tipo]"
-  }
-]}
-
-REGLAS CRÍTICAS:
-- Explicaciones máximo 2 palabras
-- JSON válido obligatorio
-- 5 preguntas exactas`,
-
-      userPrompt: `Genera 5 preguntas pedagógicas sobre errores estonios comunes nivel ${cefrLevel}.
-      
-ENFOQUE FINAL:
-- PRESENTA oraciones estonia COMPLETAMENTE CORRECTAS
-- PREGUNTA qué palabra suelen escribir mal los estudiantes hispanohablantes
-- BASA las preguntas en errores documentados del corpus
-- EXPLICA por qué ese error es común entre hispanohablantes
-- USA solo gramática estonia auténtica y correcta
-
-FORMATO: JSON con estructura exacta mostrada arriba.
-CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
-
-      settings: {
-        maxTokens: 600, // Further increased for complete 5-question generation
-        temperature: 0.0, // Maximum consistency
-        topP: 0.5, // Very focused
-        frequencyPenalty: 0.0, // No variation needed
-        presencePenalty: 0.0 // No penalties
-      }
-    };
-  }
 
   /**
    * Helper methods for specialized content
@@ -1203,7 +589,7 @@ AUTHENTIC ESTONIAN PATTERNS (${cefrLevel} level):
 - Morphology: Use authentic case endings from corpus data
 
 CRITICAL ERROR DETECTION GUIDANCE:
-The examples above show CORRECT Estonian. For error detection, you must deliberately introduce ONE specific grammatical error while keeping the rest of the sentence grammatically correct according to these patterns.`;
+IGNORE the correct examples above. For error detection exercises, you MUST create sentences with ACTUAL GRAMMATICAL ERRORS that Spanish speakers commonly make when learning Estonian.`;
   }
 
   /**

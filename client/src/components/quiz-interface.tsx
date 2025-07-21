@@ -231,13 +231,13 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     if (currentQuestionIndex === questions.length - 1) {
       const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
       const finalAnswerData: QuizAnswer = {
-        question: currentQuestion.question,
-        type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
-        options: currentQuestion.options,
-        correctAnswer: currentQuestion.correctAnswer,
+        question: currentQuestion?.question || "",
+        type: currentQuestion?.questionType || currentQuestion?.type || "multiple_choice",
+        options: currentQuestion?.options,
+        correctAnswer: currentQuestion?.correctAnswer || "",
         userAnswer: selectedAnswer,
-        explanation: currentQuestion.explanation,
-        cefrLevel: currentQuestion.cefrLevel,
+        explanation: currentQuestion?.explanation || "",
+        cefrLevel: currentQuestion?.cefrLevel || user?.cefrLevel || "B1",
         responseTime
       };
 
@@ -252,13 +252,13 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
     
     const answerData: QuizAnswer = {
-      question: currentQuestion.question,
-      type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
-      options: currentQuestion.options,
-      correctAnswer: currentQuestion.correctAnswer,
+      question: currentQuestion?.question || "",
+      type: currentQuestion?.questionType || currentQuestion?.type || "multiple_choice",
+      options: currentQuestion?.options,
+      correctAnswer: currentQuestion?.correctAnswer || "",
       userAnswer: selectedAnswer,
-      explanation: currentQuestion.explanation,
-      cefrLevel: currentQuestion.cefrLevel,
+      explanation: currentQuestion?.explanation || "",
+      cefrLevel: currentQuestion?.cefrLevel || user?.cefrLevel || "B1",
       responseTime
     };
 

@@ -42,6 +42,11 @@ The application uses a comprehensive schema designed around language learning:
 **OpenAI Service**: 
 - **GPT-4.1** for conversational tutoring with specialized Estonian teaching persona
 - **GPT-4.1** for quiz generation (upgraded from mini for consistency and accuracy)
+- **MODULAR PROFESSOR ARCHITECTURE (Jan 2025)**: Complete refactoring from monolithic to modular design
+  - Separate TypeScript files for each AI professor (vocabulary, grammar, conjugation, sentence-reordering, error-detection, chat)
+  - Base professor class providing common functionality and inheritance
+  - Factory pattern for professor instantiation with corpus knowledge injection
+  - Clean separation of concerns with type-safe interfaces
 - **Dynamic JSON-based prompt system**: Assembles prompts at runtime using exact JSON config structure
 - Maps frontend modes (chat, dialogue, pronunciation, grammar) to JSON config modes (general_conversation, dialogue_simulation, pronunciation_practice, grammar_exercises)
 - **Mode-specific parameters optimized for AI behavior**:
