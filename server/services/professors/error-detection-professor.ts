@@ -7,19 +7,53 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `ERROR DETECTION ${this.cefrLevel} - UN error por oración.
+    return `You are an Estonian ERROR DETECTION expert for ${this.cefrLevel} level. 
 
-PROHIBIDO: adjetivo+sustantivo, múltiples cambios
-PERMITIDO: caso simple, persona verbal, locativo
+Create 5 Estonian sentences with EXACTLY ONE grammatical error each. Focus on common mistakes Spanish speakers make learning Estonian.
 
-Ejemplos:
+CRITICAL RULES:
+1. Each sentence has ONE clear grammatical error
+2. Error must be a single word that's grammatically wrong
+3. Provide 3-4 options including the error word
+4. Give brief explanation in Spanish
+5. Use vocabulary appropriate for ${this.cefrLevel} level
+
+ERROR TYPES FOR ${this.cefrLevel}:
+${this.getCEFRSpecificErrors()}
+
+EXAMPLES:
 ${this.getSpecificErrorExamplesForLevel()}
 
-JSON: {"questions": [{"question": "¿Qué palabra está mal: '...'?", "translation": "traducción al español de la oración", "options": [...], "correctAnswer": "...", "explanation": "...", "cefrLevel": "${this.cefrLevel}"}]}`;
+REQUIRED JSON FORMAT:
+{
+  "questions": [
+    {
+      "question": "¿Qué palabra está incorrecta en: 'Ma lähen kooli täna'?",
+      "type": "error_detection", 
+      "options": ["Ma", "lähen", "kooli", "täna"],
+      "correctAnswer": "ninguna - la oración es correcta",
+      "explanation": "Esta oración está correcta. 'Ma lähen kooli' significa 'Voy a la escuela'",
+      "cefrLevel": "${this.cefrLevel}"
+    }
+  ]
+}
+
+Generate exactly 5 questions. Make sure each has a real grammatical error.`;
   }
 
   getUserPrompt(): string {
-    return `5 oraciones, UN ERROR cada una. Nivel ${this.cefrLevel}. NO adjetivo+sustantivo. INCLUYE traducción al español de cada oración. JSON completo con translation, options, correctAnswer, explanation.`;
+    return `Generate exactly 5 Estonian error detection questions for ${this.cefrLevel} level.
+
+Each question must have:
+- One Estonian sentence with ONE grammatical error
+- 3-4 word options (including the wrong word)
+- Correct answer identifies the wrong word
+- Spanish explanation of what's wrong
+- Appropriate ${this.cefrLevel} vocabulary
+
+Focus on errors Spanish speakers commonly make with Estonian grammar.
+
+Return complete JSON with all 5 questions.`;
   }
 
   private getSpecificErrorExamplesForLevel(): string {
@@ -52,12 +86,43 @@ JSON: {"questions": [{"question": "¿Qué palabra está mal: '...'?", "translati
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 600, // Balanced for complete JSON
-      temperature: 0.2,
+      maxTokens: 800, // Increased for complete 5-question JSON
+      temperature: 0.4, // Increased for more variation
       topP: 0.9,
-      frequencyPenalty: 0.0,
-      presencePenalty: 0.1
+      frequencyPenalty: 0.1, // Reduce repetition
+      presencePenalty: 0.2 // More variety
     };
+  }
+
+  private getCEFRSpecificErrors(): string {
+    const errorTypes = {
+      A1: `
+- Verb conjugation: *Ta lähen* → Ta läheb (3rd person)
+- Case confusion: *Ma joon piima* → Ma joon piim (nominative object)
+- Number after numeral: *kaks koer* → kaks koera (partitive singular)`,
+      
+      A2: `
+- Locative cases: *Ma elan Tallinn* → Ma elan Tallinnas (inessive)
+- Possessive: *mina auto* → minu auto (genitive) 
+- Movement direction: *Ma lähen kool* → Ma lähen kooli (illative)`,
+      
+      B1: `
+- External locative: *panen laual* → panen lauale (allative)
+- Past tense: *Eile ma lähen* → Eile ma läksin (simple past)
+- Partitive plural: *Ma näen autod* → Ma näen autosid (partitive)`,
+      
+      B2: `
+- Abessive case: *ilma raha* → ilma rahata (without money)
+- Conditional mood: *Ma oleks lähen* → Ma oleksin läinud (perfect conditional)
+- Object case: *Ta ootab bussis* → Ta ootab bussi (partitive object)`,
+      
+      C1: `
+- Quotative mood subtleties
+- Complex case relationships in subordinate clauses
+- Advanced aspectual distinctions`
+    };
+    
+    return errorTypes[this.cefrLevel as keyof typeof errorTypes] || errorTypes.B1;
   }
 
   private getCommonErrorsForLevel(): string {

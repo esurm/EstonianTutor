@@ -7,44 +7,58 @@ export class SentenceReorderingProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
-    
-    return `ESTRUCTURA ${this.cefrLevel} - Orden de palabras estonio.
+    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level.
 
-Ejemplos corpus:
-${sentenceExamples.slice(0, 3).map(s => s.text).join(", ")}
+Create 5 sentence reordering exercises where students arrange Estonian words in correct order.
 
-Reglas orden:
-- Flexible: tiempo al inicio común
-- SVO neutral, variaciones válidas
-- Énfasis mueve al inicio
+CRITICAL RULES:
+1. Use vocabulary appropriate for ${this.cefrLevel} level
+2. Provide words in SCRAMBLED order in "options" array
+3. Give ONE clear correct answer (Estonian sentence)
+4. Include Spanish translation of the correct sentence
+5. Brief explanation of the word order pattern used
 
-Patrones: ${this.getWordOrderPatterns()}
+ESTONIAN WORD ORDER PATTERNS FOR ${this.cefrLevel}:
+${this.getWordOrderPatterns()}
 
-JSON: {
-  "questions": [{
-    "question": "Järjesta sõnad õigesti:",
-    "translation": "traducción",
-    "type": "sentence_reordering",
-    "options": [palabras],
-    "correctAnswer": "oración correcta.",
-    "alternativeAnswers": ["variante1", "variante2"],
-    "explanation": "patrón usado"
-  }]
-}`;
+REQUIRED JSON FORMAT:
+{
+  "questions": [
+    {
+      "question": "Ordena las palabras para formar una oración correcta en estonio:",
+      "type": "sentence_reordering",
+      "options": ["kooli", "Ma", "lähen", "täna"],
+      "correctAnswer": "Ma lähen täna kooli",
+      "explanation": "Orden básico: sujeto + verbo + tiempo + lugar. 'Voy hoy a la escuela'",
+      "cefrLevel": "${this.cefrLevel}"
+    }
+  ]
+}
+
+Generate exactly 5 questions with realistic Estonian sentence structures.`;
   }
 
   getUserPrompt(): string {
-    return `5 ejercicios reordenar ${this.cefrLevel}. Incluye alternativas válidas. JSON completo.`;
+    return `Generate exactly 5 Estonian sentence reordering questions for ${this.cefrLevel} level.
+
+Each question must have:
+- Scrambled Estonian words in "options" array  
+- One correct Estonian sentence as "correctAnswer"
+- Spanish explanation of the word order pattern
+- Vocabulary appropriate for ${this.cefrLevel} level
+
+Focus on common Estonian sentence patterns that Spanish speakers need to practice.
+
+Return complete JSON with all 5 questions.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700, // Balanced for alternatives
-      temperature: 0.15,
+      maxTokens: 900, // Increased for complete 5-question JSON
+      temperature: 0.3, // Increased for more variation
       topP: 0.8,
-      frequencyPenalty: 0.0,
-      presencePenalty: 0.1
+      frequencyPenalty: 0.1, // Reduce repetition
+      presencePenalty: 0.2 // More variety in sentence patterns
     };
   }
 

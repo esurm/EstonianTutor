@@ -413,52 +413,76 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         console.error("Temperature used:", config.settings.temperature);
         console.error("MaxTokens used:", config.settings.maxTokens);
         
-        // For error_detection category, try to salvage partial JSON
-        if (category === 'error_detection') {
-          console.log(`🔧 Attempting to salvage error_detection JSON...`);
-          try {
-            // Try to fix truncated JSON by finding the last complete question
-            let fixedContent = content;
-            
-            // If it ends with incomplete data, find the last complete question
-            if (!fixedContent.endsWith('}')) {
-              const lastCompleteQuestion = fixedContent.lastIndexOf('},{');
-              if (lastCompleteQuestion !== -1) {
-                // Keep everything up to the last complete question
-                fixedContent = fixedContent.substring(0, lastCompleteQuestion) + '}]}';
-                console.log(`🔧 Truncated to last complete question`);
-              } else {
-                // If no complete questions, try to find at least one
-                const firstQuestionEnd = fixedContent.indexOf('}');
-                if (firstQuestionEnd !== -1) {
-                  const questionStart = fixedContent.indexOf('"questions":[{');
-                  if (questionStart !== -1) {
-                    fixedContent = fixedContent.substring(0, questionStart + 14) + 
-                                 fixedContent.substring(questionStart + 14, firstQuestionEnd + 1) + ']}';
-                    console.log(`🔧 Salvaged single question`);
-                  }
-                }
+        // Try to salvage partial JSON for any category
+        console.log(`🔧 Attempting to salvage JSON for ${category}...`);
+        try {
+          // Clean up common JSON issues
+          let fixedContent = content;
+          
+          // Remove trailing commas
+          fixedContent = fixedContent.replace(/,(\s*[}\]])/g, '$1');
+          
+          // If truncated, try to find the last complete question
+          if (!fixedContent.trim().endsWith('}')) {
+            const lastCompleteQuestion = fixedContent.lastIndexOf('},{');
+            if (lastCompleteQuestion !== -1) {
+              // Keep everything up to the last complete question and close properly
+              fixedContent = fixedContent.substring(0, lastCompleteQuestion) + '}]}';
+              console.log(`🔧 Truncated to last complete question`);
+            } else {
+              // Try to find at least one complete question
+              const questionsStart = fixedContent.indexOf('"questions":[{');
+              const firstQuestionEnd = fixedContent.indexOf('}', questionsStart);
+              if (questionsStart !== -1 && firstQuestionEnd !== -1) {
+                fixedContent = fixedContent.substring(0, questionsStart) + 
+                             '"questions":[' + 
+                             fixedContent.substring(questionsStart + 14, firstQuestionEnd + 1) + 
+                             ']}';
+                console.log(`🔧 Salvaged single question`);
               }
             }
-            
-            // Try parsing the fixed content
-            const salvageResult = JSON.parse(fixedContent);
-            if (salvageResult.questions && salvageResult.questions.length > 0) {
-              console.log(`✅ Salvaged ${salvageResult.questions.length} questions from truncated JSON`);
-              
-              const questionsWithLevel = salvageResult.questions.map((q: any) => ({
-                ...q,
-                cefrLevel: cefrLevel
-              }));
-              
-              return { questions: questionsWithLevel };
-            }
-          } catch (salvageError) {
-            console.error("Salvage attempt failed:", salvageError);
           }
+          
+          // Try to add missing closing braces
+          let braceCount = (fixedContent.match(/{/g) || []).length - (fixedContent.match(/}/g) || []).length;
+          while (braceCount > 0) {
+            fixedContent += '}';
+            braceCount--;
+          }
+          
+          // Try parsing the fixed content
+          const salvageResult = JSON.parse(fixedContent);
+          if (salvageResult.questions && salvageResult.questions.length > 0) {
+            console.log(`✅ Salvaged ${salvageResult.questions.length} questions from truncated JSON`);
+            
+            // Validate question structure and add missing fields
+            const questionsWithLevel = salvageResult.questions.map((q: any) => ({
+              question: q.question || "Quiz question missing",
+              type: q.type || "multiple_choice",
+              options: q.options || ["opción 1", "opción 2", "opción 3", "opción 4"],
+              correctAnswer: q.correctAnswer || "opción 1",
+              explanation: q.explanation || "Explicación no disponible",
+              cefrLevel: cefrLevel
+            }));
+            
+            return { questions: questionsWithLevel };
+          }
+        } catch (salvageError) {
+          console.error("Salvage attempt failed:", salvageError);
         }
         
-        throw new Error(`${config.name} failed to generate valid quiz. Please try again.`);
+        // If all else fails, return a fallback quiz
+        console.log(`❌ All parsing attempts failed, returning fallback quiz for ${category}`);
+        return {
+          questions: [{
+            question: "Quiz temporalmente no disponible",
+            type: "multiple_choice",
+            options: ["Reintentar", "Seleccionar otro tipo", "Continuar", "Regresar"],
+            correctAnswer: "Reintentar",
+            explanation: "El sistema está generando un nuevo quiz. Por favor intenta de nuevo.",
+            cefrLevel: cefrLevel
+          }]
+        };
       }
     } catch (error) {
       console.error("Quiz generation error:", error);

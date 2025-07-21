@@ -7,41 +7,57 @@ export class GrammarProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    const grammarExamples = estonianCorpus.generateGrammarExamples("case_system", this.cefrLevel);
-    
-    return `GRAMÁTICA ${this.cefrLevel} - Solo casos, NO vocabulario.
+    return `You are an Estonian GRAMMAR expert for ${this.cefrLevel} level.
 
-Casos permitidos: ${this.getCasesForLevel()}
+Create 5 grammar questions focusing on Estonian case system. NO vocabulary meanings.
 
-Tipos:
-- Completar caso: "Ma näen ___ (kass)" → kassi
-- Identificar caso: "Tallinnas" → inessivo
-- Elegir forma correcta
-- Transformar a caso requerido
+CASES FOR ${this.cefrLevel} LEVEL: ${this.getCasesForLevel()}
 
-JSON: {
-  "questions": [{
-    "question": "oración con espacio",
-    "translation": "instrucción",
-    "type": "multiple_choice",
-    "options": [4 formas],
-    "correctAnswer": "forma correcta",
-    "explanation": "caso usado"
-  }]
-}`;
+QUESTION TYPES:
+1. Fill in the blank with correct case form
+2. Choose correct case form from options
+3. Identify which case is used in a word
+4. Transform word to required case
+
+PRIORITY FOCUS: ${this.getPriorityCases()}
+
+REQUIRED JSON FORMAT:
+{
+  "questions": [
+    {
+      "question": "Completa la oración: 'Ma lähen ___ täna' (kool)",
+      "type": "multiple_choice", 
+      "options": ["kool", "kooli", "koolis", "koolist"],
+      "correctAnswer": "kooli",
+      "explanation": "Dirección hacia un lugar usa el caso ilativo (-i)",
+      "cefrLevel": "${this.cefrLevel}"
+    }
+  ]
+}
+
+Generate exactly 5 questions using simple, common Estonian words (kass, maja, laps, kool, auto, etc.).`;
   }
 
   getUserPrompt(): string {
-    return `5 ejercicios casos ${this.cefrLevel}. Palabras simples: kass, maja, laps. JSON completo.`;
+    return `Generate exactly 5 Estonian grammar questions for ${this.cefrLevel} level.
+
+Each question must have:
+- Focus on Estonian case system (not vocabulary)
+- Use simple, common words (kass, maja, laps, kool, auto)
+- 4 multiple choice options showing different case forms
+- One correct answer with proper case
+- Brief explanation of which case is used and why
+
+Return complete JSON with all 5 questions.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 650, // Balanced for complete JSON
-      temperature: 0.15,
-      topP: 0.75,
-      frequencyPenalty: 0.0,
-      presencePenalty: 0.0
+      maxTokens: 800, // Increased for complete 5-question JSON
+      temperature: 0.25, // Slightly more creative while staying accurate
+      topP: 0.8,
+      frequencyPenalty: 0.1, // Some variety in word selection
+      presencePenalty: 0.1 // Encourage different case types
     };
   }
 

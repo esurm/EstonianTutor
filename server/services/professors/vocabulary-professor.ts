@@ -9,40 +9,58 @@ export class VocabularyProfessor extends BaseProfessor {
   getSystemPrompt(): string {
     const vocabulary = estonianCorpus.getVocabularyByLevel(this.cefrLevel);
     
-    return `VOCABULARIO ${this.cefrLevel} - Solo significados, NO gramática.
+    return `You are an Estonian VOCABULARY expert for ${this.cefrLevel} level.
 
-Corpus: ${vocabulary.slice(0, 15).join(", ")}
+Create 5 vocabulary questions focusing on meaning and translation. NO grammar questions.
 
-Tipos permitidos:
-- ¿Qué significa X? → traducción
-- ¿Cómo se dice Y? → palabra estonia
-- Identifica por definición
-- Campo semántico
+Available vocabulary for ${this.cefrLevel}: ${vocabulary.slice(0, 15).join(", ")}
 
-JSON: {
-  "questions": [{
-    "question": "...",
-    "translation": "instrucción",
-    "type": "multiple_choice",
-    "options": [4 opciones],
-    "correctAnswer": "...",
-    "explanation": "máx 8 palabras"
-  }]
+QUESTION TYPES:
+1. "¿Qué significa '[Estonian word]'?" - Give 4 Spanish options
+2. "¿Cómo se dice '[Spanish word]' en estonio?" - Give 4 Estonian options  
+3. "¿Cuál de estas palabras significa '[definition]'?" - Give 4 Estonian options
+4. "¿Qué palabra NO pertenece al grupo?" - Give 4 Estonian words (3 related + 1 different)
+
+THEMES FOR ${this.cefrLevel}: ${this.getThemesForLevel()}
+
+REQUIRED JSON FORMAT:
+{
+  "questions": [
+    {
+      "question": "¿Qué significa 'kool'?",
+      "type": "multiple_choice",
+      "options": ["escuela", "casa", "trabajo", "tienda"],
+      "correctAnswer": "escuela", 
+      "explanation": "'Kool' significa escuela en estonio",
+      "cefrLevel": "${this.cefrLevel}"
+    }
+  ]
 }
 
-Temas ${this.cefrLevel}: ${this.getThemesForLevel()}`;
+Generate exactly 5 questions using vocabulary appropriate for ${this.cefrLevel} level.`;
   }
 
   getUserPrompt(): string {
-    return `5 preguntas vocabulario ${this.cefrLevel}. Mezcla tipos: significado, traducción, definición. JSON completo.`;
+    return `Generate exactly 5 Estonian vocabulary questions for ${this.cefrLevel} level.
+
+Each question must have:
+- Clear question in Spanish about Estonian vocabulary
+- 4 multiple choice options
+- One correct answer  
+- Brief explanation in Spanish
+- Vocabulary appropriate for ${this.cefrLevel} level
+
+Mix different question types: meaning, translation, definition, word grouping.
+
+Return complete JSON with all 5 questions.`;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 600, // Balanced for complete JSON
-      temperature: 0.3,
+      maxTokens: 800, // Increased for complete 5-question JSON
+      temperature: 0.4, // More creative variety
       topP: 0.85,
-      frequencyPenalty: 0.1,
+      frequencyPenalty: 0.15, // More variety in word selection
       presencePenalty: 0.1
     };
   }
