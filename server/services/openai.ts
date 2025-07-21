@@ -698,7 +698,10 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `You are a specialized Estonian grammar teacher. Create exactly 5 Estonian error detection questions for CEFR level ${cefrLevel}.
+          system: `You are a specialized Estonian grammar teacher. Create exactly 5 Estonian error detection questions specifically tailored for CEFR level ${cefrLevel}.
+
+FOR CEFR ${cefrLevel} LEVEL:
+${this.getCefrGuidanceForErrorDetection(cefrLevel)}
 
 MANDATORY JSON FORMAT:
 {"questions":[{"question":"Leia lausest grammatiline viga: [Estonian sentence with ONE grammatical error]","translation":"[Spanish translation of the Estonian sentence]","options":["word1","word2","word3","word4"],"correctAnswer":"[the incorrect word]","explanation":"[Spanish explanation in 5-8 words]"}]}
@@ -714,12 +717,12 @@ STRICT REQUIREMENTS:
 REAL ERROR EXAMPLES:
 - Wrong case: "Ma lähen pood" → should be "poodi" (illative case needed)
 - Wrong verb: "Ta lähevad kooli" → should be "läheb" (3rd person singular)
-- Wrong adjective: "Meie sõbrad on tore" → should be "head" (plural form)
+- Wrong adjective: "Meie sõbrad on tore" → should be "toredad" (plural form)
 - Wrong word order: "Koolis ma käin" → should be "Ma käin koolis"
 
 CRITICAL: Use authentic Estonian grammar rules. Common errors:
 - Missing illative case (-sse, -de, vowel change)
-- Wrong plural forms (head vs tore, etc.)
+- Wrong plural forms (toredad vs tore, etc.)
 - Incorrect verb conjugations
 - Word order mistakes
 
@@ -734,6 +737,61 @@ Generate varied, realistic Estonian sentences with authentic grammatical mistake
           user: `5 questions with options, correct answer, explanation.`,
           maxTokens: 700
         };
+    }
+  }
+
+  private getCefrGuidanceForErrorDetection(cefrLevel: string): string {
+    switch (cefrLevel) {
+      case "A1":
+        return `A1 Level - Focus on basic errors:
+- Simple present tense mistakes
+- Basic case errors (nominative/partitive confusion)
+- Elementary word order problems
+- Simple adjective agreement errors
+Use very simple vocabulary and short sentences.`;
+      
+      case "A2":
+        return `A2 Level - Focus on elementary errors:
+- Basic case system mistakes (illative, partitive)
+- Simple verb conjugation errors
+- Basic plural forms (tore/toredad)
+- Simple sentence structure problems
+Use everyday vocabulary and moderate sentence length.`;
+      
+      case "B1":
+        return `B1 Level - Focus on intermediate errors:
+- Complex case system mistakes
+- Conditional and past tense errors
+- Adjective declension problems
+- More complex word order issues
+Use intermediate vocabulary and varied sentence structures.`;
+      
+      case "B2":
+        return `B2 Level - Focus on advanced intermediate errors:
+- Subtle case distinctions
+- Complex verb forms and moods
+- Advanced word order variations
+- Nuanced adjective agreements
+Use sophisticated vocabulary and complex sentences.`;
+      
+      case "C1":
+        return `C1 Level - Focus on advanced errors:
+- Sophisticated grammatical nuances
+- Complex syntactic structures
+- Advanced stylistic choices
+- Subtle semantic distinctions
+Use advanced vocabulary and intricate sentence patterns.`;
+      
+      case "C2":
+        return `C2 Level - Focus on mastery-level errors:
+- Very subtle grammatical distinctions
+- Complex literary structures
+- Advanced stylistic variations
+- Nuanced semantic relationships
+Use native-level vocabulary and complex grammatical structures.`;
+      
+      default:
+        return `B1 Level - Standard intermediate errors focusing on case system and verb conjugations.`;
     }
   }
 }
