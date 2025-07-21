@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { estonianCorpus } from "./estonianCorpus";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
@@ -805,6 +806,9 @@ SELGITUSTE KEELE NÕUE (ABSOLUUTSELT KOHUSTUSLIK):
 - KEELATUD: segakeelsed selgitused
 - KOHUSTUSLIK: ainult hispaania sõnad explanation tekstis
 
+KORPUSE TEADMISED (Estonian Linguistic Accuracy):
+${this.getCorpusKnowledge(cefrLevel)}
+
 ${cefrLevel} TASEME NÕUDED:
 ${this.getDifficultyGuidance(cefrLevel)}`,
 
@@ -1045,6 +1049,23 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
           frequencyPenalty: 0.0
         };
     }
+  }
+
+  /**
+   * Get Estonian corpus knowledge for AI prompts
+   */
+  private getCorpusKnowledge(cefrLevel: string): string {
+    const vocabulary = estonianCorpus.getVocabularyByLevel(cefrLevel);
+    const sentences = estonianCorpus.getSentencesByLevel(cefrLevel);
+    const grammarExamples = estonianCorpus.generateGrammarExamples("case_system", cefrLevel);
+
+    return `
+AUTHENTIC ESTONIAN PATTERNS (${cefrLevel} level):
+- Vocabulary: ${vocabulary.slice(0, 10).join(", ")}
+- Sample structures: ${sentences.slice(0, 2).map(s => `"${s.text}"`).join(", ")}
+- Grammar patterns: ${grammarExamples.slice(0, 3).join(", ")}
+- Word order: Follow Estonian SVO with flexible adverb placement
+- Morphology: Use authentic case endings from corpus data`;
   }
 
   private getCefrFallbackSentences(cefrLevel: string) {
