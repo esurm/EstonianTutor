@@ -30,7 +30,7 @@ interface ProgressData {
 }
 
 interface ProgressDashboardProps {
-  onModeSelect?: (mode: string) => void;
+  onModeSelect?: (mode: "chat" | "quiz-vocabulary" | "quiz-grammar" | "quiz-conjugation" | "quiz-sentence-reordering" | "quiz-error-detection" | "dialogue" | "pronunciation" | "grammar") => void;
 }
 
 export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {}) {
@@ -223,6 +223,33 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             >
               <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>
               <span className="text-sm font-medium text-gray-900">Quiz de Gramática</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("quiz-conjugation")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-rose-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Quiz de Conjugación</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("quiz-sentence-reordering")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-amber-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Reordenamiento de Oraciones</span>
+            </Button>
+            
+            <Button
+              onClick={() => onModeSelect?.("quiz-error-detection")}
+              variant="ghost"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors h-auto"
+            >
+              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-900">Detección de Errores</span>
             </Button>
           </div>
         </div>
