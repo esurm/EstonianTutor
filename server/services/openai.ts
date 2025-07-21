@@ -337,6 +337,18 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         // Validate that we got actual questions, not fallback
         if (result.questions && result.questions.length > 0) {
           console.log(`✅ Successfully parsed ${result.questions.length} quiz questions`);
+          console.log(`🔍 First question preview:`, JSON.stringify(result.questions[0], null, 2));
+          
+          // Validate sentence_reordering specific fields
+          if (category === "sentence_reordering") {
+            const hasRequiredFields = result.questions.every((q: any) => 
+              q.options && q.correctAnswer && q.explanation
+            );
+            if (!hasRequiredFields) {
+              console.error("❌ Missing required fields in sentence_reordering questions");
+              throw new Error("Invalid sentence_reordering question structure");
+            }
+          }
           
           // Add cefrLevel to each question for database requirements
           const questionsWithLevel = result.questions.map((q: any) => ({
@@ -356,6 +368,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         console.error("JSON truncation detected - content ends mid-string");
         console.error("Category:", category, "CEFR Level:", cefrLevel);
         console.error("Temperature used:", prompts.temperature);
+        console.error("🚨 FALLING BACK TO HARDCODED QUESTIONS - THIS SHOULDN'T HAPPEN");
         // Return fallback quiz appropriate for the category
         if (category === "sentence_reordering") {
           // Use CEFR-appropriate fallback sentences
