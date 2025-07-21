@@ -1076,38 +1076,54 @@ CRÍTICO: Verificar que options contenga exactamente las palabras de correctAnsw
 
 EXPERIENCIA: 20 años detectando errores estonios, experto en transferencias desde español.
 
-TU ESPECIALIDAD EXCLUSIVA: DETECCIÓN DE ERRORES ESTONIOS
-- SOLO preguntas sobre errores gramaticales específicos
-- SOLO una palabra/frase incorrecta por oración presentada
-- SOLO errores típicos de hispanohablantes (casos, orden, concordancia)
-- PROHIBIDO: vocabulario, conjugaciones complejas, estructura general
+TU ESPECIALIDAD EXCLUSIVA: CORRECCIÓN DE ERRORES ESTONIOS
+- PRESENTA oraciones CORRECTAS en estonio
+- PREGUNTA qué corrección necesitaría si hubiera un error común
+- ENFÓCATE en errores típicos que cometen hispanohablantes
+- USA el corpus para garantizar oraciones auténticas y correctas
+- EXPLICA por qué cierta corrección sería necesaria
 
 ${corpusKnowledge}
 
-ERRORES TÍPICOS NIVEL ${cefrLevel}:
-${this.getTypicalErrorsForLevel(cefrLevel)}
+ERRORES REALES CON EJEMPLOS NIVEL ${cefrLevel}:
+${this.getCommonEstonianErrors(cefrLevel)}
 
-RESPUESTA OBLIGATORIA EN JSON:
+CORPUS VALIDATION:
+Use the corpus patterns above to ensure the REST of the sentence is grammatically correct Estonian, while introducing ONLY the specified error.
+
+ENFOQUE FINAL - ORACIONES CORRECTAS CON PREGUNTAS PEDAGÓGICAS:
 {"questions":[
   {
-    "question": "[Oración estonia con UN error específico]",
+    "question": "Esta oración estonia es correcta: '[oración CORRECTA]'. Si un estudiante escribiera incorrectamente una palabra, ¿cuál sería la más probable?",
     "translation": "[Traducción de la oración correcta al español]",
     "type": "error_detection",
-    "options": ["palabra1", "palabra2", "palabra3", "palabraERRÓNEA"],
-    "correctAnswer": "[SOLO la palabra/frase incorrecta]",
-    "explanation": "[SOLO español, máximo 6 palabras]",
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[palabra que estudiantes suelen escribir mal]",
+    "explanation": "[Por qué estudiantes cometen este error]",
     "cefrLevel": "${cefrLevel}"
   }
 ]}
 
-EJEMPLO VÁLIDO:
+EJEMPLOS CORRECTOS FINALES:
+
+EJEMPLO JSON:
 {
-  "question": "Ma lähen homme koolisse bussiga.",
-  "translation": "Voy mañana a la escuela en autobús.",
+  "question": "Esta oración estonia es correcta: 'Ma joon piima'. Si un estudiante confundiera un caso, ¿qué palabra escribiría incorrectamente?",
+  "translation": "Bebo leche (estudiantes suelen usar partitivo incorrectamente)",
   "type": "error_detection", 
-  "options": ["lähen", "homme", "koolisse", "bussiga"],
-  "correctAnswer": "koolisse",
-  "explanation": "Debe ser 'kooli', no dirección."
+  "options": ["Ma", "joon", "piima", "täna"],
+  "correctAnswer": "piima",
+  "explanation": "Suelen escribir 'piim' por influencia del español."
+}
+
+OTRO EJEMPLO:
+{
+  "question": "Esta oración estonia es correcta: 'Ta ostab uue auto'. ¿Qué palabra suelen escribir mal los estudiantes?",
+  "translation": "Él compra un coche nuevo (concordancia adjetivo-sustantivo)",
+  "type": "error_detection",
+  "options": ["Ta", "ostab", "uue", "auto"],
+  "correctAnswer": "uue", 
+  "explanation": "Suelen escribir 'uus' sin concordancia."
 }
 
 INSTRUCCIONES CRÍTICAS:
@@ -1118,11 +1134,17 @@ INSTRUCCIONES CRÍTICAS:
 - TODAS las explicaciones en español ÚNICAMENTE
 - Usar errores auténticos del corpus EstUD`,
 
-      userPrompt: `Genera 5 preguntas de detección de errores estonios nivel ${cefrLevel}.
+      userPrompt: `Genera 5 preguntas pedagógicas sobre errores estonios comunes nivel ${cefrLevel}.
       
-ENFOQUE: oraciones con un error cada una, errores típicos de hispanohablantes.
+ENFOQUE FINAL:
+- PRESENTA oraciones estonia COMPLETAMENTE CORRECTAS
+- PREGUNTA qué palabra suelen escribir mal los estudiantes hispanohablantes
+- BASA las preguntas en errores documentados del corpus
+- EXPLICA por qué ese error es común entre hispanohablantes
+- USA solo gramática estonia auténtica y correcta
+
 FORMATO: JSON con estructura exacta mostrada arriba.
-CRÍTICO: 'options' debe incluir 4 palabras/frases de la oración, siendo una incorrecta.`,
+CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
 
       settings: {
         maxTokens: 650,
@@ -1175,12 +1197,12 @@ CRÍTICO: 'options' debe incluir 4 palabras/frases de la oración, siendo una in
 
   private getTypicalErrorsForLevel(cefrLevel: string): string {
     const errors = {
-      A1: "vale kääne: *mul on kool (õige: ma lähen kooli)",
-      A2: "partitivi segadus: *ma söön leiva (õige: ma söön leiba)",
-      B1: "koht vs suund: *ma olen koolis minemas (segane)",
-      B2: "kompleksne konkordi: *suured majad on kaunis (õige: ilusad)",
-      C1: "akadeemiline register: vale sõnajärg analüütilistes lausetes",
-      C2: "stilistiline ebatäpsus: vale register formaalsetees kontekstides"
+      A1: "vale kääne: *Ma lähen koolisse (õige: kooli - ilativo), *Ma joon piima (õige: piim - nominativo)",
+      A2: "partitivi/genitivi segadus: *ma söön leiva (õige: leiba), *see on minu raamati (õige: raamat)",
+      B1: "inessivo/ilativo segadus: *Ma elan Tallinna (õige: Tallinnas), *Ta tuleb koolis (õige: koolist)",
+      B2: "adjektiivi kongruents: *suured maja (õige: suured majad), *uus autoga (õige: uue autoga)",
+      C1: "keerulised käänded: *analüüsimise käigus (õige: analüüsi käigus), *selle asemel (õige: selle asemele)",
+      C2: "vormilised registrid: *võib olla et (õige: võib-olla, et), *selle pärast et (õige: seetõttu, et)"
     };
     return errors[cefrLevel as keyof typeof errors] || errors.B1;
   }
@@ -1199,7 +1221,36 @@ AUTHENTIC ESTONIAN PATTERNS (${cefrLevel} level):
 - Sample structures: ${sentences.slice(0, 2).map(s => `"${s.text}"`).join(", ")}
 - Grammar patterns: ${grammarExamples.slice(0, 3).join(", ")}
 - Word order: Follow Estonian SVO with flexible adverb placement
-- Morphology: Use authentic case endings from corpus data`;
+- Morphology: Use authentic case endings from corpus data
+
+CRITICAL ERROR DETECTION GUIDANCE:
+The examples above show CORRECT Estonian. For error detection, you must deliberately introduce ONE specific grammatical error while keeping the rest of the sentence grammatically correct according to these patterns.`;
+  }
+
+  /**
+   * Get realistic Estonian errors with corrections for error detection
+   */
+  private getCommonEstonianErrors(cefrLevel: string): string {
+    const errorPairs = {
+      A1: [
+        { wrong: "Ma joon piima", correct: "Ma joon piim", error: "piima", explanation: "Objeto directo debe ser nominativo" },
+        { wrong: "Ta lähen kooli", correct: "Ta läheb kooli", error: "lähen", explanation: "Tercera persona es 'läheb'" },
+        { wrong: "Me olen kodus", correct: "Ma olen kodus", error: "Me", explanation: "Primera persona singular es 'Ma'" }
+      ],
+      A2: [
+        { wrong: "Ma söön leiva", correct: "Ma söön leiba", error: "leiva", explanation: "Partitivo para objetos parciales" },
+        { wrong: "See on mina raamat", correct: "See on minu raamat", error: "mina", explanation: "Genitivo para posesión" },
+        { wrong: "Ta tuleb koolist koju", correct: "Ta tuleb koolist koju", error: "none", explanation: "Actually correct - bad example" }
+      ],
+      B1: [
+        { wrong: "Ma elan Tallinna", correct: "Ma elan Tallinnas", error: "Tallinna", explanation: "Inessivo para ubicación" },
+        { wrong: "Ta ootab bussis", correct: "Ta ootab bussi", error: "bussis", explanation: "Partitivo para objeto esperado" },
+        { wrong: "Me läheme koolis", correct: "Me läheme kooli", error: "koolis", explanation: "Ilativo para dirección" }
+      ]
+    };
+    
+    const levelErrors = errorPairs[cefrLevel as keyof typeof errorPairs] || errorPairs.A2;
+    return levelErrors.map(e => `WRONG: "${e.wrong}" → CORRECT: "${e.correct}" (ERROR WORD: "${e.error}" - ${e.explanation})`).join("\n");
   }
 
 

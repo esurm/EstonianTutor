@@ -67,6 +67,8 @@ The application uses a comprehensive schema designed around language learning:
 - **ZERO FALLBACK POLICY**: Removed all deprecated fallback quiz code - only authentic AI professors with Estonian corpus knowledge
 - **Systematic review completed**: All 5 specialized AI professors verified with proper Estonian linguistic corpus access
 - **Error detection interface fixed**: AI now generates proper options array for click-to-select functionality
+- **Error detection accuracy improved**: Fixed AI professor to only generate genuine grammatical errors, not stylistic differences
+- **BREAKTHROUGH: Error detection pedagogical redesign**: Resolved core issue where AI couldn't reliably generate incorrect Estonian due to training conflicts. New approach presents correct Estonian and asks about common learner errors pedagogically - dramatically improved accuracy and authenticity
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
