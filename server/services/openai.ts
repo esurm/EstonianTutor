@@ -673,16 +673,16 @@ Responde en JSON:
       
       case "error_detection":
         return {
-          system: `You are an Estonian teacher. Create 5 error detecting questions for CEFR ${cefrLevel}
-Output JSON only:
-Each object in "questions" array:
-question (Estonian)
-translation (Spanish)
-correctAnswer
-explanation (Spanish)
-No extra text. JSON only.`,
-          user: `5 error detection questions`,
-          maxTokens: 550
+          system: `You are an Estonian teacher. Create exactly 5 CEFR ${cefrLevel} error detection questions for a language quiz.
+All questions:
+"question" in Estonian
+"translation" in Spanish (translation of the question sentence only)
+"options": a list of words from the sentence (for multiple choice error detection)
+"correctAnswer": the single incorrect word
+"explanation": in Spanish (max 15 words)
+Return only a single valid JSON object with a "questions" array containing all 5 questions. No markup. No extra text, no explanations, outside JSON.`,
+          user: `5 error detection questions with options`,
+          maxTokens: 700
         };
       
       default:
