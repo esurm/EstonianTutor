@@ -246,6 +246,23 @@ My Spanish-speaking students really benefit from your clear explanations of WHY 
 Could you focus on sentences that use vocabulary they already know at ${this.cefrLevel} level?`;
   }
 
+  // Generate questions directly from hardcoded patterns (bypasses AI)
+  generateDirectQuestions(): any {
+    const patterns = this.getSentencePatterns();
+    const selectedPatterns = patterns.slice(0, 5); // Take first 5 patterns
+    
+    const questions = selectedPatterns.map((pattern, index) => ({
+      question: "Ordena las palabras para formar una oración correcta en estonio:",
+      type: "sentence_reordering",
+      options: [...pattern.words], // Copy the scrambled words array
+      correctAnswer: pattern.sentence,
+      explanation: pattern.explanation,
+      cefrLevel: this.cefrLevel
+    }));
+
+    return { questions };
+  }
+
   getSettings(): ProfessorSettings {
     return {
       maxTokens: 650, // Adequate for 5 sentence reordering questions

@@ -237,6 +237,23 @@ Your clear explanations in Spanish really help my students understand WHY Estoni
 Could you create questions that teach the essential case usage for ${this.cefrLevel} level?`;
   }
 
+  // Generate questions directly from hardcoded patterns (bypasses AI)
+  generateDirectQuestions(): any {
+    const patterns = this.getGrammarPatterns();
+    const selectedPatterns = patterns.slice(0, 5); // Take first 5 patterns
+    
+    const questions = selectedPatterns.map((pattern, index) => ({
+      question: `Completa: '${pattern.template}' (${pattern.word})`,
+      type: "multiple_choice",
+      options: [...pattern.options],
+      correctAnswer: pattern.correct,
+      explanation: pattern.explanation,
+      cefrLevel: this.cefrLevel
+    }));
+
+    return { questions };
+  }
+
   getSettings(): ProfessorSettings {
     return {
       maxTokens: 700, // Adequate for 5 grammar questions with explanations

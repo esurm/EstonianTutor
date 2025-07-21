@@ -102,6 +102,27 @@ Make sure the vocabulary is appropriate for ${this.cefrLevel} level and will be 
 The students really benefit from your clear Spanish explanations!`;
   }
 
+  // Generate questions directly from hardcoded patterns (bypasses AI)
+  generateDirectQuestions(): any {
+    const words = this.getVocabularyWords();
+    const selectedWords = words.slice(0, 5); // Take first 5 words
+    
+    const questions = selectedWords.map((word, index) => {
+      const options = [word.spanish, ...word.distractors].sort(() => Math.random() - 0.5);
+      
+      return {
+        question: `¿Qué significa '${word.estonian}'?`,
+        type: "multiple_choice",
+        options: options,
+        correctAnswer: word.spanish,
+        explanation: `'${word.estonian}' significa ${word.spanish} en estonio. Palabra muy básica y útil.`,
+        cefrLevel: this.cefrLevel
+      };
+    });
+
+    return { questions };
+  }
+
   getSettings(): ProfessorSettings {
     return {
       maxTokens: 700, // Adequate for 5 vocabulary questions with explanations

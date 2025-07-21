@@ -235,6 +235,37 @@ REGLAS IMPORTANTES:
     return `Crea 5 preguntas de detección de errores para nivel ${this.cefrLevel}. Usa los patrones dados. Solo JSON.`;
   }
 
+  // Generate questions directly from hardcoded patterns (bypasses AI)
+  generateDirectQuestions(): any {
+    const patterns = this.getErrorPatterns();
+    const selectedPatterns = patterns.slice(0, 5); // Take first 5 patterns
+    
+    const questions = selectedPatterns.map((pattern, index) => {
+      const words = pattern.sentence.split(' ');
+      const options = words.filter(word => word !== pattern.error)
+        .slice(0, 3)
+        .concat(pattern.error)
+        .sort(() => Math.random() - 0.5); // Shuffle options
+      
+      // Ensure we have exactly 4 options
+      while (options.length < 4) {
+        options.push('correcta');
+      }
+      
+      return {
+        question: `¿Qué palabra está incorrecta en: '${pattern.sentence}'?`,
+        translation: pattern.translation,
+        type: "error_detection",
+        options: options.slice(0, 4),
+        correctAnswer: pattern.error,
+        explanation: pattern.explanation,
+        cefrLevel: this.cefrLevel
+      };
+    });
+
+    return { questions };
+  }
+
   getSettings(): ProfessorSettings {
     return {
       maxTokens: 600,

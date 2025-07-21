@@ -235,6 +235,23 @@ Focus on the verb forms that Spanish speakers at this level need to master. Use 
 Could you create exercises that reinforce the essential verb patterns for ${this.cefrLevel} level?`;
   }
 
+  // Generate questions directly from hardcoded patterns (bypasses AI)
+  generateDirectQuestions(): any {
+    const patterns = this.getConjugationPatterns();
+    const selectedPatterns = patterns.slice(0, 5); // Take first 5 patterns
+    
+    const questions = selectedPatterns.map((pattern, index) => ({
+      question: `¿Cuál es la forma correcta? '${pattern.template}' (${pattern.verb})`,
+      type: "multiple_choice",
+      options: [...pattern.options],
+      correctAnswer: pattern.correct,
+      explanation: pattern.explanation,
+      cefrLevel: this.cefrLevel
+    }));
+
+    return { questions };
+  }
+
   private getCEFRVerbGuidance(): string {
     const guidance = {
       A1: `BASIC VERBS - Present tense fundamentals:

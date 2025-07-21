@@ -302,19 +302,33 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     }
   }
 
-  // SPECIALIZED QUIZ GENERATION WITH CORPUS INTEGRATION
+  // SPECIALIZED QUIZ GENERATION WITH HARDCODED PATTERNS
   async generateQuiz(cefrLevel: string, category?: string): Promise<QuizGeneration> {
     try {
       console.log(`🎓 Activating ${category?.toUpperCase() || 'VOCABULARY'} Professor for CEFR level ${cefrLevel}`);
       
-      // Skip complex Estonian validation for faster generation
-      console.log(`⚡ Using direct AI generation for faster quiz creation`);
+      // Use direct generation for instant quiz creation
+      console.log(`⚡ Using direct hardcoded generation for instant quiz creation`);
       
       // Get corpus knowledge
       const corpusKnowledge = this.getCorpusKnowledge(cefrLevel);
       
       // Create specialized professor
       const professor = createProfessor(category || 'vocabulary', cefrLevel, corpusKnowledge);
+      
+      // Check if professor has direct generation method
+      if (typeof (professor as any).generateDirectQuestions === 'function') {
+        const startTime = Date.now();
+        const result = (professor as any).generateDirectQuestions();
+        const endTime = Date.now();
+        
+        console.log(`⚡ Direct generation completed in ${endTime - startTime}ms`);
+        console.log(`✅ Generated ${result.questions.length} ${category} questions instantly`);
+        
+        return { questions: result.questions };
+      }
+      
+      // Fallback to AI generation if direct method not available
       const config = professor.getProfessor();
       
       const startTime = Date.now();
