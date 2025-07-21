@@ -53,6 +53,10 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
 
+  // Sentence reordering state
+  const [sentenceOrder, setSentenceOrder] = useState<string[]>([]);
+  const [availableWords, setAvailableWords] = useState<string[]>([]);
+
   const { toast } = useToast();
   const { user } = useCEFRTracking();
   const { playAudio, synthesizeSpeech } = useSpeech();
@@ -118,6 +122,51 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
+  };
+
+  // Initialize sentence reordering for new question
+  useEffect(() => {
+    if (category === "sentence_reordering" && currentQuestion?.options) {
+      setSentenceOrder([]);
+      setAvailableWords([...currentQuestion.options]);
+      setSelectedAnswer("");
+    }
+  }, [currentQuestionIndex, category, currentQuestion]);
+
+  // Handle sentence reordering logic
+  const handleWordSelect = (word: string) => {
+    if (category === "sentence_reordering") {
+      // Add word to sentence and remove from available
+      const newOrder = [...sentenceOrder, word];
+      const newAvailable = availableWords.filter(w => w !== word);
+      
+      setSentenceOrder(newOrder);
+      setAvailableWords(newAvailable);
+      
+      // Update selectedAnswer to be the complete sentence
+      setSelectedAnswer(newOrder.join(" "));
+    }
+  };
+
+  const handleWordRemove = (index: number) => {
+    if (category === "sentence_reordering") {
+      // Remove word from sentence and add back to available
+      const removedWord = sentenceOrder[index];
+      const newOrder = sentenceOrder.filter((_, i) => i !== index);
+      const newAvailable = [...availableWords, removedWord];
+      
+      setSentenceOrder(newOrder);
+      setAvailableWords(newAvailable);
+      setSelectedAnswer(newOrder.join(" "));
+    }
+  };
+
+  const handleResetSentence = () => {
+    if (category === "sentence_reordering" && currentQuestion?.options) {
+      setSentenceOrder([]);
+      setAvailableWords([...currentQuestion.options]);
+      setSelectedAnswer("");
+    }
   };
 
   const handleSubmitAnswer = () => {
@@ -590,6 +639,100 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
               <p className="text-xs text-gray-500 italic">
                 Pista: La respuesta debe estar en estonio y coincidir exactamente con la palabra correcta.
               </p>
+            </div>
+          ) : category === "sentence_reordering" ? (
+            <div className="space-y-4">
+              <label className="text-sm font-medium text-gray-700">
+                Ordena las palabras para formar la oración correcta:
+              </label>
+              
+              {/* Current sentence being built */}
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-4 min-h-[60px]">
+                <div className="text-sm text-gray-500 mb-2">Tu oración:</div>
+                <div className="flex flex-wrap gap-2 min-h-[32px]">
+                  {sentenceOrder.length === 0 ? (
+                    <span className="text-gray-400 italic">Selecciona palabras para construir la oración...</span>
+                  ) : (
+                    sentenceOrder.map((word, index) => (
+                      <span
+                        key={`${word}-${index}`}
+                        onClick={() => !showAnswerFeedback && handleWordRemove(index)}
+                        className={`px-3 py-1 bg-blue-100 border border-blue-300 rounded-md text-blue-800 cursor-pointer hover:bg-blue-200 transition-colors ${
+                          showAnswerFeedback ? "cursor-default" : ""
+                        }`}
+                      >
+                        {word}
+                        {!showAnswerFeedback && (
+                          <span className="ml-2 text-blue-600 hover:text-blue-800">×</span>
+                        )}
+                      </span>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Available words to select */}
+              <div className="space-y-2">
+                <div className="text-sm text-gray-500">Palabras disponibles:</div>
+                <div className="flex flex-wrap gap-2">
+                  {availableWords.map((word, index) => (
+                    <button
+                      key={`${word}-available-${index}`}
+                      onClick={() => !showAnswerFeedback && handleWordSelect(word)}
+                      disabled={showAnswerFeedback}
+                      className={`px-3 py-2 border-2 rounded-lg transition-all ${
+                        showAnswerFeedback
+                          ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                          : "border-gray-300 bg-white hover:border-primary hover:bg-blue-50 text-gray-700 cursor-pointer"
+                      }`}
+                    >
+                      {word}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reset button */}
+              {sentenceOrder.length > 0 && !showAnswerFeedback && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetSentence}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Reiniciar Oración
+                </Button>
+              )}
+
+              {/* Show feedback after answer */}
+              {showAnswerFeedback && (
+                <div className={`border rounded-lg p-4 ${
+                  isAnswerCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+                }`}>
+                  <div className="flex items-center space-x-2 mb-2">
+                    {isAnswerCorrect ? (
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-red-600" />
+                    )}
+                    <span className={`font-medium ${isAnswerCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                      {isAnswerCorrect ? '¡Correcto!' : 'Incorrecto'}
+                    </span>
+                  </div>
+                  {!isAnswerCorrect && (
+                    <div className="text-sm">
+                      <div className="mb-2">
+                        <span className="text-gray-600">Tu respuesta:</span>
+                        <span className="ml-2 text-red-700 font-medium">{selectedAnswer}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Respuesta correcta:</span>
+                        <span className="ml-2 text-green-700 font-medium">{currentQuestion.correctAnswer}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             currentQuestion.options?.map((option, index) => {
