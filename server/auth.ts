@@ -61,7 +61,7 @@ export function setupAuth(app: Express) {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.NODE_ENV === "production" 
-        ? `${process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN || 'https://your-app.railway.app'}/auth/google/callback`
+        ? `${process.env.RAILWAY_PUBLIC_DOMAIN || 'https://nohemy.up.railway.app'}/auth/google/callback`
         : "/auth/google/callback"
     }, async (accessToken, refreshToken, profile, done) => {
       try {
