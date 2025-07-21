@@ -176,10 +176,10 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("chat")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-2 lg:p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors h-auto dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors h-auto dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
             >
               <div className="w-3 h-3 bg-gray-600 rounded-full dark:bg-gray-400 flex-shrink-0"></div>
-              <span className="text-xs lg:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Conversación General</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Conversación General</span>
             </Button>
             
             <Button
