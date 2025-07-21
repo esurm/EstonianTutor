@@ -118,6 +118,7 @@ MODO: PRÁCTICA DE PRONUNCIACIÓN
 - Proporciona transcripción fonética simplificada
 - Compara con sonidos del español cuando ayuda
 - Practica vocales largas vs cortas (crucial en estonio)
+- When user submits any one word, help them learn to pronounce it
 
 ESTRUCTURA DE RESPUESTA:
 1. Palabra/frase en estonio
