@@ -680,10 +680,9 @@ question (Estonian)
 translation (Spanish)
 correctAnswer
 explanation (Spanish)
-cefrLevel
 No extra text. JSON only.`,
           user: `5 error detection questions`,
-          maxTokens: 700
+          maxTokens: 550
         };
       
       default:
