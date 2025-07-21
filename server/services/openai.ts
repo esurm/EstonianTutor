@@ -334,7 +334,22 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       const content = response.choices[0].message.content || "{}";
       try {
         // Clean response to remove markdown code blocks if present
-        const cleanContent = content.replace(/^```json\s*\n?/g, '').replace(/\n?```$/g, '').trim();
+        let cleanContent = content.replace(/^```json\s*\n?/g, '').replace(/\n?```$/g, '').trim();
+        
+        // Fix common JSON issues for error detection category
+        if (category === 'error_detection') {
+          // Remove any trailing incomplete content after last complete object
+          const lastBraceIndex = cleanContent.lastIndexOf('}');
+          if (lastBraceIndex !== -1 && lastBraceIndex < cleanContent.length - 1) {
+            cleanContent = cleanContent.substring(0, lastBraceIndex + 1);
+          }
+          
+          // Clean up trailing commas and incomplete arrays
+          cleanContent = cleanContent.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+          
+          console.log(`🔧 Cleaned error_detection content (${cleanContent.length} chars)`);
+        }
+        
         const result = JSON.parse(cleanContent);
         
         // Validate that we got actual questions from AI professor
@@ -358,6 +373,22 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         console.error("Raw content preview:", content.substring(0, 500) + "...");
         console.error("Temperature used:", professor.settings.temperature);
         console.error("MaxTokens used:", professor.settings.maxTokens);
+        
+        // For error_detection category, try to salvage partial JSON
+        if (category === 'error_detection') {
+          console.log(`🔧 Attempting to salvage error_detection JSON...`);
+          try {
+            // Extract just the questions array if possible
+            const questionsMatch = content.match(/"questions":\s*\[(.*?)\]/s);
+            if (questionsMatch) {
+              const questionsContent = questionsMatch[1];
+              console.log(`Found questions content: ${questionsContent.substring(0, 200)}...`);
+            }
+          } catch (salvageError) {
+            console.error("Salvage attempt failed:", salvageError);
+          }
+        }
+        
         throw new Error(`${professor.name} failed to generate valid quiz. Please try again.`);
       }
     } catch (error) {
@@ -1147,7 +1178,7 @@ FORMATO: JSON con estructura exacta mostrada arriba.
 CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
 
       settings: {
-        maxTokens: 650,
+        maxTokens: 500, // Reduced to prevent JSON truncation
         temperature: 0.1,
         topP: 1.0,
         frequencyPenalty: 0.1,
