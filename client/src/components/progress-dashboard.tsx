@@ -96,7 +96,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
   };
 
   return (
-    <Card className="h-full">
+    <Card className="h-full lg:min-h-[calc(100vh-180px)]">
       <CardHeader>
         <div className="flex items-center space-x-2">
           <TrendingUp className="h-4 w-4 text-primary" />
@@ -104,7 +104,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         </div>
       </CardHeader>
       
-      <CardContent className="h-full overflow-y-auto p-6 flex flex-col">
+      <CardContent className="space-y-6 overflow-y-auto lg:h-full lg:flex lg:flex-col p-6">
         <div className="space-y-6 flex-shrink-0 -mt-5">
         {/* CEFR Level Display */}
         <div className="bg-blue-600 rounded-lg p-4 text-white">
@@ -166,20 +166,20 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         </div>
 
         {/* Chat Mode Selector */}
-        <div className="mt-9">
+        <div className="lg:mt-auto">
           <div className="flex items-center space-x-2 mb-3">
             <MessageSquare className="h-4 w-4 text-primary" />
             <h4 className="font-medium text-gray-900">Modos de Aprendizaje</h4>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
             <Button
               onClick={() => onModeSelect?.("chat")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors h-auto dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
+              className="w-full flex items-center justify-start space-x-3 p-2 lg:p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors h-auto dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
             >
-              <div className="w-3 h-3 bg-gray-600 rounded-full dark:bg-gray-400"></div>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Conversación General</span>
+              <div className="w-3 h-3 bg-gray-600 rounded-full dark:bg-gray-400 flex-shrink-0"></div>
+              <span className="text-xs lg:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Conversación General</span>
             </Button>
             
             <Button

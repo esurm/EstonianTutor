@@ -33,8 +33,8 @@ export default function Home() {
         return <QuizInterface category="error_detection" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
       case "dialogue":
         return (
-          <div className="h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[calc(100vh-180px)]">
               <div className="lg:col-span-3">
                 <ChatInterface 
                   key="dialogue" 
@@ -52,8 +52,8 @@ export default function Home() {
         );
       case "pronunciation":
         return (
-          <div className="h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[calc(100vh-180px)]">
               <div className="lg:col-span-3">
                 <ChatInterface 
                   key="pronunciation" 
@@ -71,8 +71,8 @@ export default function Home() {
         );
       case "grammar":
         return (
-          <div className="h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[calc(100vh-180px)]">
               <div className="lg:col-span-3">
                 <ChatInterface 
                   key="grammar" 
@@ -91,8 +91,8 @@ export default function Home() {
       case "chat":
       default:
         return (
-          <div className="h-full">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[calc(100vh-180px)]">
               <div className="lg:col-span-3">
                 <ChatInterface 
                   placeholder="¿Qué querés aprender hoy? Escribí en español o estonio..." 
@@ -111,13 +111,11 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="flex-1 px-4 sm:px-6 lg:px-8 py-6 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto">
-          {renderMainContent()}
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {renderMainContent()}
       </div>
     </div>
   );
