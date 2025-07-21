@@ -1,5 +1,6 @@
 import { BaseProfessor, ProfessorSettings } from './base-professor';
 import { estonianCorpus } from '../estonianCorpus';
+import { estonianErrorGenerator } from '../estonian-error-generator';
 
 export class ErrorDetectionProfessor extends BaseProfessor {
   getName(): string {
@@ -7,53 +8,118 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `You are an Estonian ERROR DETECTION expert for ${this.cefrLevel} level. 
+    const corpusKnowledge = this.corpusKnowledge || "";
+    
+    return `You are an Estonian ERROR DETECTION expert for ${this.cefrLevel} level using authentic Estonian corpus data.
+
+CORPUS-BASED VOCABULARY FOR ${this.cefrLevel}:
+${corpusKnowledge}
 
 Create 5 Estonian sentences with EXACTLY ONE grammatical error each. Focus on common mistakes Spanish speakers make learning Estonian.
 
-CRITICAL RULES:
-1. Each sentence has ONE clear grammatical error
+CRITICAL RULES - USE CORPUS GUIDANCE:
+1. Each sentence has ONE clear grammatical error 
 2. Error must be a single word that's grammatically wrong
-3. Provide 3-4 options including the error word
-4. Give brief explanation in Spanish
-5. Use vocabulary appropriate for ${this.cefrLevel} level
+3. Use vocabulary from the corpus appropriate for ${this.cefrLevel} level
+4. Provide 3-4 options including the error word
+5. Give brief explanation in Spanish
+6. Follow authentic Estonian patterns from corpus
 
 ERROR TYPES FOR ${this.cefrLevel}:
 ${this.getCEFRSpecificErrors()}
 
-EXAMPLES:
+CORPUS-VALIDATED EXAMPLES:
 ${this.getSpecificErrorExamplesForLevel()}
 
 REQUIRED JSON FORMAT:
 {
   "questions": [
     {
-      "question": "¿Qué palabra está incorrecta en: 'Ma lähen kooli täna'?",
+      "question": "¿Qué palabra está incorrecta en: '[Estonian sentence with one error]'?",
       "type": "error_detection", 
-      "options": ["Ma", "lähen", "kooli", "täna"],
-      "correctAnswer": "ninguna - la oración es correcta",
-      "explanation": "Esta oración está correcta. 'Ma lähen kooli' significa 'Voy a la escuela'",
+      "options": ["word1", "word2", "ERROR_WORD", "word4"],
+      "correctAnswer": "ERROR_WORD",
+      "explanation": "Explicación en español del error gramatical",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate exactly 5 questions. Make sure each has a real grammatical error.`;
+Generate exactly 5 questions using corpus vocabulary. Each must have a real grammatical error that will be validated by Estonian language tools.`;
   }
 
   getUserPrompt(): string {
     return `Generate exactly 5 Estonian error detection questions for ${this.cefrLevel} level.
 
+IMPORTANT: Use the provided corpus examples and error patterns to create authentic Estonian grammatical errors.
+
 Each question must have:
-- One Estonian sentence with ONE grammatical error
+- One Estonian sentence with EXACTLY ONE grammatical error (verified by corpus)
 - 3-4 word options (including the wrong word)
 - Correct answer identifies the wrong word
-- Spanish explanation of what's wrong
-- Appropriate ${this.cefrLevel} vocabulary
+- Spanish explanation of what's wrong and why
+- Vocabulary from Estonian corpus appropriate for ${this.cefrLevel} level
 
-Focus on errors Spanish speakers commonly make with Estonian grammar.
+Base your errors on authentic Estonian patterns and common mistakes Spanish speakers make learning Estonian grammar.
 
-Return complete JSON with all 5 questions.`;
+Return complete JSON with all 5 questions using corpus-validated examples.`;
+  }
+
+  /**
+   * Enhanced method to generate pre-validated errors using Estonian linguistic tools
+   */
+  async generateValidatedErrors(): Promise<any[]> {
+    try {
+      const estonianErrors = await estonianErrorGenerator.generateErrorsForLevel(this.cefrLevel, 5);
+      
+      return estonianErrors.map((error, index) => ({
+        question: `¿Qué palabra está incorrecta en: '${error.errorSentence}'?`,
+        type: "error_detection",
+        options: this.generateOptionsForError(error),
+        correctAnswer: error.errorWord,
+        explanation: error.explanation,
+        cefrLevel: this.cefrLevel
+      }));
+      
+    } catch (error) {
+      console.error('Failed to generate Estonian validated errors:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Generate realistic options for error detection
+   */
+  private generateOptionsForError(error: any): string[] {
+    const words = error.errorSentence.split(' ');
+    const options = [error.errorWord];
+    
+    // Add other words from the sentence as distractors
+    words.forEach(word => {
+      if (word !== error.errorWord && options.length < 4) {
+        options.push(word);
+      }
+    });
+    
+    // Pad with common Estonian words if needed
+    const commonWords = ['ja', 'on', 'ei', 'või'];
+    commonWords.forEach(word => {
+      if (options.length < 4 && !options.includes(word)) {
+        options.push(word);
+      }
+    });
+    
+    // Shuffle options
+    return this.shuffleArray(options);
+  }
+
+  private shuffleArray(array: any[]): any[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   private getSpecificErrorExamplesForLevel(): string {

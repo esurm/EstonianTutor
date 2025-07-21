@@ -7,19 +7,32 @@ export class SentenceReorderingProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level.
+    const corpusKnowledge = this.corpusKnowledge || "";
+    const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
+    
+    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level using authentic corpus data.
 
-Create 5 sentence reordering exercises where students arrange Estonian words in correct order.
+CORPUS-BASED SENTENCE EXAMPLES FOR ${this.cefrLevel}:
+${sentenceExamples.slice(0, 5).map(s => `"${s.text}" (${s.domain})`).join(", ")}
 
-CRITICAL RULES:
-1. Use vocabulary appropriate for ${this.cefrLevel} level
-2. Provide words in SCRAMBLED order in "options" array
-3. Give ONE clear correct answer (Estonian sentence)
-4. Include Spanish translation of the correct sentence
-5. Brief explanation of the word order pattern used
+VOCABULARY AVAILABLE FOR ${this.cefrLevel}:
+${corpusKnowledge}
+
+Create 5 sentence reordering exercises using authentic Estonian sentence patterns from the corpus.
+
+CRITICAL RULES - USE CORPUS GUIDANCE:
+1. Base sentences on corpus examples for ${this.cefrLevel} level
+2. Use vocabulary from corpus appropriate for ${this.cefrLevel}  
+3. Provide words in SCRAMBLED order in "options" array
+4. Give ONE clear correct answer (Estonian sentence)
+5. Include Spanish translation of the correct sentence
+6. Brief explanation of the Estonian word order pattern used
 
 ESTONIAN WORD ORDER PATTERNS FOR ${this.cefrLevel}:
 ${this.getWordOrderPatterns()}
+
+SENTENCE ALTERNATIVES FROM CORPUS:
+${this.getCorpusAlternatives()}
 
 REQUIRED JSON FORMAT:
 {
@@ -29,13 +42,24 @@ REQUIRED JSON FORMAT:
       "type": "sentence_reordering",
       "options": ["kooli", "Ma", "lähen", "täna"],
       "correctAnswer": "Ma lähen täna kooli",
-      "explanation": "Orden básico: sujeto + verbo + tiempo + lugar. 'Voy hoy a la escuela'",
+      "explanation": "Patrón estonio: sujeto + verbo + tiempo + lugar. 'Voy hoy a la escuela'",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate exactly 5 questions with realistic Estonian sentence structures.`;
+Generate exactly 5 questions based on authentic Estonian corpus patterns.`;
+  }
+
+  private getCorpusAlternatives(): string {
+    const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
+    
+    if (sentenceExamples.length > 0) {
+      const alternatives = estonianCorpus.getAlternatives(sentenceExamples[0].text);
+      return alternatives.length > 0 ? `Alternatives: ${alternatives.join(", ")}` : "No alternatives found in corpus";
+    }
+    
+    return "Use basic Estonian sentence patterns";
   }
 
   getUserPrompt(): string {
