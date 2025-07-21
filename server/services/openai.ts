@@ -378,11 +378,41 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         if (category === 'error_detection') {
           console.log(`🔧 Attempting to salvage error_detection JSON...`);
           try {
-            // Extract just the questions array if possible
-            const questionsMatch = content.match(/"questions":\s*\[(.*?)\]/);
-            if (questionsMatch) {
-              const questionsContent = questionsMatch[1];
-              console.log(`Found questions content: ${questionsContent.substring(0, 200)}...`);
+            // Try to fix truncated JSON by finding the last complete question
+            let fixedContent = cleanContent;
+            
+            // If it ends with incomplete data, find the last complete question
+            if (!fixedContent.endsWith('}')) {
+              const lastCompleteQuestion = fixedContent.lastIndexOf('},{');
+              if (lastCompleteQuestion !== -1) {
+                // Keep everything up to the last complete question
+                fixedContent = fixedContent.substring(0, lastCompleteQuestion) + '}]}';
+                console.log(`🔧 Truncated to last complete question`);
+              } else {
+                // If no complete questions, try to find at least one
+                const firstQuestionEnd = fixedContent.indexOf('}');
+                if (firstQuestionEnd !== -1) {
+                  const questionStart = fixedContent.indexOf('"questions":[{');
+                  if (questionStart !== -1) {
+                    fixedContent = fixedContent.substring(0, questionStart + 14) + 
+                                 fixedContent.substring(questionStart + 14, firstQuestionEnd + 1) + ']}';
+                    console.log(`🔧 Salvaged single question`);
+                  }
+                }
+              }
+            }
+            
+            // Try parsing the fixed content
+            const salvageResult = JSON.parse(fixedContent);
+            if (salvageResult.questions && salvageResult.questions.length > 0) {
+              console.log(`✅ Salvaged ${salvageResult.questions.length} questions from truncated JSON`);
+              
+              const questionsWithLevel = salvageResult.questions.map((q: any) => ({
+                ...q,
+                cefrLevel: cefrLevel
+              }));
+              
+              return { questions: questionsWithLevel };
             }
           } catch (salvageError) {
             console.error("Salvage attempt failed:", salvageError);
@@ -781,38 +811,22 @@ REGLA CRÍTICA PARA EXPLICACIONES:
 - TODAS las explicaciones deben estar en ESPAÑOL únicamente
 - NUNCA uses palabras en estonio en las explicaciones
 - SIEMPRE menciona la palabra correcta específica en la explicación
-- Formato obligatorio: "Error de [tipo], debería ser '[palabra_correcta]'"
-- Máximo 12 palabras en español por explicación
+- Formato obligatorio: "Error de [tipo]"
+- Máximo 4 palabras en español por explicación
 - PROHIBIDO: explicaciones vagas como "pronombre incorrecto"
 - OBLIGATORIO: mencionar la palabra exacta que debería usarse
 
 NIVEL ${cefrLevel} ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
 
-      userPrompt: `Crear 5 ejercicios de detección de errores estonios reales para nivel ${cefrLevel}.
-
-INSTRUCCIONES ESPECÍFICAS PARA DETECCIÓN DE ERRORES:
-- Cada oración debe contener UN error gramatical real y obvio
-- Error debe ser pedagógicamente útil para nivel ${cefrLevel}
-- Crear errores auténticos, no inventados
-- Palabras como opciones para identificar el error
-- En las explicaciones SIEMPRE incluir la palabra correcta específica
-- NO usar explicaciones vagas, mencionar la forma exacta correcta
-
-FORMATO JSON DETECCIÓN DE ERRORES:
+      userPrompt: `JSON exacto:
 {"questions":[
-  {
-    "question": "Leia lause seast grammatiline viga: [oración_con_error_real]",
-    "translation": "[traducción de oración con error]",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[palabra que contiene el error]",
-    "explanation": "Error de [tipo], debería ser '[palabra_exacta]' ([razón_breve])",
-    "questionType": "error_detection",
-    "errorType": "[caso/verbo/plural/tiempo]"
-  }
-]}
-
-EJEMPLOS DE EXPLICACIONES CORRECTAS EN ESPAÑOL:
+{"question":"¿Qué palabra está mal: 'Ma joon piima'?","translation":"Bebo leche","type":"error_detection","options":["Ma","joon","piima","vee"],"correctAnswer":"piima","explanation":"Error caso"},
+{"question":"¿Qué palabra está mal: 'Ma lähen koolis'?","translation":"Voy escuela","type":"error_detection","options":["Ma","lähen","koolis","koju"],"correctAnswer":"koolis","explanation":"Error lugar"},
+{"question":"¿Qué palabra está mal: 'Ta tuleb kodu'?","translation":"Viene casa","type":"error_detection","options":["Ta","tuleb","kodu","koju"],"correctAnswer":"kodu","explanation":"Error dirección"},
+{"question":"¿Qué palabra está mal: 'Me ostame leiv'?","translation":"Compramos pan","type":"error_detection","options":["Me","ostame","leiv","leiba"],"correctAnswer":"leiv","explanation":"Error objeto"},
+{"question":"¿Qué palabra está mal: 'Nad läheb kooli'?","translation":"Van escuela","type":"error_detection","options":["Nad","läheb","kooli","lähevad"],"correctAnswer":"läheb","explanation":"Error verbo"}
+]}`
 ✓ "Error de caso, debería ser 'kassi' (partitivo)"
 ✓ "Error de verbo, debería ser 'läheme' (primera persona)"
 ✓ "Error de tiempo, debería ser 'läksin' (pasado)"
@@ -1130,7 +1144,7 @@ ENFOQUE FINAL - ORACIONES CORRECTAS CON PREGUNTAS PEDAGÓGICAS:
     "type": "error_detection",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
     "correctAnswer": "[palabra que estudiantes suelen escribir mal]",
-    "explanation": "[Por qué estudiantes cometen este error]",
+    "explanation": "[máximo 4 palabras en español]",
     "cefrLevel": "${cefrLevel}"
   }
 ]}
@@ -1178,11 +1192,11 @@ FORMATO: JSON con estructura exacta mostrada arriba.
 CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
 
       settings: {
-        maxTokens: 600, // Increased for explanations
-        temperature: 0.2, // Higher for realistic errors
-        topP: 0.9, // More creative error types
-        frequencyPenalty: 0.15, // Vary error patterns
-        presencePenalty: 0.05 // Minimal
+        maxTokens: 250, // Minimum viable for 5 questions
+        temperature: 0.0, // Maximum consistency
+        topP: 0.5, // Very focused
+        frequencyPenalty: 0.0, // No variation needed
+        presencePenalty: 0.0 // No penalties
       }
     };
   }
