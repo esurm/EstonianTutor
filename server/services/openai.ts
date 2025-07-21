@@ -691,29 +691,16 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `Generate exactly 5 Estonian grammar error detection questions for CEFR ${cefrLevel}.
-
-CRITICAL: Each sentence MUST contain exactly ONE real grammar error - incorrect case, wrong verb form, or improper word order.
-
-Question format: "Leia lausest grammatiline viga: [sentence with ONE grammar error]"
-
-STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-
-Fields:
-- question (Estonian with clear grammar error)
-- translation (Spanish translation) 
-- options (4 words from the sentence)
-- correctAnswer (the grammatically INCORRECT word)
-- explanation (Spanish, under 10 words, explain the specific error)
-
-Examples of grammar errors to include:
-- Wrong case: "Ma lähen pood" (should be "poodi")
-- Wrong verb form: "Ta lähevad kooli" (should be "läheb") 
-- Word order: "Koolis ma käin" (should be "Ma käin koolis")
-
-VERIFY each sentence contains a real grammar error before including it!`,
-          user: `5 Estonian grammar error detection questions with verified errors`,
-          maxTokens: 1200
+          system: `Generate 5 Estonian error detection questions for CEFR ${cefrLevel}.
+Format: "Leia lausest grammatiline viga: [sentence with ONE grammar error]"
+JSON: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+CRITICAL: Each sentence must have ONE real grammar error. Examples:
+- Wrong case: "Ma lähen pood" (needs "poodi")
+- Wrong verb: "Ta lähevad" (needs "läheb")
+- Bad order: "Koolis ma käin" (needs "Ma käin koolis")
+correctAnswer = the INCORRECT word. Explanation in Spanish, under 8 words.`,
+          user: `5 error detection questions`,
+          maxTokens: 900
         };
       
       default:
