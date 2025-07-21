@@ -9,14 +9,22 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   getSystemPrompt(): string {
     return `GENERA 5 ORACIONES CON UN ERROR CADA UNA EN FORMATO JSON
 
-CRÍTICO: UN SOLO ERROR por oración.
-Si usas adjetivo+sustantivo, AMBOS en el MISMO caso.
+REGLA ABSOLUTA: EXACTAMENTE UN ERROR por oración.
 
-Estructura JSON requerida:
+PROHIBIDO:
+- NO uses adjetivo + sustantivo juntos (evita errores de concordancia)
+- NO uses construcciones que requieran múltiples cambios
+- SOLO errores simples de caso, persona verbal, o preposición
+
+PERMITIDO:
+- Error de caso en UN sustantivo solo: "Ma näen kass" (→ kassi)
+- Error de persona verbal: "Ta lähen" (→ läheb)
+- Error de preposición/caso locativo: "Ma elan Tallinn" (→ Tallinnas)
+
+Estructura JSON:
 {
   "questions": [
-    {"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."},
-    // ... 5 preguntas total
+    {"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."}
   ]
 }
 
