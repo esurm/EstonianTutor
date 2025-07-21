@@ -105,7 +105,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
       </CardHeader>
       
       <CardContent className="space-y-6 overflow-y-auto lg:h-full lg:flex lg:flex-col p-6">
-        <div className="space-y-6 flex-shrink-0 -mt-5">
+        <div className="space-y-6 flex-shrink-0 -mt-6">
         {/* CEFR Level Display */}
         <div className="bg-blue-600 rounded-lg p-4 text-white">
           <div className="flex items-start justify-between">
