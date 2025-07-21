@@ -15,35 +15,35 @@ PERMITIDO: caso simple, persona verbal, locativo
 Ejemplos:
 ${this.getSpecificErrorExamplesForLevel()}
 
-JSON: {"questions": [{"question": "¿Qué palabra está mal: '...'?", "options": [...], "correctAnswer": "...", "explanation": "..."}]}`;
+JSON: {"questions": [{"question": "¿Qué palabra está mal: '...'?", "translation": "traducción al español de la oración", "options": [...], "correctAnswer": "...", "explanation": "...", "cefrLevel": "${this.cefrLevel}"}]}`;
   }
 
   getUserPrompt(): string {
-    return `5 oraciones, UN ERROR cada una. Nivel ${this.cefrLevel}. NO adjetivo+sustantivo. JSON.`;
+    return `5 oraciones, UN ERROR cada una. Nivel ${this.cefrLevel}. NO adjetivo+sustantivo. INCLUYE traducción al español de cada oración. JSON completo con translation, options, correctAnswer, explanation.`;
   }
 
   private getSpecificErrorExamplesForLevel(): string {
     const examples = {
       A1: `
-{"question": "¿Qué palabra está mal: 'Ta lähen poodi'?", "options": ["Ta", "lähen", "poodi"], "correctAnswer": "lähen", "explanation": "3ra persona: läheb"}
-{"question": "¿Qué palabra está mal: 'Mul on kaks koer'?", "options": ["Mul", "on", "kaks", "koer"], "correctAnswer": "koer", "explanation": "después de número: koera"}`,
+{"question": "¿Qué palabra está mal: 'Ta lähen poodi'?", "translation": "Él/Ella va a la tienda", "options": ["Ta", "lähen", "poodi"], "correctAnswer": "lähen", "explanation": "3ra persona: läheb"}
+{"question": "¿Qué palabra está mal: 'Mul on kaks koer'?", "translation": "Tengo dos perros", "options": ["Mul", "on", "kaks", "koer"], "correctAnswer": "koer", "explanation": "después de número: koera"}`,
       
       A2: `
-{"question": "¿Qué palabra está mal: 'Ma elan Tallinn'?", "options": ["Ma", "elan", "Tallinn"], "correctAnswer": "Tallinn", "explanation": "vivir en: Tallinnas"}
-{"question": "¿Qué palabra está mal: 'See on mina raamat'?", "options": ["See", "on", "mina", "raamat"], "correctAnswer": "mina", "explanation": "posesivo: minu"}`,
+{"question": "¿Qué palabra está mal: 'Ma elan Tallinn'?", "translation": "Vivo en Tallin", "options": ["Ma", "elan", "Tallinn"], "correctAnswer": "Tallinn", "explanation": "vivir en: Tallinnas"}
+{"question": "¿Qué palabra está mal: 'See on mina raamat'?", "translation": "Este es mi libro", "options": ["See", "on", "mina", "raamat"], "correctAnswer": "mina", "explanation": "posesivo: minu"}`,
       
       B1: `
-{"question": "¿Qué palabra está mal: 'Ma panen raamatu laud'?", "options": ["Ma", "panen", "raamatu", "laud"], "correctAnswer": "laud", "explanation": "hacia superficie: lauale"}
-{"question": "¿Qué palabra está mal: 'Eile ma lähen kinno'?", "options": ["Eile", "ma", "lähen", "kinno"], "correctAnswer": "lähen", "explanation": "pasado: läksin"}`,
+{"question": "¿Qué palabra está mal: 'Ma panen raamatu laud'?", "translation": "Pongo el libro sobre la mesa", "options": ["Ma", "panen", "raamatu", "laud"], "correctAnswer": "laud", "explanation": "hacia superficie: lauale"}
+{"question": "¿Qué palabra está mal: 'Eile ma lähen kinno'?", "translation": "Ayer voy al cine", "options": ["Eile", "ma", "lähen", "kinno"], "correctAnswer": "lähen", "explanation": "pasado: läksin"}`,
       
       B2: `
-{"question": "¿Qué palabra está mal: 'Ma tulen ilma raha'?", "options": ["Ma", "tulen", "ilma", "raha"], "correctAnswer": "raha", "explanation": "sin algo: rahata"}
-{"question": "¿Qué palabra está mal: 'Ta ootab bussis'?", "options": ["Ta", "ootab", "bussis"], "correctAnswer": "bussis", "explanation": "esperar algo: bussi"}`,
+{"question": "¿Qué palabra está mal: 'Ma tulen ilma raha'?", "translation": "Vengo sin dinero", "options": ["Ma", "tulen", "ilma", "raha"], "correctAnswer": "raha", "explanation": "sin algo: rahata"}
+{"question": "¿Qué palabra está mal: 'Ta ootab bussis'?", "translation": "Él/Ella espera el autobús", "options": ["Ta", "ootab", "bussis"], "correctAnswer": "bussis", "explanation": "esperar algo: bussi"}`,
       
       C1: `
-{"question": "¿Qué palabra está mal: 'Eksperdid arutavad selle küsimus üle'?", "options": ["Eksperdid", "arutavad", "selle", "küsimus", "üle"], "correctAnswer": "küsimus", "explanation": "genitivo: küsimuse"}
-{"question": "¿Qué palabra está mal: 'Professor selgitas teema huvitavalt'?", "options": ["Professor", "selgitas", "teema", "huvitavalt"], "correctAnswer": "teema", "explanation": "partitivo: teemat"}
-{"question": "¿Qué palabra está mal: 'Õpilased arutasid tähtsat probleem'?", "options": ["Õpilased", "arutasid", "tähtsat", "probleem"], "correctAnswer": "probleem", "explanation": "partitivo: probleemi"}`,
+{"question": "¿Qué palabra está mal: 'Eksperdid arutavad selle küsimus üle'?", "translation": "Los expertos discuten sobre esta pregunta", "options": ["Eksperdid", "arutavad", "selle", "küsimus", "üle"], "correctAnswer": "küsimus", "explanation": "genitivo: küsimuse"}
+{"question": "¿Qué palabra está mal: 'Professor selgitas teema huvitavalt'?", "translation": "El profesor explicó el tema de manera interesante", "options": ["Professor", "selgitas", "teema", "huvitavalt"], "correctAnswer": "teema", "explanation": "partitivo: teemat"}
+{"question": "¿Qué palabra está mal: 'Õpilased arutasid tähtsat probleem'?", "translation": "Los estudiantes discutieron un problema importante", "options": ["Õpilased", "arutasid", "tähtsat", "probleem"], "correctAnswer": "probleem", "explanation": "partitivo: probleemi"}`,
       
       C2: `Nivel C2 no evaluado oficialmente en Estonia`
     };
