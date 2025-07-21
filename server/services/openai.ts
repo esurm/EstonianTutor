@@ -785,15 +785,27 @@ PERSONALIDAD DEL PROFESOR DE CORRECCIÓN:
 - Enfocado en corrección pedagógica
 
 TIPOS DE ERRORES REALES QUE CREAS:
-- Error de caso: "Ma näen kass" → debería ser "kassi"
+- Error de caso: "Ma näen kass" → debería ser "kassi" 
 - Error de verbo: "Me läheb" → debería ser "läheme"  
 - Error de plural: "kolm kass" → debería ser "kolme kassi"
 - Error de tiempo: "Eile ma lähen" → debería ser "läksin"
+- Error de modo: "Ma arvan, et ta tuleb" (indicativo correcto) vs "Ma arvan, et ta tuleks" (condicional incorrecto)
 
 ESTRUCTURAS CORRECTAS (NO MARCAR COMO ERRORES):
 ✓ "maja aknast" - caso elativo correcto
 ✓ "mida ta ostis" - pronombre relativo correcto  
 ✓ "Me näeme suur maja" - orden correcto
+✓ "oleks sattunud" - condicional perfecto correcto en contexto hipotético
+✓ "kui ta oleks tulnud" - condicional en cláusula condicional
+✓ "milles ta kunagi oleks" - uso correcto del condicional
+
+REGLA CRÍTICA PARA EXPLICACIONES:
+- TODAS las explicaciones deben estar en ESPAÑOL únicamente
+- NUNCA uses palabras en estonio en las explicaciones
+- Explica los errores en términos que entienda un hispanohablante
+- Máximo 8 palabras en español por explicación
+- PROHIBIDO: "oleks vale", "peaks olema", términos técnicos estonios
+- OBLIGATORIO: "debería ser", "error de", "modo incorrecto"
 
 NIVEL ${cefrLevel} ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
@@ -805,7 +817,7 @@ INSTRUCCIONES ESPECÍFICAS PARA DETECCIÓN DE ERRORES:
 - Error debe ser pedagógicamente útil para nivel ${cefrLevel}
 - Crear errores auténticos, no inventados
 - Palabras como opciones para identificar el error
-- Explicaciones sobre por qué es error
+- Explicaciones SOLAMENTE en ESPAÑOL sobre por qué es error
 
 FORMATO JSON DETECCIÓN DE ERRORES:
 {"questions":[
@@ -814,11 +826,25 @@ FORMATO JSON DETECCIÓN DE ERRORES:
     "translation": "[traducción de oración con error]",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
     "correctAnswer": "[palabra que contiene el error]",
-    "explanation": "[por qué es error - máximo 8 palabras]",
+    "explanation": "[explicación en ESPAÑOL únicamente - máximo 8 palabras]",
     "questionType": "error_detection",
     "errorType": "[caso/verbo/plural/tiempo]"
   }
-]}`,
+]}
+
+EJEMPLOS DE EXPLICACIONES CORRECTAS EN ESPAÑOL:
+✓ "Debería usar modo indicativo, no condicional"
+✓ "Error de caso, necesita partitivo"
+✓ "Verbo incorrecto para primera persona plural"
+✓ "Falta concordancia en número"
+✓ "Tiempo verbal incorrecto para pasado"
+✓ "Concordancia errónea de adjetivo"
+
+EJEMPLOS PROHIBIDOS (NUNCA USAR):
+✗ "Kaudne kõneviis vale tuleviku korral"
+✗ "'Oleks' vale kõneviis ajas, peaks olema"
+✗ "Tingiv kõneviis vale"
+✗ Cualquier palabra en estonio en las explicaciones`,
 
       answerStructure: "errorIdentification", // Seleccionar palabra errónea
       maxTokens: 950

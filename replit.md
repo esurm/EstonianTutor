@@ -56,7 +56,7 @@ The application uses a comprehensive schema designed around language learning:
   - **Grammar Expert**: 12 years experience, specialized in Estonian case system and rule application
   - **Conjugation Expert**: Verbal system specialist, Estonian tenses and persons (ma/sa/ta/me/te/nad)
   - **Structure Expert**: Word order specialist, adverb placement (tiempo-manera-lugar)
-  - **Error Detection Expert**: Real Estonian mistakes, pedagogically useful corrections
+  - **Error Detection Expert**: Real Estonian mistakes, pedagogically useful corrections, Spanish-only explanations enforced
   - Zero cross-contamination between categories through isolated prompt systems
   - Unique answer structures: multipleChoice, wordReordering, errorIdentification
   - Category-specific CEFR guidance and complexity levels
