@@ -310,7 +310,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
 
 ${this.getCategoryPrompt(category)}
 
-Create 5 varied questions APPROPRIATE for the specific CEFR level.
+Create exactly 5 varied questions APPROPRIATE for the specific CEFR level.
 CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
 MANDATORY: Every question MUST include a "translation" field with the Spanish translation.
 
@@ -356,7 +356,7 @@ Respond in JSON format:
         top_p: 1.0,
         frequency_penalty: 0.1,
         presence_penalty: 0,
-        max_tokens: 400,
+        max_tokens: 1500,
         response_format: { type: "json_object" }
       });
 
@@ -369,17 +369,51 @@ Respond in JSON format:
       } catch (parseError) {
         console.error("JSON parsing error for quiz generation:", parseError);
         console.error("Raw content:", content);
-        // Return fallback quiz with proper structure
+        // Return fallback quiz with proper structure (5 questions as expected)
         return {
           questions: [
             {
               question: "Mis on 'tere' tähendus?",
               translation: "¿Qué significa 'tere'?",
-              type: "multiple_choice",
               questionType: "multiple_choice",
               options: ["Adiós", "Hola", "Gracias", "Por favor"],
               correctAnswer: "Hola",
               explanation: "'Tere' significa 'hola' en español.",
+              cefrLevel: cefrLevel
+            },
+            {
+              question: "Kuidas öelda 'tänan' inglise keeles?",
+              translation: "¿Cómo se dice 'tänan' en inglés?",
+              questionType: "multiple_choice", 
+              options: ["Hello", "Thank you", "Goodbye", "Please"],
+              correctAnswer: "Thank you",
+              explanation: "'Tänan' significa 'gracias' en español y 'thank you' en inglés.",
+              cefrLevel: cefrLevel
+            },
+            {
+              question: "Millal kasutatakse sõna 'nägemist'?",
+              translation: "¿Cuándo se usa la palabra 'nägemist'?",
+              questionType: "multiple_choice",
+              options: ["Hommikul", "Lahkudes", "Söögiajal", "Magama minnes"],
+              correctAnswer: "Lahkudes", 
+              explanation: "'Nägemist' tähendab 'adiós' ja kasutatakse lahkudes.",
+              cefrLevel: cefrLevel
+            },
+            {
+              question: "Täida lünk: 'Ma _____ eesti keelt.'",
+              translation: "Completa el espacio: 'Ma _____ eesti keelt.'",
+              questionType: "completion",
+              correctAnswer: "õpin",
+              explanation: "'Õpin' tähendab 'estoy aprendiendo' - Ma õpin eesti keelt = Estoy aprendiendo estonio.",
+              cefrLevel: cefrLevel
+            },
+            {
+              question: "Mis on 'kool' tähendus?",
+              translation: "¿Qué significa 'kool'?",
+              questionType: "multiple_choice",
+              options: ["Casa", "Escuela", "Tienda", "Parque"],
+              correctAnswer: "Escuela",
+              explanation: "'Kool' significa 'escuela' en español.",
               cefrLevel: cefrLevel
             }
           ]

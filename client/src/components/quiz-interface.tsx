@@ -58,7 +58,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
   // Generate quiz
   const generateQuizMutation = useMutation({
-    mutationFn: () => api.generateQuiz(user?.cefrLevel || "B1", category),
+    mutationFn: () => api.generateQuiz((user as any)?.cefrLevel || "B1", category),
     onSuccess: (data) => {
       setQuestions(data.quiz.questions);
       setSessionId(data.sessionId);
@@ -260,7 +260,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
             </div>
             <div className="bg-gray-50 rounded-lg p-3">
               <CheckCircle className="h-6 w-6 mx-auto mb-2 text-gray-600" />
-              <p className="font-semibold">{user?.cefrLevel || "B1"}</p>
+              <p className="font-semibold">{(user as any)?.cefrLevel || "B1"}</p>
               <p className="text-xs text-gray-500">Nivel CEFR</p>
             </div>
           </div>
