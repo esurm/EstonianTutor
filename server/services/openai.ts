@@ -154,7 +154,7 @@ export class OpenAIService {
         top_p: 1.0,
         presence_penalty: 0,
         frequency_penalty: 0,
-        max_tokens: 250
+        max_tokens: 400
       },
       grammar_exercises: {
         temperature: 0.3,
@@ -324,7 +324,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         top_p: professor.settings.topP,
         frequency_penalty: professor.settings.frequencyPenalty,
         presence_penalty: professor.settings.presencePenalty,
-        max_tokens: professor.settings.maxTokens,
+        max_tokens: 600, // Force higher limit for error detection
         response_format: { type: "json_object" }
       });
 
@@ -379,7 +379,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           console.log(`🔧 Attempting to salvage error_detection JSON...`);
           try {
             // Try to fix truncated JSON by finding the last complete question
-            let fixedContent = cleanContent;
+            let fixedContent = content;
             
             // If it ends with incomplete data, find the last complete question
             if (!fixedContent.endsWith('}')) {
@@ -819,37 +819,12 @@ REGLA CRÍTICA PARA EXPLICACIONES:
 NIVEL ${cefrLevel} ERRORES:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}`,
 
-      userPrompt: `JSON exacto:
-{"questions":[
-{"question":"¿Qué palabra está mal: 'Ma joon piima'?","translation":"Bebo leche","type":"error_detection","options":["Ma","joon","piima","vee"],"correctAnswer":"piima","explanation":"Error caso"},
-{"question":"¿Qué palabra está mal: 'Ma lähen koolis'?","translation":"Voy escuela","type":"error_detection","options":["Ma","lähen","koolis","koju"],"correctAnswer":"koolis","explanation":"Error lugar"},
-{"question":"¿Qué palabra está mal: 'Ta tuleb kodu'?","translation":"Viene casa","type":"error_detection","options":["Ta","tuleb","kodu","koju"],"correctAnswer":"kodu","explanation":"Error dirección"},
-{"question":"¿Qué palabra está mal: 'Me ostame leiv'?","translation":"Compramos pan","type":"error_detection","options":["Me","ostame","leiv","leiba"],"correctAnswer":"leiv","explanation":"Error objeto"},
-{"question":"¿Qué palabra está mal: 'Nad läheb kooli'?","translation":"Van escuela","type":"error_detection","options":["Nad","läheb","kooli","lähevad"],"correctAnswer":"läheb","explanation":"Error verbo"}
-]}`
-✓ "Error de caso, debería ser 'kassi' (partitivo)"
-✓ "Error de verbo, debería ser 'läheme' (primera persona)"
-✓ "Error de tiempo, debería ser 'läksin' (pasado)"
-✓ "Error de número, debería ser 'kolme kassi' (plural)"
-✓ "Error de caso, debería ser 'linna' (illativo)"
-✓ "Error de pronombre, debería ser 'keda' (acusativo)"
-
-EJEMPLOS PROHIBIDOS (demasiado vagos):
-✗ "Pronombre relativo incorrecto en contexto"
-✗ "Error de tiempo verbal"
-✗ "Caso incorrecto"
-✗ Cualquier explicación sin la palabra correcta específica
-
-EJEMPLOS PROHIBIDOS (NUNCA USAR):
-✗ "Kaudne kõneviis vale tuleviku korral"
-✗ "'Oleks' vale kõneviis ajas, peaks olema"
-✗ "Tingiv kõneviis vale"
-✗ Cualquier palabra en estonio en las explicaciones`,
+      userPrompt: `Crea 5 preguntas error detection nivel ${cefrLevel}. JSON válido únicamente.`,
 
       answerStructure: "errorIdentification", // Seleccionar palabra errónea
-      maxTokens: 1000,
-      temperature: 0.1,
-      topP: 1.0,
+      maxTokens: 600, // Increased to prevent truncation
+      temperature: 0.0, // Maximum consistency
+      topP: 0.5, // Very focused
       presencePenalty: 0.0,
       frequencyPenalty: 0.0
     };
@@ -1117,67 +1092,26 @@ CRÍTICO: Verificar que options contenga exactamente las palabras de correctAnsw
   private createErrorDetectionProfessor(cefrLevel: string, corpusKnowledge: string) {
     return {
       name: "Professor de Detección de Errores Estonia",
-      systemPrompt: `Eres el PROFESOR DE DETECCIÓN DE ERRORES ESTONIA más experto del mundo, especializado en errores típicos de hispanohablantes.
+      systemPrompt: `Profesor de errores estonios. 
 
-EXPERIENCIA: 20 años detectando errores estonios, experto en transferencias desde español.
+TAREA: Crear 5 preguntas sobre errores comunes.
 
-TU ESPECIALIDAD EXCLUSIVA: CORRECCIÓN DE ERRORES ESTONIOS
-- PRESENTA oraciones CORRECTAS en estonio
-- PREGUNTA qué corrección necesitaría si hubiera un error común
-- ENFÓCATE en errores típicos que cometen hispanohablantes
-- USA el corpus para garantizar oraciones auténticas y correctas
-- EXPLICA por qué cierta corrección sería necesaria
-
-${corpusKnowledge}
-
-ERRORES REALES CON EJEMPLOS NIVEL ${cefrLevel}:
-${this.getCommonEstonianErrors(cefrLevel)}
-
-CORPUS VALIDATION:
-Use the corpus patterns above to ensure the REST of the sentence is grammatically correct Estonian, while introducing ONLY the specified error.
-
-ENFOQUE FINAL - ORACIONES CORRECTAS CON PREGUNTAS PEDAGÓGICAS:
+FORMATO JSON REQUERIDO:
 {"questions":[
   {
-    "question": "Esta oración estonia es correcta: '[oración CORRECTA]'. Si un estudiante escribiera incorrectamente una palabra, ¿cuál sería la más probable?",
-    "translation": "[Traducción de la oración correcta al español]",
+    "question": "¿Qué palabra está mal: '[oración con error]'?",
+    "translation": "[traducción]",
     "type": "error_detection",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-    "correctAnswer": "[palabra que estudiantes suelen escribir mal]",
-    "explanation": "[máximo 4 palabras en español]",
-    "cefrLevel": "${cefrLevel}"
+    "options": ["a", "b", "c", "d"],
+    "correctAnswer": "[palabra incorrecta]",
+    "explanation": "Error [tipo]"
   }
 ]}
 
-EJEMPLOS CORRECTOS FINALES:
-
-EJEMPLO JSON:
-{
-  "question": "Esta oración estonia es correcta: 'Ma joon piima'. Si un estudiante confundiera un caso, ¿qué palabra escribiría incorrectamente?",
-  "translation": "Bebo leche (estudiantes suelen usar partitivo incorrectamente)",
-  "type": "error_detection", 
-  "options": ["Ma", "joon", "piima", "täna"],
-  "correctAnswer": "piima",
-  "explanation": "Suelen escribir 'piim' por influencia del español."
-}
-
-OTRO EJEMPLO:
-{
-  "question": "Esta oración estonia es correcta: 'Ta ostab uue auto'. ¿Qué palabra suelen escribir mal los estudiantes?",
-  "translation": "Él compra un coche nuevo (concordancia adjetivo-sustantivo)",
-  "type": "error_detection",
-  "options": ["Ta", "ostab", "uue", "auto"],
-  "correctAnswer": "uue", 
-  "explanation": "Suelen escribir 'uus' sin concordancia."
-}
-
-INSTRUCCIONES CRÍTICAS:
-- EXACTAMENTE 5 preguntas de detección de errores
-- Cada oración debe tener SOLO UN error específico
-- 'correctAnswer' debe ser SOLO la palabra/frase incorrecta
-- 'options' debe incluir 4 opciones: 3 correctas + 1 incorrecta
-- TODAS las explicaciones en español ÚNICAMENTE
-- Usar errores auténticos del corpus EstUD`,
+REGLAS CRÍTICAS:
+- Explicaciones máximo 2 palabras
+- JSON válido obligatorio
+- 5 preguntas exactas`,
 
       userPrompt: `Genera 5 preguntas pedagógicas sobre errores estonios comunes nivel ${cefrLevel}.
       
@@ -1192,7 +1126,7 @@ FORMATO: JSON con estructura exacta mostrada arriba.
 CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
 
       settings: {
-        maxTokens: 250, // Minimum viable for 5 questions
+        maxTokens: 600, // Further increased for complete 5-question generation
         temperature: 0.0, // Maximum consistency
         topP: 0.5, // Very focused
         frequencyPenalty: 0.0, // No variation needed
