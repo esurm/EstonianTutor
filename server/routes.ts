@@ -234,9 +234,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentUser = await getCurrentUserForRequest(req);
       const userCefrLevel = cefrLevel || currentUser.cefrLevel;
       
-      // Generate 5 questions in a single batch request using gpt-4.1-mini
-      console.log(`🎯 Generating 5-question ${category} quiz for CEFR level ${userCefrLevel}`);
-      const quiz = await openaiService.generateQuiz(userCefrLevel, category);
+      // Generate 5 individual questions using batch generation for speed
+      console.log(`🚀 Batch generating 5 ${category} questions for CEFR level ${userCefrLevel}`);
+      const batchRequests = Array(5).fill(null).map(() => ({
+        cefrLevel: userCefrLevel,
+        category: category
+      }));
+      const batchResults = await openaiService.generateBatchQuizzes(batchRequests);
+      
+      // Combine all questions into single quiz
+      const allQuestions = batchResults.flatMap(result => result.questions);
+      const quiz = { questions: allQuestions.slice(0, 5) };
       
       // Create session for quiz
       const session = await storage.createSession({

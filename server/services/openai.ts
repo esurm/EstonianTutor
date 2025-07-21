@@ -306,20 +306,22 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate 5 Estonian ${category} questions for CEFR ${cefrLevel}. ALL questions in Estonian, explanations in Spanish. Include "translation" field.
+            content: `Generate 1 Estonian ${category} question for CEFR ${cefrLevel}. Question in Estonian, explanation in Spanish.
 
-${category === 'vocabulary' ? 'Focus: word meanings, definitions, basic vocabulary' : 'Focus: grammar, verb forms, sentence structure'}
+${category === 'vocabulary' ? 'Focus: word meanings' : 'Focus: grammar, verb forms'}
 
-JSON format:
-{"questions": [{"question": "Estonian question", "translation": "Spanish translation", "questionType": "multiple_choice|completion", "options": ["A","B","C","D"], "correctAnswer": "answer", "explanation": "Spanish explanation", "cefrLevel": "${cefrLevel}"}]}`
+JSON: {"question": "Estonian question", "translation": "Spanish translation", "questionType": "multiple_choice", "options": ["A","B","C","D"], "correctAnswer": "answer", "explanation": "Spanish explanation", "cefrLevel": "${cefrLevel}"}`
           },
           {
             role: "user",
-            content: `Create 5 ${category} questions for level ${cefrLevel}`
+            content: `Create 1 ${category} question for level ${cefrLevel}`
           }
         ],
-        temperature: 0.3,
-        max_tokens: 800,
+        temperature: 0.2,
+        top_p: 1.0,
+        frequency_penalty: 0.1,
+        presence_penalty: 0,
+        max_tokens: 200,
         response_format: { type: "json_object" }
       });
 
@@ -328,7 +330,9 @@ JSON format:
       
       const content = response.choices[0].message.content || "{}";
       try {
-        return JSON.parse(content);
+        const result = JSON.parse(content);
+        // Wrap single question in questions array format
+        return { questions: [result] };
       } catch (parseError) {
         console.error("JSON parsing error for quiz generation:", parseError);
         console.error("Raw content:", content);
@@ -442,7 +446,7 @@ Respond in JSON format with questions array.`
             top_p: 1.0,
             frequency_penalty: 0.1,
             presence_penalty: 0,
-            max_tokens: 250,
+            max_tokens: 800,
             response_format: { type: "json_object" }
           }
         };
