@@ -57,10 +57,10 @@ Return complete JSON with all 5 questions.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Increased for complete 5-question JSON
-      temperature: 0.4, // More creative variety
-      topP: 0.85,
-      frequencyPenalty: 0.15, // More variety in word selection
+      maxTokens: 500, // Reduced for faster generation
+      temperature: 0.2, // Lower for consistency
+      topP: 0.8,
+      frequencyPenalty: 0.1,
       presencePenalty: 0.1
     };
   }

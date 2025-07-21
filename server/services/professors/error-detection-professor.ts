@@ -8,64 +8,61 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    const corpusKnowledge = this.corpusKnowledge || "";
-    
-    return `You are an Estonian ERROR DETECTION expert for ${this.cefrLevel} level using authentic Estonian corpus data.
+    return `Generate exactly 5 Estonian grammar error questions for ${this.cefrLevel} level.
 
-CORPUS-BASED VOCABULARY FOR ${this.cefrLevel}:
-${corpusKnowledge}
+COPY THESE EXACT PATTERNS:
 
-Create 5 Estonian sentences with EXACTLY ONE grammatical error each. Focus on common mistakes Spanish speakers make learning Estonian.
+VERB AGREEMENT ERRORS:
+❌ "Ma läheb kooli" → Error word: "läheb" → Should be: "lähen"  
+❌ "Ta lähen tööle" → Error word: "lähen" → Should be: "läheb"
+❌ "Me olen kodus" → Error word: "olen" → Should be: "oleme"
 
-CRITICAL RULES - MANDATORY REQUIREMENTS:
-1. Each sentence has EXACTLY ONE clear grammatical error 
-2. Error must be a single word that's grammatically wrong
-3. Use vocabulary appropriate for ${this.cefrLevel} level (simple words like: kool, maja, auto, töö)
-4. Provide 3-4 options including the error word
-5. **EXPLANATION MUST BE IN SPANISH ONLY** - No Estonian in explanations!
-6. Focus on errors Spanish speakers actually make learning Estonian
+CASE ERRORS:
+❌ "Ma söön leiv" → Error word: "leiv" → Should be: "leiba" 
+❌ "Ma elan Tallinn" → Error word: "Tallinn" → Should be: "Tallinnas"
 
-ERROR TYPES FOR ${this.cefrLevel}:
-${this.getCEFRSpecificErrors()}
+RULES:
+1. Keep word order normal (Subject-Verb-Object)
+2. Only change ONE word to make it grammatically wrong
+3. Use simple 3-4 word sentences
+4. Explanations in Spanish only
 
-CORPUS-VALIDATED EXAMPLES:
-${this.getSpecificErrorExamplesForLevel()}
-
-REQUIRED JSON FORMAT:
+JSON FORMAT:
 {
   "questions": [
     {
       "question": "¿Qué palabra está incorrecta en: 'Ma läheb kooli'?",
-      "type": "error_detection", 
+      "type": "error_detection",
       "options": ["Ma", "läheb", "kooli"],
-      "correctAnswer": "läheb",
-      "explanation": "Con 'Ma' (yo) el verbo debe ser 'lähen', no 'läheb'. Primera persona singular usa '-n'.",
+      "correctAnswer": "läheb", 
+      "explanation": "Con 'Ma' se usa 'lähen', no 'läheb'",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-**MANDATORY**: All explanations must be in Spanish only. Use simple Estonian sentences with common vocabulary.`;
+Generate 5 questions following these exact patterns.`;
   }
 
   getUserPrompt(): string {
-    return `Generate exactly 5 Estonian error detection questions for ${this.cefrLevel} level.
+    return `Create 5 questions like these examples:
 
-IMPORTANT: Use the provided corpus examples and error patterns to create authentic Estonian grammatical errors.
+EXAMPLE 1:
+Sentence with error: "Ma läheb kooli"
+Wrong word: "läheb" 
+Explanation: "Con 'Ma' se usa 'lähen', no 'läheb'"
 
-MANDATORY REQUIREMENTS:
-- Use SIMPLE Estonian sentences (3-5 words max)
-- Use common vocabulary: ma, sa, ta, kool, maja, auto, töö, söön, lähen, olen
-- Each sentence has EXACTLY ONE grammatical error
-- ALL explanations in SPANISH ONLY (no Estonian words in explanations)
-- Focus on verb agreement and basic case errors
+EXAMPLE 2: 
+Sentence with error: "Ta lähen tööle"
+Wrong word: "lähen"
+Explanation: "Con 'Ta' se usa 'läheb', no 'lähen'"
 
-Example of good sentence: "Ma läheb kooli" (error: läheb should be lähen)
-Example of good explanation: "Con 'Ma' el verbo debe terminar en '-n', no '-b'"
+EXAMPLE 3:
+Sentence with error: "Ma söön leiv"  
+Wrong word: "leiv"
+Explanation: "Después de 'söön' se usa 'leiba', no 'leiv'"
 
-NO complex sentences, NO Estonian in explanations, NO multiple errors.
-
-Return complete JSON with all 5 simple questions.`;
+Make 5 similar questions with simple grammar errors. Return JSON format.`;
   }
 
   /**
@@ -155,43 +152,43 @@ Return complete JSON with all 5 simple questions.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700, // Simple sentences need less
-      temperature: 0.2, // Lower for more consistent error patterns
-      topP: 0.8, // More focused on common errors
-      frequencyPenalty: 0.1, 
-      presencePenalty: 0.1 // Focus on clarity over creativity
+      maxTokens: 600, // Sufficient for 5 simple questions
+      temperature: 0.1, // Very low for consistent patterns
+      topP: 0.7, // Focused generation
+      frequencyPenalty: 0, // No penalty - follow examples exactly
+      presencePenalty: 0 // No penalty - copy patterns
     };
   }
 
-  private getCEFRSpecificErrors(): string {
+  private getRealGrammarErrors(): string {
     const errorTypes = {
       A1: `
-- Verb conjugation: *Ta lähen* → Ta läheb (3rd person)
-- Case confusion: *Ma joon piima* → Ma joon piim (nominative object)
-- Number after numeral: *kaks koer* → kaks koera (partitive singular)`,
+VERB CONJUGATION ERRORS:
+- "Ma läheb kooli" → ERROR: "läheb" | CORRECT: "lähen" (1st person needs -n)
+- "Ta lähen tööle" → ERROR: "lähen" | CORRECT: "läheb" (3rd person needs -b) 
+- "Me olen kodus" → ERROR: "olen" | CORRECT: "oleme" (we are)
+
+BASIC CASE ERRORS:
+- "Ma söön leiv" → ERROR: "leiv" | CORRECT: "leiba" (partitive object)
+- "Kaks koer" → ERROR: "koer" | CORRECT: "koera" (after number = partitive)`,
       
       A2: `
-- Locative cases: *Ma elan Tallinn* → Ma elan Tallinnas (inessive)
-- Possessive: *mina auto* → minu auto (genitive) 
-- Movement direction: *Ma lähen kool* → Ma lähen kooli (illative)`,
+CASE ERRORS:
+- "Ma elan Tallinn" → ERROR: "Tallinn" | CORRECT: "Tallinnas" (living IN = inessive)
+- "Ma lähen kool" → ERROR: "kool" | CORRECT: "kooli" (going TO = illative)
+- "See on mina auto" → ERROR: "mina" | CORRECT: "minu" (possessive = genitive)
+
+VERB ERRORS:
+- "Me lähen koju" → ERROR: "lähen" | CORRECT: "läheme" (we go)`,
       
       B1: `
-- External locative: *panen laual* → panen lauale (allative)
-- Past tense: *Eile ma lähen* → Eile ma läksin (simple past)
-- Partitive plural: *Ma näen autod* → Ma näen autosid (partitive)`,
-      
-      B2: `
-- Abessive case: *ilma raha* → ilma rahata (without money)
-- Conditional mood: *Ma oleks lähen* → Ma oleksin läinud (perfect conditional)
-- Object case: *Ta ootab bussis* → Ta ootab bussi (partitive object)`,
-      
-      C1: `
-- Quotative mood subtleties
-- Complex case relationships in subordinate clauses
-- Advanced aspectual distinctions`
+CASE ERRORS:
+- "Ma panen raamat laud" → ERROR: "laud" | CORRECT: "lauale" (put ON = allative)
+- "Ta võtab laualt raamat" → ERROR: "raamat" | CORRECT: "raamatu" (object = genitive/partitive)
+- "Mul on palju raamat" → ERROR: "raamat" | CORRECT: "raamatuid" (many books = partitive plural)`
     };
     
-    return errorTypes[this.cefrLevel as keyof typeof errorTypes] || errorTypes.B1;
+    return errorTypes[this.cefrLevel as keyof typeof errorTypes] || errorTypes.A1;
   }
 
   private getCommonErrorsForLevel(): string {

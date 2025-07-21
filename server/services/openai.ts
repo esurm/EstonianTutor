@@ -307,33 +307,8 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     try {
       console.log(`🎓 Activating ${category?.toUpperCase() || 'VOCABULARY'} Professor for CEFR level ${cefrLevel}`);
       
-      // For error detection, try to use Estonian error generator first
-      if (category === 'error_detection') {
-        try {
-          console.log(`🔧 Attempting Estonian error generator for validated questions...`);
-          const { estonianErrorGenerator } = await import('./estonian-error-generator');
-          const estonianErrors = await estonianErrorGenerator.generateErrorsForLevel(cefrLevel, 5);
-          
-          if (estonianErrors.length >= 3) {
-            console.log(`✅ Generated ${estonianErrors.length} validated Estonian errors`);
-            
-            const questions = estonianErrors.map(error => ({
-              question: `¿Qué palabra está incorrecta en: '${error.errorSentence}'?`,
-              type: "error_detection" as const,
-              options: this.generateOptionsForError(error),
-              correctAnswer: error.errorWord,
-              explanation: error.explanation,
-              cefrLevel: cefrLevel
-            }));
-            
-            return { questions };
-          } else {
-            console.log(`⚠️ Estonian error generator produced only ${estonianErrors.length} questions, falling back to AI generation`);
-          }
-        } catch (generatorError) {
-          console.error('Estonian error generator failed, falling back to AI:', generatorError);
-        }
-      }
+      // Skip complex Estonian validation for faster generation
+      console.log(`⚡ Using direct AI generation for faster quiz creation`);
       
       // Get corpus knowledge
       const corpusKnowledge = this.getCorpusKnowledge(cefrLevel);
@@ -392,90 +367,8 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           console.log(`✅ ${config.name} generated ${result.questions.length} quiz questions`);
           console.log(`🔍 First question preview:`, JSON.stringify(result.questions[0], null, 2));
           
-          // Validate with Estonian linguistic tools
-          if (category === 'error_detection') {
-            try {
-              console.log(`🔍 Validating ${result.questions.length} error detection questions with Estonian validator...`);
-              const validationResult = await estonianValidator.validateErrorDetectionQuiz(result);
-              
-              if (!validationResult.all_valid) {
-                console.log(`⚠️ Estonian validator found issues:`);
-                console.log(`   Valid: ${validationResult.valid_questions}/${validationResult.total_questions}`);
-                console.log(`   Invalid: ${validationResult.invalid_questions}`);
-                
-                // Filter out invalid questions and suggest fixes
-                const validQuestions = [];
-                for (let i = 0; i < result.questions.length; i++) {
-                  const detail = validationResult.details[i];
-                  if (detail && detail.validation.valid) {
-                    validQuestions.push(result.questions[i]);
-                    console.log(`✅ Question ${i+1}: Valid - ${detail.sentence}`);
-                  } else if (detail) {
-                    console.log(`❌ Question ${i+1}: Invalid - ${detail.sentence}`);
-                    console.log(`   Error count: ${detail.validation.error_count}`);
-                    
-                    // Try to suggest a fix using Estonian validator
-                    try {
-                      const suggestedFix = await estonianValidator.suggestFix(detail.sentence, detail.error_word);
-                      if (suggestedFix) {
-                        console.log(`💡 Suggested fix: ${detail.error_word} → ${suggestedFix}`);
-                      }
-                    } catch (fixError) {
-                      console.log(`🔧 Could not suggest fix: ${fixError}`);
-                    }
-                  }
-                }
-                
-                // If we have at least 3 valid questions, use them
-                if (validQuestions.length >= 3) {
-                  result.questions = validQuestions;
-                  console.log(`✅ Using ${validQuestions.length} validated questions`);
-                } else {
-                  console.log(`❌ Only ${validQuestions.length} valid questions - need corpus-guided regeneration`);
-                  // Don't throw error, let it continue with what we have but log the issue
-                  console.log(`🔄 Recommendation: Improve error detection prompts using corpus patterns`);
-                }
-              } else {
-                console.log(`✅ All ${validationResult.total_questions} error detection questions validated successfully by Estonian linguistic tools`);
-              }
-            } catch (validationError) {
-              console.error('Estonian validation failed:', validationError);
-              console.log('📝 Continuing without validation - check Python environment and pymorphy2 installation');
-              // Continue without validation if the validator fails
-            }
-          }
-
-          // Use Estonian corpus for vocabulary and sentence validation  
-          if (category === 'vocabulary' || category === 'sentence_reordering') {
-            try {
-              console.log(`🏛️ Validating ${category} questions with Estonian corpus...`);
-              let corpusIssues = 0;
-              
-              result.questions.forEach((q: any, i: number) => {
-                if (category === 'vocabulary' && q.correctAnswer) {
-                  const level = estonianCorpus.estimateTextLevel(q.correctAnswer);
-                  if (level !== cefrLevel && level !== "B1") { // B1 is fallback
-                    console.log(`⚠️ Question ${i+1}: Vocabulary level mismatch - expected ${cefrLevel}, estimated ${level}`);
-                    corpusIssues++;
-                  }
-                }
-                
-                if (category === 'sentence_reordering' && q.correctAnswer) {
-                  const level = estonianCorpus.estimateTextLevel(q.correctAnswer);
-                  const alternatives = estonianCorpus.getAlternatives(q.correctAnswer);
-                  console.log(`📝 Question ${i+1}: "${q.correctAnswer}" (level: ${level}, alternatives: ${alternatives.length})`);
-                }
-              });
-              
-              if (corpusIssues > 0) {
-                console.log(`📊 Corpus validation found ${corpusIssues} level mismatches out of ${result.questions.length} questions`);
-              } else {
-                console.log(`✅ All ${category} questions validated against Estonian corpus`);
-              }
-            } catch (corpusError) {
-              console.error('Estonian corpus validation failed:', corpusError);
-            }
-          }
+          // Skip complex validation for faster generation
+          console.log(`⚡ Generated ${result.questions.length} ${category} questions - skipping validation for speed`);
           
           // Add cefrLevel to each question for database requirements
           const questionsWithLevel = result.questions.map((q: any) => ({
