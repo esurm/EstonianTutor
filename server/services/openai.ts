@@ -742,6 +742,20 @@ REGLAS DE ORDEN ESTONIO QUE ENSEÑAS:
 - Lugar al final: "läheme parki"
 - Objeto directo después del verbo: "näen kassi"
 
+PRECISIÓN SEMÁNTICA CRÍTICA:
+- Usa verbos apropiados para el contexto
+- "hinnatakse" (se valora) NO "loetakse" (se lee) para literatura
+- "õpitakse" (se aprende) NO "vaadatakse" (se mira) para estudios
+- "mõistetakse" (se entiende) NO "kuuldakse" (se oye) para conceptos
+- Verifica que verbos tengan sentido lógico en contexto
+
+REALISMO Y LÓGICA OBLIGATORIOS:
+- Crear oraciones que tengan sentido en la vida real
+- NO "kohtab arhitekte" (conoce arquitectos) sino "näeb hooneid" (ve edificios)
+- NO "inspireeritult" adverbios extraños sino "kiiresti, aeglaselt, hästi"
+- NO situaciones absurdas sino contextos normales y naturales
+- Verificar que la oración completa sea lógica y realista
+
 NIVEL ${cefrLevel} ESTRUCTURA:
 ${this.getDifficultyGuidance(cefrLevel)}`,
 
@@ -752,6 +766,15 @@ INSTRUCCIONES ESPECÍFICAS PARA REORDENAMIENTO:
 - Dar palabras desordenadas para reordenar
 - Incluir adverbios de tiempo/manera/lugar según nivel
 - Estructura apropiada para complejidad ${cefrLevel}
+- USAR VERBOS SEMÁNTICAMENTE CORRECTOS:
+  * Para literatura: "hinnatakse", "tunnustatakse", "imetletakse"
+  * Para estudios: "õpitakse", "uuritakse", "analüüsitakse"
+  * Para conceptos: "mõistetakse", "selgitatakse", "käsitletakse"
+- CREAR ORACIONES REALISTAS Y LÓGICAS:
+  * "Eile läksin poodi" (ayer fui a la tienda) - normal
+  * "Täna õpin eesti keelt" (hoy aprendo estonio) - realista
+  * "Homme sõidan Tallinna" (mañana viajo a Tallinn) - típico
+  * NO oraciones absurdas o artificiales
 - Explicaciones sobre el orden correcto
 
 FORMATO JSON REORDENAMIENTO:
