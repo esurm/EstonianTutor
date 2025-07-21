@@ -460,7 +460,7 @@ ESTRUCTURA DE PREGUNTAS DE VOCABULARIO:
 - SOLO significados y reconocimiento, NO gramática
 
 NIVEL ${cefrLevel} VOCABULARIO:
-${this.getDifficultyGuidance(cefrLevel)}`,
+${this.getCasesForLevel(cefrLevel)}`,
 
       userPrompt: `Crear 5 ejercicios de vocabulario estonio puro para nivel ${cefrLevel}.
 
@@ -512,7 +512,7 @@ ESTRUCTURA DE PREGUNTAS DE GRAMÁTICA:
 - SOLO reglas gramaticales, NO vocabulario
 
 NIVEL ${cefrLevel} GRAMÁTICA:
-${this.getDifficultyGuidance(cefrLevel)}`,
+${this.getCasesForLevel(cefrLevel)}`,
 
       userPrompt: `Crear 5 ejercicios de gramática estonia pura para nivel ${cefrLevel}.
 
@@ -564,7 +564,7 @@ ESTRUCTURA DE PREGUNTAS DE CONJUGACIÓN:
 - SOLO formas verbales, NO vocabulario ni gramática general
 
 NIVEL ${cefrLevel} CONJUGACIÓN:
-${this.getDifficultyGuidance(cefrLevel)}`,
+${this.getVerbsForLevel(cefrLevel)}`,
 
       userPrompt: `Crear 5 ejercicios de conjugación verbal estonia para nivel ${cefrLevel}.
 
@@ -645,7 +645,7 @@ KORPUSE TEADMISED (Estonian Linguistic Accuracy):
 ${this.getCorpusKnowledge(cefrLevel)}
 
 ${cefrLevel} TASEME NÕUDED:
-${this.getDifficultyGuidance(cefrLevel)}`,
+${this.getSentencePatternsForLevel(cefrLevel)}`,
 
       userPrompt: `Loo 5 eesti keele sõnajärje harjutust ${cefrLevel} tasemele.
 
@@ -1074,13 +1074,13 @@ CRÍTICO: Verificar que options contenga exactamente las palabras de correctAnsw
       name: "Professor de Detección de Errores Estonia",
       systemPrompt: `Eres el PROFESOR DE DETECCIÓN DE ERRORES ESTONIA más experto del mundo, especializado en errores típicos de hispanohablantes.
 
-EXPERIENCIA: 20 años identificando errores específicos de estudiantes hispanohablantes de estonio.
+EXPERIENCIA: 20 años detectando errores estonios, experto en transferencias desde español.
 
 TU ESPECIALIDAD EXCLUSIVA: DETECCIÓN DE ERRORES ESTONIOS
-- SOLO preguntas con oraciones que contienen UN error gramática
-- SOLO errores reales: casos incorrectos, concordancia, orden de palabras
-- SOLO errores que cometen hispanohablantes aprendiendo estonio
-- PROHIBIDO: vocabulario, conjugaciones básicas, definiciones
+- SOLO preguntas sobre errores gramaticales específicos
+- SOLO una palabra/frase incorrecta por oración presentada
+- SOLO errores típicos de hispanohablantes (casos, orden, concordancia)
+- PROHIBIDO: vocabulario, conjugaciones complejas, estructura general
 
 ${corpusKnowledge}
 
@@ -1090,27 +1090,39 @@ ${this.getTypicalErrorsForLevel(cefrLevel)}
 RESPUESTA OBLIGATORIA EN JSON:
 {"questions":[
   {
-    "question": "[Oración estonia con UN error]",
-    "translation": "[Traducción de la oración al español]",
+    "question": "[Oración estonia con UN error específico]",
+    "translation": "[Traducción de la oración correcta al español]",
     "type": "error_detection",
-    "correctAnswer": "[Palabra/frase incorrecta que debe corregirse]",
-    "explanation": "[SOLO español, máximo 8 palabras]",
+    "options": ["palabra1", "palabra2", "palabra3", "palabraERRÓNEA"],
+    "correctAnswer": "[SOLO la palabra/frase incorrecta]",
+    "explanation": "[SOLO español, máximo 6 palabras]",
     "cefrLevel": "${cefrLevel}"
   }
 ]}
 
+EJEMPLO VÁLIDO:
+{
+  "question": "Ma lähen homme koolisse bussiga.",
+  "translation": "Voy mañana a la escuela en autobús.",
+  "type": "error_detection", 
+  "options": ["lähen", "homme", "koolisse", "bussiga"],
+  "correctAnswer": "koolisse",
+  "explanation": "Debe ser 'kooli', no dirección."
+}
+
 INSTRUCCIONES CRÍTICAS:
 - EXACTAMENTE 5 preguntas de detección de errores
-- Cada oración debe tener EXACTAMENTE un error
-- Errores apropiados para nivel ${cefrLevel}
+- Cada oración debe tener SOLO UN error específico
+- 'correctAnswer' debe ser SOLO la palabra/frase incorrecta
+- 'options' debe incluir 4 opciones: 3 correctas + 1 incorrecta
 - TODAS las explicaciones en español ÚNICAMENTE
-- Usar errores pedagógicamente útiles
-- correctAnswer debe ser la parte incorrecta para corregir`,
+- Usar errores auténticos del corpus EstUD`,
 
       userPrompt: `Genera 5 preguntas de detección de errores estonios nivel ${cefrLevel}.
       
 ENFOQUE: oraciones con un error cada una, errores típicos de hispanohablantes.
-FORMATO: JSON con estructura exacta mostrada arriba.`,
+FORMATO: JSON con estructura exacta mostrada arriba.
+CRÍTICO: 'options' debe incluir 4 palabras/frases de la oración, siendo una incorrecta.`,
 
       settings: {
         maxTokens: 650,

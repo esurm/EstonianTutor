@@ -65,6 +65,8 @@ The application uses a comprehensive schema designed around language learning:
 - **Model upgrade**: Switched from GPT-4.1-mini to full GPT-4.1 for better accuracy and Spanish-only explanations
 - **All quiz categories fully operational**: vocabulary, grammar, conjugation, sentence_reordering, error_detection working with 100% AI-generated content
 - **ZERO FALLBACK POLICY**: Removed all deprecated fallback quiz code - only authentic AI professors with Estonian corpus knowledge
+- **Systematic review completed**: All 5 specialized AI professors verified with proper Estonian linguistic corpus access
+- **Error detection interface fixed**: AI now generates proper options array for click-to-select functionality
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context
