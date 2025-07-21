@@ -626,27 +626,32 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `You are creating Estonian grammar exercises. Generate 5 error detection questions for ${cefrLevel} level.
+          system: `Create Estonian error detection exercises for ${cefrLevel} level. You must generate sentences with ACTUAL grammatical mistakes.
 
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}
 
-JSON FORMAT REQUIRED:
-{"questions":[{"question":"Leia lausest grammatiline viga: [sentence with error]","translation":"[Spanish translation]","options":["word1","word2","word3","word4"],"correctAnswer":"[incorrect word]","explanation":"[Spanish only explanation]"}]}
+ESTONIAN GRAMMAR FACTS (DO NOT VIOLATE):
+- Indirect speech: "Ta ütles, et ta loeb" is CORRECT (no tense change needed)
+- Relative pronouns: "raamat, mida ta ostis" is CORRECT (partitive case)
+- Past participle: "Ta oli läinud" is CORRECT Estonian
+- Word order: Subject-Verb-Object is normal in Estonian
 
-CRITICAL RULES:
-1. Create sentences with REAL grammatical errors - not correct sentences
-2. Explanations MUST be in Spanish language only
-3. Never use Estonian words in explanations
-4. Verify each sentence actually contains an error before including it
+ONLY create errors in these areas:
+- Case endings: *genitive instead of partitive
+- Verb conjugation: *wrong person/number
+- Adjective agreement: *singular adj with plural noun
+- Word formation: *wrong suffix/prefix
 
-Spanish explanation examples:
-- "Falta caso partitivo"
-- "Verbo en tiempo incorrecto" 
-- "Adjetivo debe ser plural"
-- "Error en conjugación verbal"
+JSON FORMAT:
+{"questions":[{"question":"Leia lausest grammatiline viga: [sentence with actual error]","translation":"[Spanish translation]","options":["word1","word2","word3","word4"],"correctAnswer":"[the wrong word]","explanation":"[Spanish explanation]"}]}
 
-DO NOT create questions from grammatically correct sentences like "Ta oli läinud kinno" - this is correct Estonian.`,
-          user: `Create 5 Estonian error detection questions. Each sentence must have a real grammatical error. All explanations must be in Spanish only, never use Estonian words in explanations.`,
+EXAMPLES OF ACTUAL ERRORS:
+- "Ma näen kass" (should be "kassi" - missing partitive)
+- "Ta on kena tüdrukuid" (should be "tüdruk" - wrong plural form)
+- "Me läheme pood" (should be "poodi" - missing illative case)
+
+Spanish explanations only: "Falta caso partitivo", "Forma plural incorrecta"`,
+          user: `Create 5 Estonian sentences with ACTUAL grammatical errors (case mistakes, verb errors, adjective agreement). Do NOT use correct Estonian grammar. Explanations in Spanish only.`,
           maxTokens: 850
         };
       

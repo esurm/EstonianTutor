@@ -157,6 +157,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
     const newAnswers = [...answers, answerData];
     setAnswers(newAnswers);
+    
+    console.log(`📝 Saved answer ${newAnswers.length}/${questions.length}:`, answerData);
 
     // Reset for next question
     setShowAnswerFeedback(false);
@@ -166,8 +168,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Quiz complete - but don't submit yet, wait for user to click "Ver Resultados"
-      console.log("Quiz completed, waiting for user to click Results button");
+      // Quiz complete - all answers saved
+      console.log("✅ Quiz completed with all answers saved:", newAnswers.length);
       setQuizCompleted(true);
     }
   };
