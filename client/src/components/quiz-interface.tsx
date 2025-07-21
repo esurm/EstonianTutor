@@ -399,7 +399,16 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
         <div className="flex items-center justify-between mb-4">
           <div>
             <CardTitle className="text-lg">
-              {category === "vocabulary" ? "Quiz de Vocabulario" : "Quiz de Gramática"} - Nivel {user?.cefrLevel || "B1"}
+              {(() => {
+                switch(category) {
+                  case "vocabulary": return "Quiz de Vocabulario";
+                  case "grammar": return "Quiz de Gramática";
+                  case "conjugation": return "Quiz de Conjugación";
+                  case "sentence_reordering": return "Quiz de Oraciones";
+                  case "error_detection": return "Quiz de Errores";
+                  default: return "Quiz de Gramática";
+                }
+              })()} - Nivel {user?.cefrLevel || "B1"}
             </CardTitle>
             <p className="text-sm text-gray-600">
               Pregunta {currentQuestionIndex + 1} de {questions.length}
@@ -448,7 +457,66 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
         {/* Answer Options */}
         <div className="space-y-3">
-          {currentQuestion.questionType === "completion" || currentQuestion.type === "completion" ? (
+          {category === "error_detection" ? (
+            <div className="space-y-4">
+              <label className="text-sm font-medium text-gray-700">
+                Haz clic en la palabra o frase que contiene el error:
+              </label>
+              
+              {/* Error Detection Text Interface */}
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                <div className="text-lg leading-relaxed">
+                  {currentQuestion.question
+                    .replace(/^Leia lause seast viga:\s*["""]/g, '')
+                    .replace(/["""]\s*$/g, '')
+                    .replace(/^Leia lause vigane osa:\s*["""]/g, '')
+                    .replace(/^Vali lause vigane osa:\s*["""]/g, '')
+                    .replace(/^Leia vigane osa:\s*["""]/g, '')
+                    .split(/(\s+)/)
+                    .map((word, index) => {
+                      if (!word.trim()) return word; // Keep spaces as-is
+                      
+                      const cleanWord = word.replace(/[.,!?;:"""]/g, '');
+                      const isSelected = selectedAnswer === cleanWord;
+                      const isCorrect = currentQuestion.correctAnswer && cleanWord.toLowerCase() === currentQuestion.correctAnswer.toLowerCase();
+                      
+                      let wordClass = "";
+                      if (showAnswerFeedback) {
+                        if (isCorrect) {
+                          wordClass = "bg-green-200 border-green-500 text-green-800";
+                        } else if (isSelected && !isCorrect) {
+                          wordClass = "bg-red-200 border-red-500 text-red-800";
+                        } else {
+                          wordClass = "hover:bg-gray-100";
+                        }
+                      } else {
+                        wordClass = isSelected 
+                          ? "bg-blue-200 border-blue-500 text-blue-800" 
+                          : "hover:bg-blue-100 cursor-pointer";
+                      }
+                      
+                      return (
+                        <span
+                          key={index}
+                          onClick={() => !showAnswerFeedback && handleAnswerSelect(cleanWord)}
+                          className={`inline-block px-1 py-0.5 m-0.5 border-2 border-transparent rounded transition-all ${wordClass}`}
+                        >
+                          {word}
+                        </span>
+                      );
+                    })}
+                </div>
+              </div>
+              
+              {selectedAnswer && !showAnswerFeedback && (
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                  <p className="text-blue-800 text-sm">
+                    Has seleccionado: <span className="font-semibold">"{selectedAnswer}"</span>
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : currentQuestion.questionType === "completion" || currentQuestion.type === "completion" ? (
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
                 Completa la oración escribiendo la palabra en estonio:
