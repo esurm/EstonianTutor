@@ -195,8 +195,8 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     }
 
     // Check if answer is correct
-    const userAnswer = selectedAnswer.toLowerCase().trim();
-    const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim();
+    const userAnswer = category === "sentence_reordering" ? selectedAnswer.trim() : selectedAnswer.toLowerCase().trim();
+    const correctAnswer = category === "sentence_reordering" ? currentQuestion.correctAnswer.trim() : currentQuestion.correctAnswer.toLowerCase().trim();
     
     console.log('🔍 Answer comparison:', {
       userAnswer: `"${userAnswer}"`,
@@ -205,14 +205,23 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       exactMatch: userAnswer === correctAnswer
     });
     
-    // For sentence reordering, require EXACT match (Estonian has specific word order rules)
+    // For sentence reordering, check main answer and alternatives (Estonian allows some flexibility)
     let isCorrect = userAnswer === correctAnswer;
+    
+    // Check alternative answers if available
+    if (!isCorrect && category === "sentence_reordering" && currentQuestion.alternativeAnswers) {
+      isCorrect = currentQuestion.alternativeAnswers.some((alt: string) => 
+        userAnswer.trim() === alt.trim()
+      );
+    }
     
     console.log('🔍 Sentence validation:', {
       userAnswer: `"${userAnswer}"`,
       correctAnswer: `"${correctAnswer}"`,
+      alternativeAnswers: currentQuestion.alternativeAnswers || [],
       category,
-      exactMatch: isCorrect
+      exactMatch: userAnswer === correctAnswer,
+      alternativeMatch: isCorrect && userAnswer !== correctAnswer
     });
     
     setIsAnswerCorrect(isCorrect);

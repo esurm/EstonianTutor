@@ -40,6 +40,7 @@ export interface QuizQuestion {
   type?: "multiple_choice" | "completion";
   options?: string[];
   correctAnswer: string;
+  alternativeAnswers?: string[];
   explanation: string;
   cefrLevel: string;
 }

@@ -733,17 +733,19 @@ SINU EKSPERTIIS:
 - Sügav teadmine hispaania vs eesti struktuuri erinevustest
 - Täielik arusaam ${cefrLevel} taseme nõuetest
 
-EESTI KEELE SÕNAJÄRG (range reeglitega):
+EESTI KEELE SÕNAJÄRG (paindlik kuid reeglitega):
 1. Aeg tavaliselt lause alguses: "Täna ma lähen"
 2. Subjekt + verb: "ma lähen", "ta tuleb" 
-3. Objekt verbi järel: "näen koera", "ostan raamatu"
-4. Viis verbi järel: "jookseb kiiresti", "räägib vaikselt"
-5. Koht lause lõpus: "läheme parki", "elan Tallinnas"
+3. Objekt ja kohavalikud võivad varieeruda:
+   ✓ "arutab teemasid ülikoolis" 
+   ✓ "arutab ülikoolis teemasid"
+4. Viis verbi lähedal: "jookseb kiiresti", "kiiresti jookseb"
+5. Rõhutamine muudab järjekorda: koht võib olla ees või taga
 
-RANGEID VALIDEERIMISREEGLEID:
-- Ainult ÜKS õige sõnajärjekord lubatud
-- Pole paindlikkust - täpne järjestus nõutav
-- Iga sõna peab olema täpselt õiges kohas
+REALISTLIKUD VALIDEERIMISREEGLID:
+- Põhilised variandid (2-3) lubatud kui grammatiliselt õiged
+- Aeg, subjekt, verb fikseeritud positsioonides
+- Objekt ja koht võivad vahetuda
 - Punktuatsioon peab olema täpne
 
 KVALITEEDI STANDARDID:
@@ -760,15 +762,16 @@ ${this.getDifficultyGuidance(cefrLevel)}`,
 KRITILISED NÕUDED:
 
 1. SÕNAJÄRJE ÕIGSUS:
-   - Ainult ÜKS õige vastus lubatud
-   - Range eesti keele struktuur
-   - Mitte paindlik interpreteerimine
+   - Põhiline vastus + 1-2 lubatud varianti
+   - Aeg-subjekt-verb on fikseeritud
+   - Objekt ja koht võivad vahetuda kui grammatiliselt õige
 
-2. SÕNADE SEGAMINE (OLULINE):
-   - Sega sõnad täiesti juhuslikult
-   - Mitte järjestikused osad
-   - Tee sõnajärg võimalikult segaseks
-   - Näide: õige "Ma lähen homme poodi" → sega kui ["poodi", "ma", "homme", "lähen"]
+2. SÕNADE TÄPSUS JA SEGAMINE (KRIITILINE):
+   - Kasuta AINULT sõnu, mis on õiges vastuses
+   - Ära lisa ühtegi ekstra sõna või vale vorm
+   - Näide: kui vastus on "Homme õpilased õpivad koolis" → options: ["homme", "õpilased", "õpivad", "koolis"]
+   - Sega need sõnad juhuslikult järjestuses
+   - Kontrolli et iga sõna on täpselt sama kui vastuses
 
 3. REALISTLIKUD LAUSED:
    - Igapäevased situatsioonid
@@ -786,7 +789,8 @@ JSON FORMAAT:
     "question": "Järjesta sõnad õigesti:",
     "translation": "[täpne hispaaniakeelne tõlge]",
     "options": ["sõna1", "sõna2", "sõna3", "sõna4", "sõna5", "sõna6"],
-    "correctAnswer": "[AINULT õige vastus täpse punktuatsiooniga]",
+    "correctAnswer": "[Põhiline õige vastus täpse punktuatsiooniga]",
+    "alternativeAnswers": ["[Alternatiivne õige vastus]", "[Teine variant kui on]"],
     "explanation": "[Lühike selgitus sõnajärje reegli kohta]",
     "questionType": "sentence_reordering"
   }
@@ -795,7 +799,13 @@ JSON FORMAAT:
 PUNKTUATSIOONI REEGLID:
 - A1-A2: "Sõna1 sõna2 sõna3."
 - B1-B2: "Sõna1, sõna2 sõna3."  
-- C1-C2: "Sõna1, sõna2, sõna3 ja sõna4."`,
+- C1-C2: "Sõna1, sõna2, sõna3 ja sõna4."
+
+KRIITILISED KONTROLLID:
+1. Kontrolli et options sisaldab AINULT correctAnswer sõnu
+2. Ära kasuta sõnu mis ei ole vastuses
+3. Näide vigane: vastus "homme õpilased" kuid options ["homses", "õpilased"] → VALE
+4. Näide õige: vastus "homme õpilased" ja options ["homme", "õpilased"] → ÕIGE`,
 
       answerStructure: "wordReordering",
       maxTokens: 950
