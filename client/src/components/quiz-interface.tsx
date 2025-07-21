@@ -139,6 +139,26 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     
     setIsAnswerCorrect(isCorrect);
     setShowAnswerFeedback(true);
+
+    // If this is the last question, also complete the quiz
+    if (currentQuestionIndex === questions.length - 1) {
+      const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
+      const finalAnswerData: QuizAnswer = {
+        question: currentQuestion.question,
+        type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
+        options: currentQuestion.options,
+        correctAnswer: currentQuestion.correctAnswer,
+        userAnswer: selectedAnswer,
+        explanation: currentQuestion.explanation,
+        cefrLevel: currentQuestion.cefrLevel,
+        responseTime
+      };
+
+      const allAnswers = [...answers, finalAnswerData];
+      console.log("🏁 Final question answered, quiz completed with", allAnswers.length, "answers");
+      setAnswers(allAnswers);
+      setQuizCompleted(true);
+    }
   };
 
   const handleNextQuestion = () => {
@@ -207,36 +227,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const handleShowResults = () => {
     console.log("🎯 Ver Resultados clicked!");
     
-    // If this is the last question and quiz isn't completed yet, save the final answer first
-    if (!quizCompleted && currentQuestionIndex === questions.length - 1) {
-      console.log("💾 Saving final answer before submitting quiz");
-      
-      const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
-      const finalAnswerData: QuizAnswer = {
-        question: currentQuestion.question,
-        type: currentQuestion.questionType || currentQuestion.type || "multiple_choice",
-        options: currentQuestion.options,
-        correctAnswer: currentQuestion.correctAnswer,
-        userAnswer: selectedAnswer,
-        explanation: currentQuestion.explanation,
-        cefrLevel: currentQuestion.cefrLevel,
-        responseTime
-      };
-
-      const allAnswers = [...answers, finalAnswerData];
-      console.log("✅ Final quiz submission with all", allAnswers.length, "answers");
-      
-      // Submit immediately with all answers
-      if (sessionId) {
-        const responseTimes = allAnswers.map(a => a.responseTime);
-        submitQuizMutation.mutate({
-          sessionId,
-          answers: allAnswers,
-          responseTime: responseTimes
-        });
-      }
-    } else if (quizCompleted && answers.length === questions.length) {
-      // Quiz already completed, just submit
+    if (quizCompleted && answers.length === questions.length && sessionId) {
       console.log("✅ Submitting completed quiz with", answers.length, "answers");
       const responseTimes = answers.map(a => a.responseTime);
       submitQuizMutation.mutate({
@@ -245,7 +236,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
         responseTime: responseTimes
       });
     } else {
-      console.error("❌ Invalid quiz state for submission");
+      console.error("❌ Cannot submit quiz - not completed or missing data");
     }
   };
 
@@ -695,12 +686,12 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           </Button>
         ) : (
           <Button
-            onClick={currentQuestionIndex >= questions.length - 1 || quizCompleted ? handleShowResults : handleNextQuestion}
+            onClick={quizCompleted ? handleShowResults : handleNextQuestion}
             className="w-full"
             size="lg"
             disabled={submitQuizMutation.isPending}
           >
-            {currentQuestionIndex >= questions.length - 1 || quizCompleted ? (
+            {quizCompleted ? (
               <>
                 Ver Resultados
                 <BarChart3 className="ml-2 h-4 w-4" />
