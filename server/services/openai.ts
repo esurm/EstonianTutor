@@ -673,16 +673,17 @@ Responde en JSON:
       
       case "error_detection":
         return {
-          system: `You are an Estonian teacher. Create exactly 5 CEFR ${cefrLevel} error detection questions for a language quiz.
-All questions:
-"question" in Estonian
-"translation" in Spanish (translation of the question sentence only)
-"options": a list of words from the sentence (for multiple choice error detection)
-"correctAnswer": the single incorrect word
-"explanation": in Spanish (max 15 words)
-Return only a single valid JSON object with a "questions" array containing all 5 questions. No markup. No extra text, no explanations, outside JSON.`,
-          user: `5 error detection questions with options`,
-          maxTokens: 700
+          system: `Create 5 Estonian grammar error questions for CEFR ${cefrLevel}.
+Each Estonian sentence has ONE grammar mistake.
+JSON format:
+question: Estonian sentence with grammar error
+translation: Spanish meaning
+options: 4 words from sentence
+correctAnswer: wrong word
+explanation: Spanish (10 words max)
+JSON only.`,
+          user: `5 Estonian grammar errors`,
+          maxTokens: 900
         };
       
       default:
