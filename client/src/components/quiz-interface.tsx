@@ -411,7 +411,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
               })()} - Nivel {user?.cefrLevel || "B1"}
             </CardTitle>
             <p className="text-sm text-gray-600">
-              Pregunta {currentQuestionIndex + 1} de {questions.length}
+              {quizCompleted ? `Quiz Completado - ${questions.length} preguntas` : `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`}
             </p>
           </div>
           <div className="flex items-center space-x-4">

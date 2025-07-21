@@ -712,9 +712,16 @@ STRICT REQUIREMENTS:
 6. CorrectAnswer: The grammatically incorrect Estonian word
 
 REAL ERROR EXAMPLES:
-- Wrong case: "Ma lähen pood" → should be "poodi" (illative case)
+- Wrong case: "Ma lähen pood" → should be "poodi" (illative case needed)
 - Wrong verb: "Ta lähevad kooli" → should be "läheb" (3rd person singular)
-- Wrong order: "Koolis ma käin" → should be "Ma käin koolis" (standard order)
+- Wrong adjective: "Meie sõbrad on tore" → should be "head" (plural form)
+- Wrong word order: "Koolis ma käin" → should be "Ma käin koolis"
+
+CRITICAL: Use authentic Estonian grammar rules. Common errors:
+- Missing illative case (-sse, -de, vowel change)
+- Wrong plural forms (head vs tore, etc.)
+- Incorrect verb conjugations
+- Word order mistakes
 
 Generate varied, realistic Estonian sentences with authentic grammatical mistakes.`,
           user: `5 Estonian error detection questions with Spanish translations and explanations`,
