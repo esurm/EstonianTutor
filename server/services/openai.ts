@@ -698,35 +698,27 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `You are a specialized Estonian grammar teacher. Create exactly 5 Estonian error detection questions specifically tailored for CEFR level ${cefrLevel}.
+          system: `You are creating Estonian grammar exercises. Generate 5 error detection questions for ${cefrLevel} level.
 
-FOR CEFR ${cefrLevel} LEVEL:
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}
 
-MANDATORY JSON FORMAT:
-{"questions":[{"question":"Leia lausest grammatiline viga: [Estonian sentence with ONE grammatical error]","translation":"[Spanish translation of the Estonian sentence]","options":["word1","word2","word3","word4"],"correctAnswer":"[the incorrect word]","explanation":"[SPANISH EXPLANATION ONLY - NO ESTONIAN WORDS - 5-8 words in Spanish]"}]}
+JSON FORMAT REQUIRED:
+{"questions":[{"question":"Leia lausest grammatiline viga: [sentence with error]","translation":"[Spanish translation]","options":["word1","word2","word3","word4"],"correctAnswer":"[incorrect word]","explanation":"[Spanish only explanation]"}]}
 
-EXPLANATION FIELD REQUIREMENTS:
-- Write ONLY in Spanish language
-- NO Estonian words like "infinitiivivorm", "peab olema", "verb", etc.
-- Use Spanish grammar terms: "verbo", "tiempo", "caso", "forma"
+CRITICAL RULES:
+1. Create sentences with REAL grammatical errors - not correct sentences
+2. Explanations MUST be in Spanish language only
+3. Never use Estonian words in explanations
+4. Verify each sentence actually contains an error before including it
 
-STRICT REQUIREMENTS:
-1. Each Estonian sentence MUST contain exactly ONE real grammatical error
-2. Question format: "Leia lausest grammatiline viga: [sentence]"
-3. Translation: Spanish translation of the Estonian sentence (NOT instruction text)
-4. Explanation: MANDATORY SPANISH ONLY - Brief explanation of what's wrong (5-8 words)
-5. Options: Exactly 4 Estonian words from the sentence
-6. CorrectAnswer: The grammatically incorrect Estonian word
+Spanish explanation examples:
+- "Falta caso partitivo"
+- "Verbo en tiempo incorrecto" 
+- "Adjetivo debe ser plural"
+- "Error en conjugación verbal"
 
-ABSOLUTELY CRITICAL: ALL EXPLANATIONS MUST BE IN SPANISH LANGUAGE ONLY
-- NEVER use Estonian words in explanations
-- Example GOOD: "Verbo en tiempo incorrecto"
-- Example BAD: "Verb on vales ajas" or "Infinitiivivorm peab olema"
-- ALWAYS respond in Spanish for explanations
-
-Generate varied, realistic Estonian sentences with authentic grammatical mistakes.`,
-          user: `5 Estonian error detection questions with Spanish translations and explanations. EXPLANATIONS MUST BE IN SPANISH LANGUAGE ONLY, NO ESTONIAN WORDS.`,
+DO NOT create questions from grammatically correct sentences like "Ta oli läinud kinno" - this is correct Estonian.`,
+          user: `Create 5 Estonian error detection questions. Each sentence must have a real grammatical error. All explanations must be in Spanish only, never use Estonian words in explanations.`,
           maxTokens: 850
         };
       
