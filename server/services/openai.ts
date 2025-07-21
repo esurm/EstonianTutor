@@ -337,7 +337,12 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         // Validate that we got actual questions, not fallback
         if (result.questions && result.questions.length > 0) {
           console.log(`✅ Successfully parsed ${result.questions.length} quiz questions`);
-          return result;
+          // Add cefrLevel to each question for database requirements
+          const questionsWithLevel = result.questions.map((q: any) => ({
+            ...q,
+            cefrLevel: cefrLevel
+          }));
+          return { questions: questionsWithLevel };
         } else {
           throw new Error("No questions found in API response");
         }
@@ -691,19 +696,27 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `Generate 5 Estonian error detection questions for CEFR ${cefrLevel}.
-Format: "Leia lausest grammatiline viga: [sentence with ONE grammar error]"
-JSON: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
-CRITICAL: Each sentence must have ONE real grammar error. Examples:
-- Wrong case: "Ma lähen pood" (needs "poodi")
-- Wrong verb: "Ta lähevad" (needs "läheb")
-- Bad order: "Koolis ma käin" (needs "Ma käin koolis")
-LANGUAGE REQUIREMENTS:
-- question: Estonian only
-- translation: SPANISH only (not English)
-- explanation: SPANISH only (not Estonian), under 8 words
-correctAnswer = the INCORRECT word.`,
-          user: `5 error detection questions with Spanish translations and explanations`,
+          system: `Genera 5 preguntas de detección de errores en estonio para nivel CEFR ${cefrLevel}.
+
+FORMATO OBLIGATORIO: "Leia lausest grammatiline viga: [oración estoniacon UN error gramatical]"
+
+JSON ESTRICTO: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+
+REQUISITOS CRÍTICOS:
+1. Cada oración DEBE tener EXACTAMENTE UN error gramatical real
+2. Solo 4 opciones (no 5)
+3. question: Solo en estonio
+4. translation: Solo en ESPAÑOL (nunca inglés)
+5. explanation: Solo en ESPAÑOL (nunca estonio), máximo 8 palabras
+6. correctAnswer: La palabra INCORRECTA
+
+EJEMPLOS de errores reales:
+- Caso incorrecto: "Ma lähen pood" (debe ser "poodi")
+- Verbo incorrecto: "Ta lähevad kooli" (debe ser "läheb")  
+- Orden incorrecto: "Koolis ma käin" (debe ser "Ma käin koolis")
+
+¡VERIFICA que cada oración tenga un error real antes de incluirla!`,
+          user: `5 preguntas de detección de errores con traducciones y explicaciones en español`,
           maxTokens: 900
         };
       
