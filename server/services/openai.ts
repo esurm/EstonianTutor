@@ -306,7 +306,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
+        model: "gpt-4.1", // Switched from mini to full version for better accuracy
         messages: [
           {
             role: "system",
@@ -326,7 +326,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
       });
 
       const endTime = Date.now();
-      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1-mini (${category} optimized)`);
+      console.log(`⚡ Quiz generation took ${endTime - startTime}ms with gpt-4.1 (${category} optimized)`);
       
       const content = response.choices[0].message.content || "{}";
       try {
@@ -421,7 +421,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           method: "POST",
           url: "/v1/chat/completions",
           body: {
-            model: "gpt-4.1-mini",
+            model: "gpt-4.1", // Full model for better accuracy
             messages: [
               {
                 role: "system",
