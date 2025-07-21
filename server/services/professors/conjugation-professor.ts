@@ -42,11 +42,6 @@ JSON RESPONSE FORMAT:
 }
 
 You always create exactly 5 questions that teach Estonian verb patterns systematically.`;
-    "options": [4 formas],
-    "correctAnswer": "forma correcta",
-    "explanation": "tiempo/persona"
-  }]
-}`;
   }
 
   getUserPrompt(): string {
