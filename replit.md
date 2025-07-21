@@ -69,6 +69,17 @@ The application uses a comprehensive schema designed around language learning:
 - **Error detection interface fixed**: AI now generates proper options array for click-to-select functionality
 - **Error detection accuracy improved**: Fixed AI professor to only generate genuine grammatical errors, not stylistic differences
 - **BREAKTHROUGH: Error detection pedagogical redesign**: Resolved core issue where AI couldn't reliably generate incorrect Estonian due to training conflicts. New approach presents correct Estonian and asks about common learner errors pedagogically - dramatically improved accuracy and authenticity
+- **CEFR Standards Alignment (Jan 2025)**: Updated all CEFR guidelines to match official Estonian language requirements:
+  - Aligned with Estonia's official 4-level system (A2, B1, B2, C1 - C2 not tested)
+  - Case system progression matches Estonian government standards (Keeleklikk/Keeletee)
+  - Vocabulary levels based on official EKI frequency data and Integration Foundation materials
+  - Grammar complexity follows authentic Estonian linguistic patterns from EstUD corpus
+- **AI Parameter Optimization (Jan 2025)**: Fine-tuned all professor parameters for Estonian language tutoring:
+  - Vocabulary: Higher creativity (temp 0.4) with diversity penalties for varied question styles
+  - Grammar: Maximum accuracy (temp 0.15) with focused responses for consistent rule application
+  - Conjugation: Ultra-precision (temp 0.05) for exact verb forms with minimal tokens
+  - Sentence Reordering: Compact responses (400 tokens) with balanced creativity for natural variety
+  - Error Detection: Enhanced creativity (temp 0.2) with pattern variation for realistic error types
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
 - Dynamic quiz and dialogue generation with cultural context

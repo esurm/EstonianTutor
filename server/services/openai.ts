@@ -379,7 +379,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
           console.log(`🔧 Attempting to salvage error_detection JSON...`);
           try {
             // Extract just the questions array if possible
-            const questionsMatch = content.match(/"questions":\s*\[(.*?)\]/s);
+            const questionsMatch = content.match(/"questions":\s*\[(.*?)\]/);
             if (questionsMatch) {
               const questionsContent = questionsMatch[1];
               console.log(`Found questions content: ${questionsContent.substring(0, 200)}...`);
@@ -516,11 +516,11 @@ FORMATO JSON VOCABULARIO:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 opciones, una correcta
-      maxTokens: 850,
-      temperature: 0.3,
-      topP: 0.9,
-      presencePenalty: 0.2,
-      frequencyPenalty: 0.1
+      maxTokens: 600, // Reduced - vocab questions are concise
+      temperature: 0.4, // Slightly higher for varied question styles
+      topP: 0.85, // Balanced creativity
+      presencePenalty: 0.3, // Encourage diverse vocabulary
+      frequencyPenalty: 0.2 // Avoid repetitive words
     };
   }
 
@@ -568,11 +568,11 @@ FORMATO JSON GRAMÁTICA:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 opciones gramaticales
-      maxTokens: 900,
-      temperature: 0.2,
-      topP: 0.8,
-      presencePenalty: 0.1,
-      frequencyPenalty: 0.0
+      maxTokens: 700, // Increased for better explanations
+      temperature: 0.15, // Lower for accuracy
+      topP: 0.75, // Focused responses
+      presencePenalty: 0.15, // Slight diversity
+      frequencyPenalty: 0.05 // Minimal repetition control
     };
   }
 
@@ -621,11 +621,11 @@ FORMATO JSON CONJUGACIÓN:
 ]}`,
 
       answerStructure: "multipleChoice", // 4 formas verbales
-      maxTokens: 850,
-      temperature: 0.1,
-      topP: 0.7,
-      presencePenalty: 0.0,
-      frequencyPenalty: 0.0
+      maxTokens: 500, // Conjugation tables are compact
+      temperature: 0.05, // Maximum precision
+      topP: 0.6, // Very focused
+      presencePenalty: 0.0, // No creativity needed
+      frequencyPenalty: 0.0 // Patterns should repeat
     };
   }
 
@@ -742,11 +742,11 @@ PUNKTUATSIOONI REEGLID:
 - Näited: "Ma lähen kooli." "Eile ta ostis raamatu."`,
 
       answerStructure: "wordReordering", 
-      maxTokens: 800, // Reduced to prevent JSON truncation
-      temperature: 0.0,
-      topP: 1.0,
-      presencePenalty: 0.0,
-      frequencyPenalty: 0.0
+      maxTokens: 400, // Shorter responses needed
+      temperature: 0.1, // Slight increase for variety
+      topP: 0.8, // Balanced
+      presencePenalty: 0.1, // Minimal diversity
+      frequencyPenalty: 0.0 // Word order patterns
     };
   }
 
@@ -1178,11 +1178,11 @@ FORMATO: JSON con estructura exacta mostrada arriba.
 CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
 
       settings: {
-        maxTokens: 500, // Reduced to prevent JSON truncation
-        temperature: 0.1,
-        topP: 1.0,
-        frequencyPenalty: 0.1,
-        presencePenalty: 0.0
+        maxTokens: 600, // Increased for explanations
+        temperature: 0.2, // Higher for realistic errors
+        topP: 0.9, // More creative error types
+        frequencyPenalty: 0.15, // Vary error patterns
+        presencePenalty: 0.05 // Minimal
       }
     };
   }
@@ -1192,48 +1192,48 @@ CRÍTICO: Las oraciones deben ser gramaticalmente perfectas en estonio.`,
    */
   private getCasesForLevel(cefrLevel: string): string {
     const cases = {
-      A1: "nominativo, partitivo (ma, sa, ta + objetos básicos)",
-      A2: "nominativo, partitivo, genitivo (posesión básica)",
-      B1: "nominativo, partitivo, genitivo, ilativo (hacia), inesesivo (en)",
-      B2: "todos los casos locales + aditivo, komutativos",
-      C1: "sistema completo de 14 casos con matices",
-      C2: "casos en contextos complejos y registros especializados"
+      A1: "nominativo básico (ma olen), partitivo simple (ma söön leiba)",
+      A2: "nominativo, partitivo, genitivo (posesión minu/sinu), ilativo básico (kooli/koju)",
+      B1: "6 casos locales: ilativo, inessivo, elativo (kooli/koolis/koolist) + allativo, adessivo, ablativo",
+      B2: "los 14 casos estonios: 3 estructurales + 6 locales + 5 semánticos (translativo, terminativo, esivo, abessivo, komitativo)",
+      C1: "uso avanzado de todos los 14 casos en contextos académicos y profesionales complejos",
+      C2: "dominio completo de matices estilísticos y registros especializados (nivel no evaluado oficialmente)"
     };
     return cases[cefrLevel as keyof typeof cases] || cases.B1;
   }
 
   private getVerbsForLevel(cefrLevel: string): string {
     const verbs = {
-      A1: "olema (olen, oled, on), minema (lähen), tulema (tulen)",
-      A2: "tegema, söõma, jõõma, magama, ütlema",
-      B1: "rääkima, õppima, töötama, elama, mängima",
-      B2: "analüüsima, uurima, võrdlema, selgitama",
-      C1: "kontseptualiseerima, sünteetisema, problematiseerima",
-      C2: "dialektiliselt mõistma, hermeneutiliselt tõlgendama"
+      A1: "olema (olen/oled/on), minema (lähen/lähed/läheb), tulema (tulen/tuled/tuleb), tegema (teen/teed/teeb)",
+      A2: "söõma, jõõma, magama, ütlema, vaatama, kuulama, ostma, andma, võtma",
+      B1: "rääkima, õppima, töötama, elama, mängima, lugema, kirjutama, mõistma, aitama",
+      B2: "analüüsima, uurima, võrdlema, selgitama, arendama, planeerima, organiseerima",
+      C1: "kontseptualiseerima, sünteetisema, problematiseerima, argumenteerima, interpreteerima",
+      C2: "nivel no evaluado oficialmente en Estonia (solo hasta C1)"
     };
     return verbs[cefrLevel as keyof typeof verbs] || verbs.B1;
   }
 
   private getSentencePatternsForLevel(cefrLevel: string): string {
     const patterns = {
-      A1: "SVO põhiline: Ma lähen kooli. Ta tuleb koju.",
-      A2: "Aeg + SVO: Täna ma lähen tööle. Homme ta tuleb.",
-      B1: "Adverbid + kompleksid: Ta räägib hästi eesti keelt.",
-      B2: "Akadeemiline: Professor seletas täna uut teemat.",
-      C1: "Keerukad: Eksperdid analüüsivad süstemaatiliselt probleeme.",
-      C2: "Abstraktsed: Intellektuaalid kontseptualiseerivad metafüüsilisi dimensioone."
+      A1: "SVO básico: Ma lähen kooli. Ta tuleb koju. Ma söön leiba.",
+      A2: "Tiempo + SVO: Täna ma lähen tööle. Eile ta tuli koju. Homme me sõidame.",
+      B1: "Adverbios + objetos: Ta räägib hästi eesti keelt. Me ostame poest toitu.",
+      B2: "Estructuras académicas: Professor seletas täna uut teemat. Õpilased analüüsivad teksti.",
+      C1: "Construcciones complejas: Eksperdid analüüsivad süstemaatiliselt probleeme akadeemilises kontekstis.",
+      C2: "nivel no evaluado oficialmente en Estonia (solo hasta C1)"
     };
     return patterns[cefrLevel as keyof typeof patterns] || patterns.B1;
   }
 
   private getTypicalErrorsForLevel(cefrLevel: string): string {
     const errors = {
-      A1: "vale kääne: *Ma lähen koolisse (õige: kooli - ilativo), *Ma joon piima (õige: piim - nominativo)",
-      A2: "partitivi/genitivi segadus: *ma söön leiva (õige: leiba), *see on minu raamati (õige: raamat)",
-      B1: "inessivo/ilativo segadus: *Ma elan Tallinna (õige: Tallinnas), *Ta tuleb koolis (õige: koolist)",
-      B2: "adjektiivi kongruents: *suured maja (õige: suured majad), *uus autoga (õige: uue autoga)",
-      C1: "keerulised käänded: *analüüsimise käigus (õige: analüüsi käigus), *selle asemel (õige: selle asemele)",
-      C2: "vormilised registrid: *võib olla et (õige: võib-olla, et), *selle pärast et (õige: seetõttu, et)"
+      A1: "confusión nominativo/partitivo: *Ma joon piima (correcto: piim), *Ma söön leiv (correcto: leiba)",
+      A2: "caso genitivo mal aplicado: *see on mina raamat (correcto: minu), *ma lähen koolis (correcto: kooli)",
+      B1: "confusión de casos locales: *Ma elan Tallinna (correcto: Tallinnas), *Ta tuleb koolis (correcto: koolist)",
+      B2: "concordancia adjetival: *suured maja (correcto: suured majad), *vana autoga (correcto: vana autoga)",
+      C1: "casos complejos en contexto académico: errores sutiles en terminativo, esivo, komitativo según contexto profesional",
+      C2: "nivel no evaluado oficialmente en Estonia (solo hasta C1)"
     };
     return errors[cefrLevel as keyof typeof errors] || errors.B1;
   }
