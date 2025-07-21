@@ -760,18 +760,20 @@ FORMATO JSON REORDENAMIENTO:
     "question": "Järjesta sõnad õigesti: [palabras_desordenadas]",
     "translation": "[traducción de oración correcta]",
     "options": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
-    "correctAnswer": "[oración sin puntuación, solo palabras separadas por espacios]",
+    "correctAnswer": "[oración con puntuación y capitalización apropiada para nivel]",
     "explanation": "[regla de orden aplicada - máximo 8 palabras]",
     "questionType": "sentence_reordering", 
     "sentenceType": "[simple/compleja/con_adverbios]"
   }
 ]}
 
-REGLAS CRÍTICAS PARA correctAnswer:
-- NO incluir puntos, comas, ni signos de puntuación
-- NO capitalizar la primera palabra
-- Solo palabras en minúsculas separadas por espacios simples
-- Ejemplo: "eile läksin kiiresti poodi" NO "Eile läksin kiiresti poodi."`,
+REGLAS PARA correctAnswer SEGÚN NIVEL:
+- A1-A2: Solo capitalización inicial, punto final básico
+  Ejemplo: "Eile läksin poodi."
+- B1-B2: Capitalización + puntuación intermedia (comas en listas)
+  Ejemplo: "Eile läksin kiiresti poodi, apteeki ja postimajja."
+- C1-C2: Puntuación completa, mayúsculas apropiadas
+  Ejemplo: "Eile, pärast tööd, läksin kiiresti nii poodi kui ka apteeki."`,
 
       answerStructure: "wordReordering", // Lista de palabras para reordenar
       maxTokens: 900

@@ -143,8 +143,13 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       setSentenceOrder(newOrder);
       setAvailableWords(newAvailable);
       
-      // Update selectedAnswer to be the complete sentence
-      setSelectedAnswer(newOrder.join(" "));
+      // Update selectedAnswer to be the complete sentence with proper formatting
+      const sentence = newOrder.join(" ");
+      // For higher CEFR levels, apply proper capitalization and punctuation
+      const formattedSentence = currentQuestion?.cefrLevel && ['B2', 'C1', 'C2'].includes(currentQuestion.cefrLevel) 
+        ? sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.'
+        : sentence;
+      setSelectedAnswer(formattedSentence);
     }
   };
 
@@ -195,23 +200,32 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     // For sentence reordering, be more flexible with Estonian word order
     let isCorrect = userAnswer === correctAnswer;
     if (category === "sentence_reordering") {
-      // Check if all words are present and properly arranged (flexible Estonian order)
-      const userWords = userAnswer.split(' ').filter(w => w.length > 0);
-      const correctWords = correctAnswer.split(' ').filter(w => w.length > 0);
-      
-      console.log('🔍 Word comparison:', {
-        userWords,
-        correctWords,
-        sameLength: userWords.length === correctWords.length,
-        allWordsPresent: userWords.every(word => correctWords.includes(word))
-      });
-      
-      // Basic check: same words count and all words present
-      const hasSameWords = userWords.length === correctWords.length && 
-                          userWords.every(word => correctWords.includes(word));
-      
-      // Accept if all words are present (Estonian allows flexible word order)
-      isCorrect = hasSameWords;
+      // First try exact match (important for punctuation/capitalization at higher levels)
+      if (isCorrect) {
+        console.log('🔍 Exact match found!');
+      } else {
+        // For flexible matching, normalize punctuation and check word order
+        const normalizeText = (text: string) => text.toLowerCase().replace(/[.,!?;:]/g, '').trim();
+        const userNormalized = normalizeText(userAnswer);
+        const correctNormalized = normalizeText(correctAnswer);
+        
+        const userWords = userNormalized.split(' ').filter(w => w.length > 0);
+        const correctWords = correctNormalized.split(' ').filter(w => w.length > 0);
+        
+        console.log('🔍 Word comparison:', {
+          userWords,
+          correctWords,
+          userNormalized,
+          correctNormalized,
+          sameLength: userWords.length === correctWords.length,
+          allWordsPresent: userWords.every(word => correctWords.includes(word))
+        });
+        
+        // Accept if all words are present (Estonian allows flexible word order)
+        const hasSameWords = userWords.length === correctWords.length && 
+                            userWords.every(word => correctWords.includes(word));
+        isCorrect = hasSameWords;
+      }
     }
     
     setIsAnswerCorrect(isCorrect);
