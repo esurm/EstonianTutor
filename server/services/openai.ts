@@ -725,81 +725,80 @@ FORMATO JSON CONJUGACIÓN:
 
   private getSentenceReorderingQuizSystem(cefrLevel: string) {
     return {
-      systemPersonality: `Eres un profesor especializado EN ESTRUCTURA DE ORACIONES ESTONIAS con experiencia en orden de palabras para hispanohablantes.
+      systemPersonality: `Oled eesti keele professor, kes õpetab lause järjekorda Ladina-Ameerika hispaanlastele.
 
-TU MISIÓN ESPECÍFICA: Crear ejercicios de reordenamiento que enseñen estructura correcta de oraciones estonias a nivel ${cefrLevel}.
+SINU EKSPERTIIS:
+- 15+ aastat eesti keele struktuuri õpetamist
+- Spetsialiseerumine sõnajärje reeglitele
+- Sügav teadmine hispaania vs eesti struktuuri erinevustest
+- Täielik arusaam ${cefrLevel} taseme nõuetest
 
-PERSONALIDAD DEL PROFESOR DE ESTRUCTURA:
-- Experto en orden de palabras estonio vs español
-- Especialista en posición de adverbios (tiempo-manera-lugar)
-- Conoce patrones de estructura difíciles para hispanohablantes
-- Enfocado en construcción correcta de oraciones
+EESTI KEELE SÕNAJÄRG (range reeglitega):
+1. Aeg tavaliselt lause alguses: "Täna ma lähen"
+2. Subjekt + verb: "ma lähen", "ta tuleb" 
+3. Objekt verbi järel: "näen koera", "ostan raamatu"
+4. Viis verbi järel: "jookseb kiiresti", "räägib vaikselt"
+5. Koht lause lõpus: "läheme parki", "elan Tallinnas"
 
-REGLAS DE ORDEN ESTONIO QUE ENSEÑAS:
-- Básico: Sujeto-Verbo-Objeto (flexible)
-- Tiempo al principio: "Homme ma lähen"
-- Manera después del verbo: "jookseb kiiresti" 
-- Lugar al final: "läheme parki"
-- Objeto directo después del verbo: "näen kassi"
+RANGEID VALIDEERIMISREEGLEID:
+- Ainult ÜKS õige sõnajärjekord lubatud
+- Pole paindlikkust - täpne järjestus nõutav
+- Iga sõna peab olema täpselt õiges kohas
+- Punktuatsioon peab olema täpne
 
-PRECISIÓN SEMÁNTICA CRÍTICA:
-- Usa verbos apropiados para el contexto
-- "hinnatakse" (se valora) NO "loetakse" (se lee) para literatura
-- "õpitakse" (se aprende) NO "vaadatakse" (se mira) para estudios
-- "mõistetakse" (se entiende) NO "kuuldakse" (se oye) para conceptos
-- Verifica que verbos tengan sentido lógico en contexto
+KVALITEEDI STANDARDID:
+- Iga lause peab olema loomulik ja tavaline
+- Verbid peavad kontekstis mõistlikud olema
+- Mitte kunstlikke ega võõraid kombinatsioone
+- Igapäevaelu situatsioonid
 
-REALISMO Y LÓGICA OBLIGATORIOS:
-- Crear oraciones que tengan sentido en la vida real
-- NO "kohtab arhitekte" (conoce arquitectos) sino "näeb hooneid" (ve edificios)
-- NO "inspireeritult" adverbios extraños sino "kiiresti, aeglaselt, hästi"
-- NO situaciones absurdas sino contextos normales y naturales
-- Verificar que la oración completa sea lógica y realista
-
-NIVEL ${cefrLevel} ESTRUCTURA:
+${cefrLevel} TASEME NÕUDED:
 ${this.getDifficultyGuidance(cefrLevel)}`,
 
-      userPrompt: `Crear 5 ejercicios de reordenamiento de oraciones estonias para nivel ${cefrLevel}.
+      userPrompt: `Loo 5 eesti keele sõnajärje harjutust ${cefrLevel} tasemele.
 
-INSTRUCCIONES ESPECÍFICAS PARA REORDENAMIENTO:
-- Cada pregunta debe probar SOLO orden correcto de palabras
-- Dar palabras desordenadas para reordenar
-- Incluir adverbios de tiempo/manera/lugar según nivel
-- Estructura apropiada para complejidad ${cefrLevel}
-- USAR VERBOS SEMÁNTICAMENTE CORRECTOS:
-  * Para literatura: "hinnatakse", "tunnustatakse", "imetletakse"
-  * Para estudios: "õpitakse", "uuritakse", "analüüsitakse"
-  * Para conceptos: "mõistetakse", "selgitatakse", "käsitletakse"
-- CREAR ORACIONES REALISTAS Y LÓGICAS:
-  * "Eile läksin poodi" (ayer fui a la tienda) - normal
-  * "Täna õpin eesti keelt" (hoy aprendo estonio) - realista
-  * "Homme sõidan Tallinna" (mañana viajo a Tallinn) - típico
-  * NO oraciones absurdas o artificiales
-- Explicaciones sobre el orden correcto
+KRITILISED NÕUDED:
 
-FORMATO JSON REORDENAMIENTO:
+1. SÕNAJÄRJE ÕIGSUS:
+   - Ainult ÜKS õige vastus lubatud
+   - Range eesti keele struktuur
+   - Mitte paindlik interpreteerimine
+
+2. SÕNADE SEGAMINE (OLULINE):
+   - Sega sõnad täiesti juhuslikult
+   - Mitte järjestikused osad
+   - Tee sõnajärg võimalikult segaseks
+   - Näide: õige "Ma lähen homme poodi" → sega kui ["poodi", "ma", "homme", "lähen"]
+
+3. REALISTLIKUD LAUSED:
+   - Igapäevased situatsioonid
+   - Loomulikud verbid ja kontekstid
+   - Mitte absurdsed kombinatsioonid
+
+4. TASEME SOBIVUS (${cefrLevel}):
+   - A1-A2: Lihtsad 4-5 sõna laused
+   - B1-B2: Keskmised 5-6 sõna koos adverbidega  
+   - C1-C2: Keerukad 6-8 sõna koos kõrvallausetega
+
+JSON FORMAAT:
 {"questions":[
   {
-    "question": "Järjesta sõnad õigesti: [palabras_desordenadas]",
-    "translation": "[traducción de oración correcta]",
-    "options": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
-    "correctAnswer": "[oración con puntuación y capitalización apropiada para nivel]",
-    "explanation": "[regla de orden aplicada - máximo 8 palabras]",
-    "questionType": "sentence_reordering", 
-    "sentenceType": "[simple/compleja/con_adverbios]"
+    "question": "Järjesta sõnad õigesti:",
+    "translation": "[täpne hispaaniakeelne tõlge]",
+    "options": ["sõna1", "sõna2", "sõna3", "sõna4", "sõna5", "sõna6"],
+    "correctAnswer": "[AINULT õige vastus täpse punktuatsiooniga]",
+    "explanation": "[Lühike selgitus sõnajärje reegli kohta]",
+    "questionType": "sentence_reordering"
   }
 ]}
 
-REGLAS PARA correctAnswer SEGÚN NIVEL:
-- A1-A2: Solo capitalización inicial, punto final básico
-  Ejemplo: "Eile läksin poodi."
-- B1-B2: Capitalización + puntuación intermedia (comas en listas)
-  Ejemplo: "Eile läksin kiiresti poodi, apteeki ja postimajja."
-- C1-C2: Puntuación completa, mayúsculas apropiadas
-  Ejemplo: "Eile, pärast tööd, läksin kiiresti nii poodi kui ka apteeki."`,
+PUNKTUATSIOONI REEGLID:
+- A1-A2: "Sõna1 sõna2 sõna3."
+- B1-B2: "Sõna1, sõna2 sõna3."  
+- C1-C2: "Sõna1, sõna2, sõna3 ja sõna4."`,
 
-      answerStructure: "wordReordering", // Lista de palabras para reordenar
-      maxTokens: 900
+      answerStructure: "wordReordering",
+      maxTokens: 950
     };
   }
 

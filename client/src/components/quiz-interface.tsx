@@ -128,7 +128,9 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   useEffect(() => {
     if (category === "sentence_reordering" && currentQuestion?.options) {
       setSentenceOrder([]);
-      setAvailableWords([...currentQuestion.options]);
+      // Shuffle the words randomly to make the quiz more challenging
+      const shuffledWords = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+      setAvailableWords(shuffledWords);
       setSelectedAnswer("");
     }
   }, [currentQuestionIndex, category, currentQuestion]);
@@ -143,13 +145,17 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       setSentenceOrder(newOrder);
       setAvailableWords(newAvailable);
       
-      // Update selectedAnswer to be the complete sentence with proper formatting
+      // Create sentence exactly as it should be compared - apply consistent formatting
       const sentence = newOrder.join(" ");
-      // For higher CEFR levels, apply proper capitalization and punctuation
-      const formattedSentence = currentQuestion?.cefrLevel && ['B2', 'C1', 'C2'].includes(currentQuestion.cefrLevel) 
-        ? sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.'
-        : sentence;
+      const formattedSentence = sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
       setSelectedAnswer(formattedSentence);
+      
+      console.log('🔍 Building sentence:', {
+        words: newOrder,
+        sentence,
+        formattedSentence,
+        targetAnswer: currentQuestion?.correctAnswer
+      });
     }
   };
 
@@ -169,7 +175,9 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const handleResetSentence = () => {
     if (category === "sentence_reordering" && currentQuestion?.options) {
       setSentenceOrder([]);
-      setAvailableWords([...currentQuestion.options]);
+      // Re-shuffle when resetting to provide different challenge
+      const shuffledWords = [...currentQuestion.options].sort(() => Math.random() - 0.5);
+      setAvailableWords(shuffledWords);
       setSelectedAnswer("");
     }
   };
@@ -197,36 +205,15 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       exactMatch: userAnswer === correctAnswer
     });
     
-    // For sentence reordering, be more flexible with Estonian word order
+    // For sentence reordering, require EXACT match (Estonian has specific word order rules)
     let isCorrect = userAnswer === correctAnswer;
-    if (category === "sentence_reordering") {
-      // First try exact match (important for punctuation/capitalization at higher levels)
-      if (isCorrect) {
-        console.log('🔍 Exact match found!');
-      } else {
-        // For flexible matching, normalize punctuation and check word order
-        const normalizeText = (text: string) => text.toLowerCase().replace(/[.,!?;:]/g, '').trim();
-        const userNormalized = normalizeText(userAnswer);
-        const correctNormalized = normalizeText(correctAnswer);
-        
-        const userWords = userNormalized.split(' ').filter(w => w.length > 0);
-        const correctWords = correctNormalized.split(' ').filter(w => w.length > 0);
-        
-        console.log('🔍 Word comparison:', {
-          userWords,
-          correctWords,
-          userNormalized,
-          correctNormalized,
-          sameLength: userWords.length === correctWords.length,
-          allWordsPresent: userWords.every(word => correctWords.includes(word))
-        });
-        
-        // Accept if all words are present (Estonian allows flexible word order)
-        const hasSameWords = userWords.length === correctWords.length && 
-                            userWords.every(word => correctWords.includes(word));
-        isCorrect = hasSameWords;
-      }
-    }
+    
+    console.log('🔍 Sentence validation:', {
+      userAnswer: `"${userAnswer}"`,
+      correctAnswer: `"${correctAnswer}"`,
+      category,
+      exactMatch: isCorrect
+    });
     
     setIsAnswerCorrect(isCorrect);
     setShowAnswerFeedback(true);
