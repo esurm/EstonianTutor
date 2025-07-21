@@ -166,7 +166,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
         </div>
 
         {/* Chat Mode Selector */}
-        <div className="mt-auto">
+        <div className="mt-8">
           <div className="flex items-center space-x-2 mb-3">
             <MessageSquare className="h-4 w-4 text-primary" />
             <h4 className="font-medium text-gray-900">Modos de Aprendizaje</h4>
