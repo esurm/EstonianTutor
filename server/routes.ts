@@ -232,7 +232,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { cefrLevel, category } = req.body;
       const currentUser = await getCurrentUserForRequest(req);
-      const quiz = await openaiService.generateQuiz(cefrLevel || currentUser.cefrLevel, category);
+      const userCefrLevel = cefrLevel || currentUser.cefrLevel;
+      
+      // Generate 5 questions in a single batch request using gpt-4.1-mini
+      console.log(`🎯 Generating 5-question ${category} quiz for CEFR level ${userCefrLevel}`);
+      const quiz = await openaiService.generateQuiz(userCefrLevel, category);
       
       // Create session for quiz
       const session = await storage.createSession({

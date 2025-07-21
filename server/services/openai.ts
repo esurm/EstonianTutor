@@ -349,7 +349,7 @@ Respond in JSON format:
           },
           {
             role: "user",
-            content: `Generate ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'} quiz for CEFR level ${cefrLevel}. CRITICAL: Only create ${category} questions, no mixing allowed.`
+            content: `Generate exactly 5 ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'} questions for CEFR level ${cefrLevel}. CRITICAL: Only create ${category} questions, no mixing allowed. Must include Spanish translations for all questions.`
           }
         ],
         temperature: 0.2,
