@@ -50,7 +50,8 @@ export interface DialogueGeneration {
 }
 
 export class OpenAIService {
-  private promptConfig = {
+  // CHAT-ONLY PROMPTS - Never used for quiz generation
+  private chatPromptConfig = {
     base_prompt: "You are an expert Estonian language tutor specialized in teaching Honduran Spanish speakers. You always respond only in Estonian, except when providing grammar explanations or cultural context — which you explain briefly in Latin American Spanish. Your teaching is adaptive to CEFR levels (A1–C2): vocabulary, grammar, and sentence complexity must match the learner's level. You are patient, supportive, and clear. You correct gently and give useful, contextual feedback.",
     modes: {
       general_conversation: {
@@ -80,6 +81,7 @@ export class OpenAIService {
     }
   };
 
+  // CHAT-ONLY METHOD - Never called for quiz generation
   private buildSystemPrompt(mode: string = "general_conversation", cefrLevel: string = "B1"): string {
     // Map frontend modes to config modes
     const modeMapping: { [key: string]: string } = {
@@ -92,10 +94,10 @@ export class OpenAIService {
     const configMode = modeMapping[mode] || mode;
     
     // Start with base prompt
-    let systemPrompt = this.promptConfig.base_prompt;
+    let systemPrompt = this.chatPromptConfig.base_prompt;
     
     // Add mode-specific instructions
-    const modeConfig = this.promptConfig.modes[configMode as keyof typeof this.promptConfig.modes];
+    const modeConfig = this.chatPromptConfig.modes[configMode as keyof typeof this.chatPromptConfig.modes];
     if (modeConfig) {
       systemPrompt += `\n\nMode: ${modeConfig.description}\n${modeConfig.prompt_addition}`;
     }
@@ -104,7 +106,7 @@ export class OpenAIService {
     systemPrompt += `\n\nTarget CEFR Level: ${cefrLevel}`;
     
     // Add CEFR-specific guidance
-    const cefrGuidance = this.promptConfig.cefr_levels[cefrLevel as keyof typeof this.promptConfig.cefr_levels];
+    const cefrGuidance = this.chatPromptConfig.cefr_levels[cefrLevel as keyof typeof this.chatPromptConfig.cefr_levels];
     if (cefrGuidance) {
       systemPrompt += `\nLevel Guidelines: ${cefrGuidance}`;
     }
@@ -296,10 +298,11 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
     }
   }
 
+  // QUIZ GENERATION - COMPLETELY ISOLATED FROM CHAT SYSTEM
   async generateQuiz(cefrLevel: string, category?: string): Promise<QuizGeneration> {
     try {
-      // Category-specific optimized prompts - NO SYSTEM INTERFERENCE
-      const prompts = this.getCategoryPrompts(category, cefrLevel);
+      // ISOLATED QUIZ PROMPTS - No chat system interference whatsoever
+      const prompts = this.getIsolatedQuizPrompts(category, cefrLevel);
       
       const startTime = Date.now();
       const response = await openai.chat.completions.create({
@@ -639,34 +642,51 @@ Responde en JSON:
     }
   }
 
-  private getCategoryPrompts(category: string, cefrLevel: string) {
+  // ISOLATED QUIZ PROMPTS - No connection to chat system
+  private getIsolatedQuizPrompts(category: string, cefrLevel: string) {
     switch(category) {
       case "vocabulary":
         return {
-          system: `Create 5 Estonian vocabulary questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 vocabulary questions with options, correct answer, explanation.`,
-          maxTokens: 600
+          system: `Generate exactly 5 Estonian vocabulary questions for CEFR ${cefrLevel}.
+STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+Each question tests vocabulary knowledge only - word meanings, synonyms, definitions.
+Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
+ONLY vocabulary - NO grammar or error detection!`,
+          user: `5 Estonian vocabulary questions`,
+          maxTokens: 800
         };
       
       case "grammar":
         return {
-          system: `Create 5 Estonian grammar questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 grammar questions with options, correct answer, explanation.`,
-          maxTokens: 650
+          system: `Generate exactly 5 Estonian grammar questions for CEFR ${cefrLevel}.
+STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+Each question tests grammar rules - verb forms, cases, sentence structure.
+Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
+ONLY grammar rules - NO vocabulary or error detection!`,
+          user: `5 Estonian grammar questions`,
+          maxTokens: 850
         };
       
       case "conjugation":
         return {
-          system: `Create 5 Estonian verb conjugation questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 conjugation questions with options, correct answer, explanation.`,
-          maxTokens: 600
+          system: `Generate exactly 5 Estonian verb conjugation questions for CEFR ${cefrLevel}.
+STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+Each question tests verb conjugations - tenses, persons, forms.
+Fields: question (Estonian), translation (Spanish), options (4 choices), correctAnswer, explanation (Spanish, under 10 words)
+ONLY verb conjugations - NO vocabulary or grammar rules!`,
+          user: `5 Estonian conjugation questions`,
+          maxTokens: 800
         };
       
       case "sentence_reordering":
         return {
-          system: `Create 5 Estonian word order questions (${cefrLevel}). Questions in Estonian, explanations in Spanish. JSON format only.`,
-          user: `5 sentence reordering questions with options, correct answer, explanation.`,
-          maxTokens: 650
+          system: `Generate exactly 5 Estonian sentence reordering questions for CEFR ${cefrLevel}.
+STRICT JSON format: {"questions":[{"question":"...","translation":"...","options":["..."],"correctAnswer":"...","explanation":"..."}]}
+Each question tests word order - scrambled words to form correct sentences.
+Fields: question (Estonian), translation (Spanish), options (4 word choices), correctAnswer, explanation (Spanish, under 10 words)
+ONLY word order - NO vocabulary or grammar rules!`,
+          user: `5 Estonian sentence reordering questions`,
+          maxTokens: 850
         };
       
       case "error_detection":
