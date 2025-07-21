@@ -241,22 +241,34 @@ REGLAS IMPORTANTES:
     const selectedPatterns = patterns.slice(0, 5); // Take first 5 patterns
     
     const questions = selectedPatterns.map((pattern, index) => {
-      const words = pattern.sentence.split(' ');
-      const options = words.filter(word => word !== pattern.error)
-        .slice(0, 3)
-        .concat(pattern.error)
-        .sort(() => Math.random() - 0.5); // Shuffle options
+      const words = pattern.sentence.split(' ').filter(word => word.length > 1); // Remove short words like commas
       
-      // Ensure we have exactly 4 options
+      // Always include the error word and 3 other words from the sentence
+      let options = [pattern.error];
+      
+      // Add other words from sentence (excluding the error word)
+      const otherWords = words.filter(word => word !== pattern.error);
+      options = options.concat(otherWords.slice(0, 3));
+      
+      // If we still need more options, add common Estonian words
+      const commonWords = ['ma', 'ta', 'see', 'on', 'ja', 'ei', 'ka', 'kui', 'või'];
       while (options.length < 4) {
-        options.push('correcta');
+        const unusedCommon = commonWords.find(word => !options.includes(word));
+        if (unusedCommon) {
+          options.push(unusedCommon);
+        } else {
+          break;
+        }
       }
+      
+      // Shuffle the options
+      options = options.slice(0, 4).sort(() => Math.random() - 0.5);
       
       return {
         question: `¿Qué palabra está incorrecta en: '${pattern.sentence}'?`,
         translation: pattern.translation,
         type: "error_detection",
-        options: options.slice(0, 4),
+        options: options,
         correctAnswer: pattern.error,
         explanation: pattern.explanation,
         cefrLevel: this.cefrLevel
