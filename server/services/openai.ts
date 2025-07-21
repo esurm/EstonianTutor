@@ -626,33 +626,44 @@ ONLY word order - NO vocabulary or grammar rules!`,
       
       case "error_detection":
         return {
-          system: `Create Estonian error detection exercises for ${cefrLevel} level. You must generate sentences with ACTUAL grammatical mistakes.
+          system: `Tu tarea es crear ejercicios de detección de errores para estudiantes de nivel ${cefrLevel} aprendiendo estonio.
+
+INSTRUCCIONES CRÍTICAS:
+1. Crea oraciones en estonio que contengan UN error gramatical real y obvio
+2. El error debe ser claro y pedagógicamente útil para estudiantes ${cefrLevel}
+3. Todas las explicaciones deben estar SOLO en español
+
+TIPOS DE ERRORES REALES A CREAR:
+- Error de caso: "Ma näen kass" → debería ser "kassi" (caso partitivo)
+- Error de verbo: "Me läheb kooli" → debería ser "läheme" (concordancia plural)
+- Error de plural: "kolm kass" → debería ser "kolme kassi" (forma correcta)
+- Error de tiempo: "Eile ma lähen kooli" → debería ser "läksin" (pasado)
+
+ESTRUCTURAS CORRECTAS DEL ESTONIO (NO marques como errores):
+✓ "Me näeme suur maja aknast" - palabra orden correcto
+✓ "mida ta ostis" - pronombre relativo correcto
+✓ "Ta ütles, et ta loeb" - discurso indirecto correcto
+✓ "maja aknast" - caso elativo correcto
 
 ${this.getCefrGuidanceForErrorDetection(cefrLevel)}
 
-ESTONIAN GRAMMAR FACTS (DO NOT VIOLATE):
-- Indirect speech: "Ta ütles, et ta loeb" is CORRECT (no tense change needed)
-- Relative pronouns: "raamat, mida ta ostis" is CORRECT (partitive case)
-- Past participle: "Ta oli läinud" is CORRECT Estonian
-- Word order: Subject-Verb-Object is normal in Estonian
+FORMATO JSON REQUERIDO:
+{"questions":[
+  {
+    "question": "Leia lausest grammatiline viga: [oración con error real]",
+    "translation": "Encuentra el error gramatical: [traducción al español]", 
+    "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
+    "correctAnswer": "[la palabra incorrecta]",
+    "explanation": "[explicación en español - máximo 8 palabras]"
+  }
+]}
 
-ONLY create errors in these areas:
-- Case endings: *genitive instead of partitive
-- Verb conjugation: *wrong person/number
-- Adjective agreement: *singular adj with plural noun
-- Word formation: *wrong suffix/prefix
-
-JSON FORMAT:
-{"questions":[{"question":"Leia lausest grammatiline viga: [sentence with actual error]","translation":"[Spanish translation]","options":["word1","word2","word3","word4"],"correctAnswer":"[the wrong word]","explanation":"[Spanish explanation]"}]}
-
-EXAMPLES OF ACTUAL ERRORS:
-- "Ma näen kass" (should be "kassi" - missing partitive)
-- "Ta on kena tüdrukuid" (should be "tüdruk" - wrong plural form)
-- "Me läheme pood" (should be "poodi" - missing illative case)
-
-Spanish explanations only: "Falta caso partitivo", "Forma plural incorrecta"`,
-          user: `Create 5 Estonian sentences with ACTUAL grammatical errors (case mistakes, verb errors, adjective agreement). Do NOT use correct Estonian grammar. Explanations in Spanish only.`,
-          maxTokens: 850
+EJEMPLOS DE ERRORES REALES VÁLIDOS:
+- "Ma armastan kassid" → error: falta partitivo → debería ser "Ma armastan kasse"
+- "Te läheb kooli" → error: verbo singular con pronombre plural → debería ser "Te lähete"
+- "Mul on kolm raamat" → error: falta plural → debería ser "kolm raamatut"`,
+          user: `Crea exactamente 5 preguntas con errores gramaticales REALES en estonio para nivel ${cefrLevel}. Cada oración debe contener un error obvio. Explicaciones solo en español.`,
+          maxTokens: 900
         };
       
       default:
