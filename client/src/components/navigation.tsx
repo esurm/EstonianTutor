@@ -1,7 +1,8 @@
 import { useCEFRTracking } from "@/hooks/use-cefr-tracking";
 import { Button } from "@/components/ui/button";
-import { User, Minus, Plus } from "lucide-react";
+import { User, Minus, Plus, LogOut } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
 
 export function Navigation() {
   const { 
@@ -13,6 +14,23 @@ export function Navigation() {
     canAdjustLevel,
     isAdjusting 
   } = useCEFRTracking();
+  
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticating(true);
+    // Redirect to Google OAuth
+    window.location.href = "/auth/google";
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/auth/logout", { method: "POST" });
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -85,26 +103,66 @@ export function Navigation() {
               </Button>
             </div>
             
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0 relative overflow-hidden">
-              {user?.profileImage ? (
-                <img 
-                  src={user.profileImage} 
-                  alt={user.name || 'User Profile'} 
-                  className="w-full h-full object-cover rounded-sm"
-                  onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                    // Fallback to default icon if image fails to load
-                    const target = e.currentTarget;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      const icon = parent.querySelector('.user-icon');
-                      if (icon) (icon as HTMLElement).style.display = 'block';
-                    }
-                  }}
-                />
-              ) : null}
-              <User className={`h-4 w-4 user-icon ${user?.profileImage ? 'hidden' : ''}`} />
-            </Button>
+            {/* User Authentication */}
+            <div className="flex items-center space-x-2">
+              {user?.email && user.email !== "demo@example.com" ? (
+                // Authenticated user - show profile and logout
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-8 h-8 p-0 relative overflow-hidden"
+                    title={`Logged in as ${user.name || user.email}`}
+                  >
+                    {user?.profileImage ? (
+                      <img 
+                        src={user.profileImage} 
+                        alt={user.name || 'User Profile'} 
+                        className="w-full h-full object-cover rounded-sm"
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const icon = parent.querySelector('.user-icon');
+                            if (icon) (icon as HTMLElement).style.display = 'block';
+                          }
+                        }}
+                      />
+                    ) : null}
+                    <User className={`h-4 w-4 user-icon ${user?.profileImage ? 'hidden' : ''}`} />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    className="w-8 h-8 p-0"
+                    title="Logout"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                // Not authenticated - show login button
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleLogin}
+                  disabled={isAuthenticating}
+                  className="px-3 h-8"
+                  title="Login with Google"
+                >
+                  {isAuthenticating ? (
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <User className="h-4 w-4 mr-1" />
+                      Login
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

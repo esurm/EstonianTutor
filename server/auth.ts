@@ -60,7 +60,9 @@ export function setupAuth(app: Express) {
     passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback"
+      callbackURL: process.env.NODE_ENV === "production" 
+        ? `${process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PUBLIC_DOMAIN || 'https://your-app.railway.app'}/auth/google/callback`
+        : "/auth/google/callback"
     }, async (accessToken, refreshToken, profile, done) => {
       try {
         const email = profile.emails?.[0]?.value;
