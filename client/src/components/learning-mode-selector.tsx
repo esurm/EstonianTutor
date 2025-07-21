@@ -10,11 +10,13 @@ import {
   Sparkles,
   Users,
   Brain,
-  Lightbulb
+  Lightbulb,
+  ArrowUpDown,
+  AlertTriangle
 } from "lucide-react";
 
 interface LearningModeProps {
-  onModeSelect: (mode: "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar") => void;
+  onModeSelect: (mode: "quiz-vocabulary" | "quiz-grammar" | "quiz-conjugation" | "quiz-sentence-reordering" | "quiz-error-detection" | "dialogue" | "pronunciation" | "grammar") => void;
 }
 
 export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
@@ -47,6 +49,48 @@ export function LearningModeSelector({ onModeSelect }: LearningModeProps) {
       hoverFrom: "hover:from-indigo-100",
       hoverTo: "hover:to-indigo-200",
       iconColor: "bg-indigo-500"
+    },
+    {
+      id: "quiz-conjugation",
+      title: "Quiz de Conjugación",
+      description: "Tiempos verbales y personas",
+      icon: BookOpen,
+      badge: "AUTO-GENERADO",
+      badgeColor: "bg-rose-500",
+      gradientFrom: "from-rose-50",
+      gradientTo: "to-rose-100",
+      borderColor: "border-rose-200",
+      hoverFrom: "hover:from-rose-100",
+      hoverTo: "hover:to-rose-200",
+      iconColor: "bg-rose-500"
+    },
+    {
+      id: "quiz-sentence-reordering",
+      title: "Reordenamiento de Oraciones",
+      description: "Orden de palabras en estonio",
+      icon: ArrowUpDown,
+      badge: "AUTO-GENERADO",
+      badgeColor: "bg-amber-500",
+      gradientFrom: "from-amber-50",
+      gradientTo: "to-amber-100",
+      borderColor: "border-amber-200",
+      hoverFrom: "hover:from-amber-100",
+      hoverTo: "hover:to-amber-200",
+      iconColor: "bg-amber-500"
+    },
+    {
+      id: "quiz-error-detection",
+      title: "Detección de Errores",
+      description: "Encuentra errores gramaticales",
+      icon: AlertTriangle,
+      badge: "AUTO-GENERADO",
+      badgeColor: "bg-red-500",
+      gradientFrom: "from-red-50",
+      gradientTo: "to-red-100",
+      borderColor: "border-red-200",
+      hoverFrom: "hover:from-red-100",
+      hoverTo: "hover:to-red-200",
+      iconColor: "bg-red-500"
     },
     {
       id: "dialogue",

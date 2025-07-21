@@ -306,27 +306,9 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         messages: [
           {
             role: "system",
-            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} EXCLUSIVELY focused on ${category === 'vocabulary' ? 'VOCABULARY ONLY' : 'GRAMMAR ONLY'}.
+            content: `Generate an Estonian language quiz for CEFR level ${cefrLevel} EXCLUSIVELY focused on ${this.getCategoryFocus(category)}.
 
-${category === 'vocabulary' ? `
-STRICT VOCABULARY FOCUS - NO GRAMMAR ALLOWED:
-- ONLY questions about word meanings, definitions, and vocabulary recognition
-- ONLY synonyms, antonyms, and word relationships
-- ONLY words related to specific themes (family, colors, food, animals, objects, etc.)
-- ONLY object and concept identification
-- NO grammar questions, NO verb conjugations, NO sentence structure
-- 70% multiple-choice questions, 30% completion questions (word completion, not sentence)
-- Example: "What does 'kass' mean?" or "Complete: The animal that says 'mjau' is a ____"
-` : `
-STRICT GRAMMAR FOCUS - NO VOCABULARY ALLOWED:
-- ONLY verb conjugations (present, past, future tenses)
-- ONLY grammatical cases (nominative, genitive, partitive, etc.)
-- ONLY sentence structure, word order, and prepositions
-- ONLY grammatical rules and language mechanics
-- NO vocabulary meanings, NO word definitions, NO translation questions
-- 30% multiple-choice questions, 70% completion questions (grammar completion)
-- Example: "Complete the verb: Ma _____ (to go) kooli" or "Which case: Ma näen ____ (kass)"
-`}
+${this.getCategoryPrompt(category)}
 
 Create 5 varied questions APPROPRIATE for the specific CEFR level.
 CRITICAL: ALL questions and options must be COMPLETELY IN ESTONIAN. Only explanations should be in Honduran Spanish.
@@ -510,6 +492,72 @@ Respond in JSON format with questions array.`
            Ejemplos: textos literarios, humor estonio, dialectos regionales.`
     };
     return guidance[cefrLevel as keyof typeof guidance] || guidance.B1;
+  }
+
+  private getCategoryFocus(category?: string): string {
+    const focuses = {
+      vocabulary: 'VOCABULARY ONLY',
+      grammar: 'GRAMMAR ONLY',
+      conjugation: 'VERB CONJUGATION ONLY',
+      sentence_reordering: 'SENTENCE STRUCTURE ONLY',
+      error_detection: 'ERROR DETECTION ONLY'
+    };
+    return focuses[category as keyof typeof focuses] || focuses.vocabulary;
+  }
+
+  private getCategoryPrompt(category?: string): string {
+    const prompts = {
+      vocabulary: `
+STRICT VOCABULARY FOCUS - NO GRAMMAR ALLOWED:
+- ONLY questions about word meanings, definitions, and vocabulary recognition
+- ONLY synonyms, antonyms, and word relationships
+- ONLY words related to specific themes (family, colors, food, animals, objects, etc.)
+- ONLY object and concept identification
+- NO grammar questions, NO verb conjugations, NO sentence structure
+- 70% multiple-choice questions, 30% completion questions (word completion, not sentence)
+- Example: "What does 'kass' mean?" or "Complete: The animal that says 'mjau' is a ____"`,
+      
+      grammar: `
+STRICT GRAMMAR FOCUS - NO VOCABULARY ALLOWED:
+- ONLY verb conjugations (present, past, future tenses)
+- ONLY grammatical cases (nominative, genitive, partitive, etc.)
+- ONLY sentence structure, word order, and prepositions
+- ONLY grammatical rules and language mechanics
+- NO vocabulary meanings, NO word definitions, NO translation questions
+- 30% multiple-choice questions, 70% completion questions (grammar completion)
+- Example: "Complete the verb: Ma _____ (to go) kooli" or "Which case: Ma näen ____ (kass)"`,
+
+      conjugation: `
+STRICT CONJUGATION FOCUS - VERB TENSES AND PERSONS ONLY:
+- ONLY verb conjugation questions (present, past, future, conditional)
+- ONLY person and number variations (ma, sa, ta, me, te, nad)
+- ONLY verb forms and tense transformations
+- Focus on common Estonian verbs: olema, minema, tulema, tegema, ütlema
+- NO vocabulary meanings, NO word order, NO cases
+- 40% multiple-choice questions, 60% completion questions (verb conjugation)
+- Example: "Complete: Ma _____ (olema) õpilane" or "Choose: Ta _____ (minema) kooli (läks/läheb/läheks)"`,
+
+      sentence_reordering: `
+STRICT SENTENCE STRUCTURE FOCUS - WORD ORDER ONLY:
+- ONLY Estonian word order questions (SVO, time-manner-place)
+- ONLY sentence reordering and structure questions
+- ONLY questions about proper Estonian sentence construction
+- Focus on time expressions first, then manner, then place
+- NO vocabulary meanings, NO verb conjugations, NO translations
+- 20% multiple-choice questions, 80% completion questions (sentence ordering)
+- Example: "Reorder: [kooli, ma, homme, lähen]" or "Correct order: [kiiresti, jookseb, ta, parki]"`,
+
+      error_detection: `
+STRICT ERROR DETECTION FOCUS - MISTAKE IDENTIFICATION ONLY:
+- ONLY questions identifying grammar or spelling mistakes in Estonian sentences
+- ONLY error spotting in verb forms, cases, word order, or spelling
+- ONLY correction of grammatical and orthographic errors
+- Focus on common Estonian mistakes: case endings, verb agreement, word order
+- NO vocabulary meanings, NO translations, NO definitions
+- 60% multiple-choice questions, 40% completion questions (error correction)
+- Example: "Find the error: 'Ma näen kassa parkis'" or "Correct: 'Ta läheb kooli kiiresti'"`,
+    };
+    return prompts[category as keyof typeof prompts] || prompts.vocabulary;
   }
 
   async generateDialogue(scenario: string, cefrLevel: string): Promise<DialogueGeneration> {

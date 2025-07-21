@@ -7,11 +7,11 @@ import { QuizInterface } from "@/components/quiz-interface";
 import { ProgressDashboard } from "@/components/progress-dashboard";
 
 export default function Home() {
-  const [currentMode, setCurrentMode] = useState<"chat" | "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar">("chat");
+  const [currentMode, setCurrentMode] = useState<"chat" | "quiz-vocabulary" | "quiz-grammar" | "quiz-conjugation" | "quiz-sentence-reordering" | "quiz-error-detection" | "dialogue" | "pronunciation" | "grammar">("chat");
 
 
   const handleModeSelect = (mode: string) => {
-    setCurrentMode(mode as "quiz-vocabulary" | "quiz-grammar" | "dialogue" | "pronunciation" | "grammar");
+    setCurrentMode(mode as "quiz-vocabulary" | "quiz-grammar" | "quiz-conjugation" | "quiz-sentence-reordering" | "quiz-error-detection" | "dialogue" | "pronunciation" | "grammar");
   };
 
   const handleQuizComplete = (score: number) => {
@@ -25,6 +25,12 @@ export default function Home() {
         return <QuizInterface category="vocabulary" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
       case "quiz-grammar":
         return <QuizInterface category="grammar" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "quiz-conjugation":
+        return <QuizInterface category="conjugation" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "quiz-sentence-reordering":
+        return <QuizInterface category="sentence_reordering" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
+      case "quiz-error-detection":
+        return <QuizInterface category="error_detection" onQuizComplete={handleQuizComplete} onQuizClose={() => setCurrentMode("chat")} />;
       case "dialogue":
         return (
           <div className="space-y-6">

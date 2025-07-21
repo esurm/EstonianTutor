@@ -23,7 +23,7 @@ import {
 interface QuizInterfaceProps {
   onQuizComplete: (results: any) => void;
   onQuizClose: () => void;
-  category: "vocabulary" | "grammar";
+  category: "vocabulary" | "grammar" | "conjugation" | "sentence_reordering" | "error_detection";
 }
 
 interface QuizAnswer {

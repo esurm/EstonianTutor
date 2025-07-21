@@ -51,11 +51,15 @@ The application uses a comprehensive schema designed around language learning:
   - Grammar exercises: temperature 0.3, max_tokens 400 (precise output)
   - Quiz generation: temperature 0.2, frequency_penalty 0.1, max_tokens 250 (reliable/regenerable)
 - **Enhanced error handling**: Robust JSON parsing with fallback responses for API failures
-- **Dual Quiz Generation System**: 
+- **Five-Category Quiz Generation System**: 
   - **Vocabulary Quizzes**: Focus on word meanings, synonyms, themed vocabulary (70% multiple-choice, 30% completion)
   - **Grammar Quizzes**: Focus on conjugations, cases, sentence structure (30% multiple-choice, 70% completion)
+  - **Conjugation Quizzes**: Focus on verb tenses and persons (40% multiple-choice, 60% completion)
+  - **Sentence Reordering**: Focus on Estonian word order and structure (20% multiple-choice, 80% completion)
+  - **Error Detection**: Focus on identifying grammar and spelling mistakes (60% multiple-choice, 40% completion)
   - Questions in Estonian with Spanish translations for comprehension
   - Strict category separation enforced with enhanced prompts
+  - Unique color schemes: Cyan (vocabulary), Indigo (grammar), Rose (conjugation), Amber (sentence reordering), Red (error detection)
 - **Batch quiz generation capability** for token optimization (ready for production scaling)
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance
