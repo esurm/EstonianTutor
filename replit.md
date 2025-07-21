@@ -59,7 +59,7 @@ The application uses a comprehensive schema designed around language learning:
   - **Error Detection**: Focus on identifying grammar and spelling mistakes (60% multiple-choice, 40% completion)
   - Questions in Estonian with Spanish translations for comprehension
   - Strict category separation enforced with enhanced prompts
-  - Unique color schemes optimized for light/dark mode: Blue (vocabulary), Violet (grammar), Teal (conjugation), Amber (sentence reordering), Rose (error detection)
+  - Distinct color schemes with maximum contrast: Blue (vocabulary), Purple (grammar), Emerald (conjugation), Yellow (sentence reordering), Red (error detection)
 - **Batch quiz generation capability** for token optimization (ready for production scaling)
 - CEFR level targeting (A1-C2) with specific complexity guidelines for each level
 - Automatic CEFR level assessment based on user performance

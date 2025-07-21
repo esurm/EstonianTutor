@@ -174,27 +174,27 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("chat")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors h-auto dark:bg-slate-900 dark:border-slate-700 dark:hover:bg-slate-800"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors h-auto dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
             >
-              <div className="w-3 h-3 bg-slate-500 rounded-full dark:bg-slate-400"></div>
+              <div className="w-3 h-3 bg-gray-600 rounded-full dark:bg-gray-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Conversación General</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("dialogue")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors h-auto dark:bg-purple-950 dark:border-purple-800 dark:hover:bg-purple-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors h-auto dark:bg-indigo-950 dark:border-indigo-800 dark:hover:bg-indigo-900"
             >
-              <div className="w-3 h-3 bg-purple-500 rounded-full dark:bg-purple-400"></div>
+              <div className="w-3 h-3 bg-indigo-600 rounded-full dark:bg-indigo-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Simulación de Diálogo</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("pronunciation")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors h-auto dark:bg-emerald-950 dark:border-emerald-800 dark:hover:bg-emerald-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-lime-50 border border-lime-200 rounded-lg hover:bg-lime-100 transition-colors h-auto dark:bg-lime-950 dark:border-lime-800 dark:hover:bg-lime-900"
             >
-              <div className="w-3 h-3 bg-emerald-500 rounded-full dark:bg-emerald-400"></div>
+              <div className="w-3 h-3 bg-lime-600 rounded-full dark:bg-lime-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Práctica de Pronunciación</span>
             </Button>
             
@@ -203,7 +203,7 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
               variant="ghost"
               className="w-full flex items-center justify-start space-x-3 p-3 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors h-auto dark:bg-orange-950 dark:border-orange-800 dark:hover:bg-orange-900"
             >
-              <div className="w-3 h-3 bg-orange-500 rounded-full dark:bg-orange-400"></div>
+              <div className="w-3 h-3 bg-orange-600 rounded-full dark:bg-orange-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Ejercicios de Gramática</span>
             </Button>
             
@@ -219,36 +219,36 @@ export function ProgressDashboard({ onModeSelect }: ProgressDashboardProps = {})
             <Button
               onClick={() => onModeSelect?.("quiz-grammar")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-violet-50 border border-violet-200 rounded-lg hover:bg-violet-100 transition-colors h-auto dark:bg-violet-950 dark:border-violet-800 dark:hover:bg-violet-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors h-auto dark:bg-purple-950 dark:border-purple-800 dark:hover:bg-purple-900"
             >
-              <div className="w-3 h-3 bg-violet-600 rounded-full dark:bg-violet-400"></div>
+              <div className="w-3 h-3 bg-purple-600 rounded-full dark:bg-purple-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Gramática</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-conjugation")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors h-auto dark:bg-teal-950 dark:border-teal-800 dark:hover:bg-teal-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors h-auto dark:bg-emerald-950 dark:border-emerald-800 dark:hover:bg-emerald-900"
             >
-              <div className="w-3 h-3 bg-teal-600 rounded-full dark:bg-teal-400"></div>
+              <div className="w-3 h-3 bg-emerald-600 rounded-full dark:bg-emerald-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Conjugación</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-sentence-reordering")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors h-auto dark:bg-amber-950 dark:border-amber-800 dark:hover:bg-amber-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors h-auto dark:bg-yellow-950 dark:border-yellow-800 dark:hover:bg-yellow-900"
             >
-              <div className="w-3 h-3 bg-amber-600 rounded-full dark:bg-amber-400"></div>
+              <div className="w-3 h-3 bg-yellow-600 rounded-full dark:bg-yellow-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Oraciones</span>
             </Button>
             
             <Button
               onClick={() => onModeSelect?.("quiz-error-detection")}
               variant="ghost"
-              className="w-full flex items-center justify-start space-x-3 p-3 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors h-auto dark:bg-rose-950 dark:border-rose-800 dark:hover:bg-rose-900"
+              className="w-full flex items-center justify-start space-x-3 p-3 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors h-auto dark:bg-red-950 dark:border-red-800 dark:hover:bg-red-900"
             >
-              <div className="w-3 h-3 bg-rose-600 rounded-full dark:bg-rose-400"></div>
+              <div className="w-3 h-3 bg-red-600 rounded-full dark:bg-red-400"></div>
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Quiz de Errores</span>
             </Button>
           </div>
