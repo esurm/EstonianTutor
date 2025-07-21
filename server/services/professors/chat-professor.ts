@@ -35,7 +35,7 @@ VOCABULARIO APROPIADO PARA ${this.cefrLevel}:
 ${vocabulary.slice(0, 30).join(", ")}
 
 ESTRUCTURAS DE EJEMPLO NIVEL ${this.cefrLevel}:
-${sentences.slice(0, 5).map(s => `- ${s.text} (${s.translation})`).join("\n")}
+${sentences.slice(0, 5).map(s => `- ${s.text} (${s.domain})`).join("\n")}
 
 PERSONALIDAD Y ESTILO:
 - Paciente y alentador, celebra pequeños logros

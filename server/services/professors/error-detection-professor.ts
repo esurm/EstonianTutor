@@ -88,7 +88,7 @@ Please make sure the errors are realistic mistakes that help students learn Esto
     const options = [error.errorWord];
     
     // Add other words from the sentence as distractors
-    words.forEach(word => {
+    words.forEach((word: string) => {
       if (word !== error.errorWord && options.length < 4) {
         options.push(word);
       }

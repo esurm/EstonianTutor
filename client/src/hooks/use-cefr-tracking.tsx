@@ -2,12 +2,13 @@ import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import type { User } from "@shared/schema";
 
 export function useCEFRTracking() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: user, isLoading } = useQuery({
+  const { data: user, isLoading } = useQuery<User>({
     queryKey: ["/api/user"],
     refetchInterval: 30000, // Refetch every 30 seconds to track changes
   });

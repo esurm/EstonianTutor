@@ -89,7 +89,17 @@ export class DatabaseStorage implements IStorage {
 
   // Sessions
   async createSession(session: InsertSession): Promise<Session> {
-    const [newSession] = await db.insert(sessions).values(session).returning();
+    const sessionData = {
+      userId: session.userId,
+      sessionType: session.sessionType,
+      endTime: session.endTime,
+      score: session.score,
+      wordsUsed: session.wordsUsed,
+      mistakes: Array.isArray(session.mistakes) ? session.mistakes : [],
+      cefrLevelAtStart: session.cefrLevelAtStart,
+      cefrLevelAtEnd: session.cefrLevelAtEnd,
+    };
+    const [newSession] = await db.insert(sessions).values(sessionData as any).returning();
     return newSession;
   }
 
@@ -123,7 +133,20 @@ export class DatabaseStorage implements IStorage {
 
   // Quizzes
   async createQuiz(quiz: InsertQuiz): Promise<Quiz> {
-    const [newQuiz] = await db.insert(quizzes).values(quiz).returning();
+    const quizData = {
+      sessionId: quiz.sessionId,
+      question: quiz.question,
+      translation: quiz.translation,
+      questionType: quiz.questionType,
+      options: Array.isArray(quiz.options) ? quiz.options : null,
+      correctAnswer: quiz.correctAnswer,
+      userAnswer: quiz.userAnswer,
+      isCorrect: quiz.isCorrect,
+      explanation: quiz.explanation,
+      cefrLevel: quiz.cefrLevel,
+      responseTime: quiz.responseTime,
+    };
+    const [newQuiz] = await db.insert(quizzes).values(quizData as any).returning();
     return newQuiz;
   }
 
@@ -158,7 +181,7 @@ export class DatabaseStorage implements IStorage {
     if (existingProgress) {
       const [updatedProgress] = await db
         .update(userProgress)
-        .set({ ...updates, updatedAt: new Date() })
+        .set({ ...updates })
         .where(and(eq(userProgress.userId, userId), eq(userProgress.vocabularyId, vocabularyId)))
         .returning();
       return updatedProgress;
@@ -208,13 +231,17 @@ export class MemStorage implements IStorage {
     const id = this.currentUserId++;
     const user: User = {
       id,
-      username: insertUser.username,
+      googleId: insertUser.googleId || null,
+      email: insertUser.email,
+      name: insertUser.name,
+      profileImage: insertUser.profileImage || null,
       cefrLevel: insertUser.cefrLevel || "B1",
       wordsLearned: insertUser.wordsLearned || 0,
       accuracy: insertUser.accuracy || 0,
       streak: insertUser.streak || 0,
       totalTime: insertUser.totalTime || 0,
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
     this.users.set(id, user);
     return user;
@@ -240,7 +267,7 @@ export class MemStorage implements IStorage {
       endTime: insertSession.endTime || null,
       score: insertSession.score || null,
       wordsUsed: insertSession.wordsUsed || 0,
-      mistakes: insertSession.mistakes || [],
+      mistakes: (insertSession.mistakes || []) as { word: string; correction: string; explanation: string; }[],
       cefrLevelAtStart: insertSession.cefrLevelAtStart,
       cefrLevelAtEnd: insertSession.cefrLevelAtEnd || null,
     };
@@ -299,7 +326,8 @@ export class MemStorage implements IStorage {
       sessionId: insertQuiz.sessionId || null,
       question: insertQuiz.question,
       questionType: insertQuiz.questionType,
-      options: insertQuiz.options || null,
+      options: (insertQuiz.options || null) as string[] | null,
+      translation: insertQuiz.translation || null,
       correctAnswer: insertQuiz.correctAnswer,
       userAnswer: insertQuiz.userAnswer || null,
       isCorrect: insertQuiz.isCorrect || null,

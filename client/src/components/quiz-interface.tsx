@@ -8,6 +8,7 @@ import { api, type QuizQuestion } from "@/lib/api";
 import { useSpeech } from "@/hooks/use-speech";
 import { useCEFRTracking } from "@/hooks/use-cefr-tracking";
 import { useToast } from "@/hooks/use-toast";
+import type { User } from "@shared/schema";
 import { 
   Clock, 
   Play, 

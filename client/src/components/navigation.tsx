@@ -1,8 +1,9 @@
 import { useCEFRTracking } from "@/hooks/use-cefr-tracking";
 import { Button } from "@/components/ui/button";
-import { User, Minus, Plus, LogOut } from "lucide-react";
+import { User as UserIcon, Minus, Plus, LogOut } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
+import type { User } from "@shared/schema";
 
 export function Navigation() {
   const { 
@@ -130,7 +131,7 @@ export function Navigation() {
                         }}
                       />
                     ) : null}
-                    <User className={`h-4 w-4 user-icon ${user?.profileImage ? 'hidden' : ''}`} />
+                    <UserIcon className={`h-4 w-4 user-icon ${user?.profileImage ? 'hidden' : ''}`} />
                   </Button>
                   <Button 
                     variant="outline" 
@@ -156,7 +157,7 @@ export function Navigation() {
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                   ) : (
                     <>
-                      <User className="h-4 w-4 mr-1" />
+                      <UserIcon className="h-4 w-4 mr-1" />
                       Login
                     </>
                   )}
