@@ -353,66 +353,29 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
         console.error("Raw content length:", content.length);
         console.error("Raw content preview:", content.substring(0, 500) + "...");
         console.error("Raw content end:", "..." + content.substring(content.length - 200));
+        console.error("JSON truncation detected - content ends mid-string");
         console.error("Category:", category, "CEFR Level:", cefrLevel);
         console.error("Temperature used:", prompts.temperature);
         // Return fallback quiz appropriate for the category
         if (category === "sentence_reordering") {
+          // Use CEFR-appropriate fallback sentences
+          const cefrFallbacks = this.getCefrFallbackSentences(cefrLevel);
           return {
-            questions: [
-              {
-                question: "Järjesta sõnad õigesti:",
-                translation: "Ordena las palabras correctamente:",
-                questionType: "sentence_reordering",
-                options: ["Ma", "lähen", "poodi"],
-                correctAnswer: "Ma lähen poodi.",
-                explanation: "Orden básico: sujeto + verbo + lugar",
-                cefrLevel: cefrLevel
-              },
-              {
-                question: "Järjesta sõnad õigesti:",
-                translation: "Ordena las palabras correctamente:",
-                questionType: "sentence_reordering", 
-                options: ["Täna", "on", "ilus", "ilm"],
-                correctAnswer: "Täna on ilus ilm.",
-                explanation: "Tiempo + verbo + adjetivo + sustantivo",
-                cefrLevel: cefrLevel
-              },
-              {
-                question: "Järjesta sõnad õigesti:",
-                translation: "Ordena las palabras correctamente:",
-                questionType: "sentence_reordering",
-                options: ["Ta", "räägib", "eesti", "keelt"],
-                correctAnswer: "Ta räägib eesti keelt.",
-                explanation: "Sujeto + verbo + objeto directo",
-                cefrLevel: cefrLevel
-              },
-              {
-                question: "Järjesta sõnad õigesti:",
-                translation: "Ordena las palabras correctamente:",
-                questionType: "sentence_reordering",
-                options: ["Me", "õpime", "koolis"],
-                correctAnswer: "Me õpime koolis.",
-                explanation: "Sujeto + verbo + lugar",
-                cefrLevel: cefrLevel
-              },
-              {
-                question: "Järjesta sõnad õigesti:",
-                translation: "Ordena las palabras correctamente:",
-                questionType: "sentence_reordering",
-                options: ["Homme", "tuleb", "sõber"],
-                correctAnswer: "Homme tuleb sõber.",
-                explanation: "Tiempo + verbo + sujeto",
-                cefrLevel: cefrLevel
-              }
-            ]
+            questions: cefrFallbacks.map((fallback, index) => ({
+              question: "Järjesta sõnad õigesti:",
+              type: "sentence_reordering",
+              options: fallback.options,
+              correctAnswer: fallback.correctAnswer,
+              explanation: fallback.explanation,
+              cefrLevel: cefrLevel
+            }))
           };
         } else {
           return {
             questions: [
               {
                 question: "Mis on 'tere' tähendus?",
-                translation: "¿Qué significa 'tere'?",
-                questionType: "multiple_choice",
+                type: "multiple_choice",
                 options: ["Adiós", "Hola", "Gracias", "Por favor"],
                 correctAnswer: "Hola",
                 explanation: "'Tere' significa 'hola' en español.",
@@ -420,8 +383,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             },
             {
               question: "Kuidas öelda 'tänan' inglise keeles?",
-              translation: "¿Cómo se dice 'tänan' en inglés?",
-              questionType: "multiple_choice", 
+              type: "multiple_choice", 
               options: ["Hello", "Thank you", "Goodbye", "Please"],
               correctAnswer: "Thank you",
               explanation: "'Tänan' significa 'gracias' en español y 'thank you' en inglés.",
@@ -429,8 +391,7 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             },
             {
               question: "Millal kasutatakse sõna 'nägemist'?",
-              translation: "¿Cuándo se usa la palabra 'nägemist'?",
-              questionType: "multiple_choice",
+              type: "multiple_choice",
               options: ["Hommikul", "Lahkudes", "Söögiajal", "Magama minnes"],
               correctAnswer: "Lahkudes", 
               explanation: "'Nägemist' tähendab 'adiós' ja kasutatakse lahkudes.",
@@ -438,16 +399,14 @@ Tiempos de respuesta (segundos): ${responseTimeSeconds.join(", ")}`
             },
             {
               question: "Täida lünk: 'Ma _____ eesti keelt.'",
-              translation: "Completa el espacio: 'Ma _____ eesti keelt.'",
-              questionType: "completion",
+              type: "fill_blank",
               correctAnswer: "õpin",
               explanation: "'Õpin' tähendab 'estoy aprendiendo' - Ma õpin eesti keelt = Estoy aprendiendo estonio.",
               cefrLevel: cefrLevel
             },
             {
               question: "Mis on 'kool' tähendus?",
-              translation: "¿Qué significa 'kool'?",
-              questionType: "multiple_choice",
+              type: "multiple_choice",
               options: ["Casa", "Escuela", "Tienda", "Parque"],
               correctAnswer: "Escuela",
               explanation: "'Kool' significa 'escuela' en español.",
@@ -869,7 +828,7 @@ JSON FORMAAT:
     "options": ["sõna1", "sõna2", "sõna3", "sõna4", "sõna5", "sõna6"],
     "correctAnswer": "[Põhiline õige vastus täpse punktuatsiooniga]",
     "alternativeAnswers": ["[Alternatiivne õige vastus]", "[Teine variant kui on]"],
-    "explanation": "[Lühike selgitus sõnajärje reegli kohta]",
+    "explanation": "[Maksimaalselt 6 sõna selgitus]",
     "questionType": "sentence_reordering"
   }
 ]}
@@ -887,8 +846,8 @@ PUNKTUATSIOONI REEGLID:
 - Ära kasuta kõiks/kommasid lihtlausetes
 - Näited: "Ma lähen kooli." "Eile ta ostis raamatu."`,
 
-      answerStructure: "wordReordering",
-      maxTokens: 1200,
+      answerStructure: "wordReordering", 
+      maxTokens: 800, // Reduced to prevent JSON truncation
       temperature: 0.0,
       topP: 1.0,
       presencePenalty: 0.0,
@@ -1060,6 +1019,67 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
           presencePenalty: 0.0,
           frequencyPenalty: 0.0
         };
+    }
+  }
+
+  private getCefrFallbackSentences(cefrLevel: string) {
+    switch (cefrLevel) {
+      case "A1":
+        return [
+          { options: ["Ma", "lähen", "kooli"], correctAnswer: "Ma lähen kooli.", explanation: "Básico: sujeto + verbo + lugar" },
+          { options: ["Täna", "on", "päike"], correctAnswer: "Täna on päike.", explanation: "Tiempo + verbo + sujeto" },
+          { options: ["Ta", "sööb", "õunu"], correctAnswer: "Ta sööb õunu.", explanation: "Sujeto + verbo + objeto" },
+          { options: ["Me", "õpime", "eesti"], correctAnswer: "Me õpime eesti.", explanation: "Pronombre + verbo + objeto" },
+          { options: ["Homme", "tuleb", "sõber"], correctAnswer: "Homme tuleb sõber.", explanation: "Tiempo + verbo + sujeto" }
+        ];
+      case "A2":
+        return [
+          { options: ["Ma", "lähen", "kiiresti", "kooli"], correctAnswer: "Ma lähen kiiresti kooli.", explanation: "Sujeto + verbo + adverbio + lugar" },
+          { options: ["Eile", "ta", "ostis", "raamatu"], correctAnswer: "Eile ta ostis raamatu.", explanation: "Tiempo + sujeto + verbo + objeto" },
+          { options: ["Me", "sõime", "kodus", "õhtul"], correctAnswer: "Me sõime kodus õhtul.", explanation: "Sujeto + verbo + lugar + tiempo" },
+          { options: ["Homme", "ma", "lähen", "tööle"], correctAnswer: "Homme ma lähen tööle.", explanation: "Tiempo + sujeto + verbo + lugar" },
+          { options: ["Ta", "räägib", "hästi", "eesti"], correctAnswer: "Ta räägib hästi eesti.", explanation: "Sujeto + verbo + adverbio + objeto" }
+        ];
+      case "B1":
+        return [
+          { options: ["Ma", "õpin", "ülikoolis", "eesti", "keelt"], correctAnswer: "Ma õpin ülikoolis eesti keelt.", explanation: "Sujeto + verbo + lugar + objeto directo" },
+          { options: ["Professor", "seletas", "täna", "uut", "teemat"], correctAnswer: "Professor seletas täna uut teemat.", explanation: "Sujeto + verbo + tiempo + objeto" },
+          { options: ["Tudengid", "arutasid", "aktiivselt", "kultuurilisi", "teemasid"], correctAnswer: "Tudengid arutasid aktiivselt kultuurilisi teemasid.", explanation: "Sujeto + verbo + adverbio + objeto complejo" },
+          { options: ["Me", "külastasime", "eile", "muuseumi", "linna"], correctAnswer: "Me külastasime eile muuseumi linna.", explanation: "Sujeto + verbo + tiempo + objeto + lugar" },
+          { options: ["Ta", "kirjutas", "hoolikalt", "oma", "esseesid"], correctAnswer: "Ta kirjutas hoolikalt oma esseesid.", explanation: "Sujeto + verbo + adverbio + posesivo + objeto" }
+        ];
+      case "B2":
+        return [
+          { options: ["Ekspert", "analüüsis", "põhjalikult", "keelelisi", "nähtusi"], correctAnswer: "Ekspert analüüsis põhjalikult keelelisi nähtusi.", explanation: "Sujeto especializado + verbo + adverbio + objeto complejo" },
+          { options: ["Teadlased", "uurisid", "sügavalt", "kultuurilisi", "traditsioone"], correctAnswer: "Teadlased uurisid sügavalt kultuurilisi traditsioone.", explanation: "Sujeto + verbo + adverbio + objeto académico" },
+          { options: ["Professor", "käsitles", "loengus", "keerulisi", "teemasid"], correctAnswer: "Professor käsitles loengus keerulisi teemasid.", explanation: "Sujeto + verbo + lugar + objeto complejo" },
+          { options: ["Kirjanikud", "kirjeldasid", "detailselt", "ühiskondlikke", "probleeme"], correctAnswer: "Kirjanikud kirjeldasid detailselt ühiskondlikke probleeme.", explanation: "Sujeto + verbo + adverbio + objeto social" },
+          { options: ["Ajakirjanikud", "kajastasid", "objektiivselt", "poliitilisi", "sündmusi"], correctAnswer: "Ajakirjanikud kajastasid objektiivselt poliitilisi sündmusi.", explanation: "Sujeto + verbo + adverbio + objeto político" }
+        ];
+      case "C1":
+        return [
+          { options: ["Akadeemikud", "diskuteerivad", "intensiivselt", "filosoofiliste", "kontseptsioonide", "üle"], correctAnswer: "Akadeemikud diskuteerivad intensiivselt filosoofiliste kontseptsioonide üle.", explanation: "Sujeto académico + verbo + adverbio + objeto filosófico" },
+          { options: ["Eksperdid", "analüüsivad", "süstemaatiliselt", "keeruliste", "probleemide", "olemust"], correctAnswer: "Eksperdid analüüsivad süstemaatiliselt keeruliste probleemide olemust.", explanation: "Sujeto + verbo + adverbio + objeto complejo + esencia" },
+          { options: ["Teadlased", "käsitlevad", "põhjalikult", "interdistsiplinaarseid", "uurimusi"], correctAnswer: "Teadlased käsitlevad põhjalikult interdistsiplinaarseid uurimusi.", explanation: "Sujeto + verbo + adverbio + objeto interdisciplinario" },
+          { options: ["Kirjanikud", "reflekteerivad", "sügavalt", "eksistentsiaalseid", "küsimusi"], correctAnswer: "Kirjanikud reflekteerivad sügavalt eksistentsiaalseid küsimusi.", explanation: "Sujeto + verbo + adverbio + objeto existencial" },
+          { options: ["Filosoofid", "vaatlevad", "kriitiliselt", "kaasaegseid", "väärtussüsteeme"], correctAnswer: "Filosoofid vaatlevad kriitiliselt kaasaegseid väärtussüsteeme.", explanation: "Sujeto + verbo + adverbio + objeto contemporáneo" }
+        ];
+      case "C2":
+        return [
+          { options: ["Intellektuaalid", "kontseptualiseerivad", "abstraktselt", "metafüüsiliste", "dimensioonide", "keerukust"], correctAnswer: "Intellektuaalid kontseptualiseerivad abstraktselt metafüüsiliste dimensioonide keerukust.", explanation: "Sujeto intelectual + verbo + adverbio + objeto metafísico complejo" },
+          { options: ["Mõtlejad", "dekonstrueerivad", "süstemaatiliselt", "ontoloogiliste", "kategooriate", "hierarhiat"], correctAnswer: "Mõtlejad dekonstrueerivad süstemaatiliselt ontoloogiliste kategooriate hierarhiat.", explanation: "Sujeto + verbo + adverbio + objeto ontológico + estructura" },
+          { options: ["Teoreetikud", "sintetiseerivad", "innovaatiliselt", "epistemoloogiliste", "paradigmade", "ristumispunkte"], correctAnswer: "Teoreetikud sintetiseerivad innovaatiliselt epistemoloogiliste paradigmade ristumispunkte.", explanation: "Sujeto + verbo + adverbio + objeto epistemológico + intersecciones" },
+          { options: ["Akadeemikud", "problematiseerivad", "dialektiliselt", "hermeneutiliste", "tõlgendusmustrite", "ambivalentsust"], correctAnswer: "Akadeemikud problematiseerivad dialektiliselt hermeneutiliste tõlgendusmustrite ambivalentsust.", explanation: "Sujeto + verbo + adverbio + objeto hermenéutico + ambivalencia" },
+          { options: ["Teadlased", "kontekstualiseerivad", "transdistsiplinaarselt", "fenomenoloogiliste", "uurimismeetodite", "potentsiaali"], correctAnswer: "Teadlased kontekstualiseerivad transdistsiplinaarselt fenomenoloogiliste uurimismeetodite potentsiaali.", explanation: "Sujeto + verbo + adverbio + objeto fenomenológico + potencial" }
+        ];
+      default:
+        return [
+          { options: ["Ma", "lähen", "kooli"], correctAnswer: "Ma lähen kooli.", explanation: "Estructura básica" },
+          { options: ["Ta", "õpib", "eesti"], correctAnswer: "Ta õpib eesti.", explanation: "Sujeto + verbo + objeto" },
+          { options: ["Me", "räägime", "eesti"], correctAnswer: "Me räägime eesti.", explanation: "Pronombre + verbo + objeto" },
+          { options: ["Homme", "tuleb", "sõber"], correctAnswer: "Homme tuleb sõber.", explanation: "Tiempo + verbo + sujeto" },
+          { options: ["Täna", "on", "ilus"], correctAnswer: "Täna on ilus.", explanation: "Tiempo + verbo + adjetivo" }
+        ];
     }
   }
 
