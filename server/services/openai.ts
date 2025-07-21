@@ -607,7 +607,12 @@ FORMATO JSON ESTRICTO:
 EJEMPLOS VÁLIDOS:
 - "Mis on 'kass'?" → opciones: ["perro", "gato", "pájaro", "pez"]
 - "Kuidas öelda 'rojo' eesti keeles?" → opciones: ["sinine", "punane", "kollane", "roheline"]`,
-          user: `Crea exactamente 5 preguntas de vocabulario estonio para nivel ${cefrLevel}. Solo vocabulario, no gramática.`,
+          user: `Crea exactamente 5 preguntas de vocabulario estonio para nivel ${cefrLevel}. 
+
+GUÍA DE NIVEL ${cefrLevel}:
+${this.getDifficultyGuidance(cefrLevel)}
+
+Solo vocabulario, no gramática.`,
           maxTokens: 800
         };
       
@@ -638,7 +643,12 @@ FORMATO JSON ESTRICTO:
 EJEMPLOS VÁLIDOS:
 - "Millist käänet kasutada: Ma näen _____ (kass)" → opciones: ["kass", "kassi", "kassile", "kassiga"]
 - "Täida lünk: Ma _____ (olema) õpilane" → opciones: ["olen", "oled", "on", "oleme"]`,
-          user: `Crea exactamente 5 preguntas de gramática estonia para nivel ${cefrLevel}. Solo gramática, no vocabulario.`,
+          user: `Crea exactamente 5 preguntas de gramática estonia para nivel ${cefrLevel}.
+
+GUÍA DE NIVEL ${cefrLevel}:
+${this.getDifficultyGuidance(cefrLevel)}
+
+Solo gramática, no vocabulario.`,
           maxTokens: 850
         };
       
@@ -669,7 +679,12 @@ FORMATO JSON ESTRICTO:
 EJEMPLOS VÁLIDOS:
 - "Ma _____ (minema) kooli" → opciones: ["lähen", "läheb", "läheme", "lähete"]
 - "Eile ta _____ (tulema) koju" → opciones: ["tuleb", "tuli", "tulen", "tuleme"]`,
-          user: `Crea exactamente 5 preguntas de conjugación verbal estonia para nivel ${cefrLevel}. Solo conjugaciones.`,
+          user: `Crea exactamente 5 preguntas de conjugación verbal estonia para nivel ${cefrLevel}.
+
+GUÍA DE NIVEL ${cefrLevel}:
+${this.getDifficultyGuidance(cefrLevel)}
+
+Solo conjugaciones.`,
           maxTokens: 800
         };
       
@@ -700,7 +715,12 @@ FORMATO JSON ESTRICTO:
 EJEMPLOS VÁLIDOS:
 - "Järjesta õigesti: [homme, ma, kooli, lähen]" → opciones en orden correcto
 - "Kus peab olema 'kiiresti': [ta, jookseb, parki]" → donde va el adverbio`,
-          user: `Crea exactamente 5 preguntas de orden de palabras estonia para nivel ${cefrLevel}. Solo estructura.`,
+          user: `Crea exactamente 5 preguntas de orden de palabras estonia para nivel ${cefrLevel}.
+
+GUÍA DE NIVEL ${cefrLevel}:
+${this.getDifficultyGuidance(cefrLevel)}
+
+Solo estructura.`,
           maxTokens: 850
         };
       
@@ -742,7 +762,12 @@ FORMATO JSON ESTRICTO:
 EJEMPLOS DE ERRORES REALES:
 - "Ma armastan kassid" → error en "kassid" → debería ser "kasse"
 - "Te läheb kooli" → error en "läheb" → debería ser "lähete"`,
-          user: `Crea exactamente 5 oraciones estonia con errores gramaticales REALES para nivel ${cefrLevel}. Cada oración debe tener un error obvio.`,
+          user: `Crea exactamente 5 oraciones estonia con errores gramaticales REALES para nivel ${cefrLevel}.
+
+GUÍA DE NIVEL ${cefrLevel}:
+${this.getDifficultyGuidance(cefrLevel)}
+
+Cada oración debe tener un error obvio apropiado para este nivel.`,
           maxTokens: 900
         };
       
