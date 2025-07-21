@@ -919,10 +919,10 @@ EJEMPLOS PROHIBIDOS (NUNCA USAR):
 
       answerStructure: "errorIdentification", // Seleccionar palabra errónea
       maxTokens: 1000,
-      temperature: 0.2,
-      topP: 0.8,
-      presencePenalty: 0.1,
-      frequencyPenalty: 0.2
+      temperature: 0.1,
+      topP: 1.0,
+      presencePenalty: 0.0,
+      frequencyPenalty: 0.0
     };
   }
 
