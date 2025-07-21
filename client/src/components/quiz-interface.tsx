@@ -156,21 +156,22 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     };
 
     const newAnswers = [...answers, answerData];
-    setAnswers(newAnswers);
+    console.log(`📝 Saving answer ${newAnswers.length}/${questions.length}:`, answerData.userAnswer);
     
-    console.log(`📝 Saved answer ${newAnswers.length}/${questions.length}:`, answerData);
-
-    // Reset for next question
-    setShowAnswerFeedback(false);
-    setSelectedAnswer("");
-    setQuestionStartTime(Date.now());
+    // Update answers state first
+    setAnswers(newAnswers);
 
     if (currentQuestionIndex < questions.length - 1) {
+      // Move to next question
+      setShowAnswerFeedback(false);
+      setSelectedAnswer("");
+      setQuestionStartTime(Date.now());
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Quiz complete - all answers saved
-      console.log("✅ Quiz completed with all answers saved:", newAnswers.length);
+      // This is the last question - mark quiz as completed
+      console.log("✅ Final answer saved. Quiz completed with", newAnswers.length, "answers");
       setQuizCompleted(true);
+      // Don't reset feedback or selection on last question
     }
   };
 
@@ -205,16 +206,21 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
 
   const handleShowResults = () => {
     console.log("🎯 Ver Resultados clicked!");
+    
+    // Force check current state after potential state updates
+    const currentAnswerCount = answers.length;
+    const needsAnswerCount = questions.length;
+    
     console.log("Quiz state:", {
       sessionId,
-      answersLength: answers.length,
-      questionsLength: questions.length,
+      answersLength: currentAnswerCount,
+      questionsLength: needsAnswerCount,
       quizCompleted,
       currentQuestionIndex,
       isPending: submitQuizMutation.isPending
     });
     
-    if (sessionId && answers.length === questions.length) {
+    if (sessionId && currentAnswerCount === needsAnswerCount) {
       console.log("✅ Submitting quiz with all answers:", answers);
       const responseTimes = answers.map(a => a.responseTime);
       submitQuizMutation.mutate({
@@ -225,9 +231,10 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     } else {
       console.error("❌ Cannot submit quiz:", {
         hasSessionId: !!sessionId,
-        answersCount: answers.length,
-        questionsCount: questions.length,
-        missingAnswers: questions.length - answers.length
+        answersCount: currentAnswerCount,
+        questionsCount: needsAnswerCount,
+        missingAnswers: needsAnswerCount - currentAnswerCount,
+        lastAnswerData: answers[answers.length - 1]
       });
     }
   };
