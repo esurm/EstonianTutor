@@ -17,13 +17,13 @@ ${corpusKnowledge}
 
 Create 5 Estonian sentences with EXACTLY ONE grammatical error each. Focus on common mistakes Spanish speakers make learning Estonian.
 
-CRITICAL RULES - USE CORPUS GUIDANCE:
-1. Each sentence has ONE clear grammatical error 
+CRITICAL RULES - MANDATORY REQUIREMENTS:
+1. Each sentence has EXACTLY ONE clear grammatical error 
 2. Error must be a single word that's grammatically wrong
-3. Use vocabulary from the corpus appropriate for ${this.cefrLevel} level
+3. Use vocabulary appropriate for ${this.cefrLevel} level (simple words like: kool, maja, auto, töö)
 4. Provide 3-4 options including the error word
-5. Give brief explanation in Spanish
-6. Follow authentic Estonian patterns from corpus
+5. **EXPLANATION MUST BE IN SPANISH ONLY** - No Estonian in explanations!
+6. Focus on errors Spanish speakers actually make learning Estonian
 
 ERROR TYPES FOR ${this.cefrLevel}:
 ${this.getCEFRSpecificErrors()}
@@ -35,17 +35,17 @@ REQUIRED JSON FORMAT:
 {
   "questions": [
     {
-      "question": "¿Qué palabra está incorrecta en: '[Estonian sentence with one error]'?",
+      "question": "¿Qué palabra está incorrecta en: 'Ma läheb kooli'?",
       "type": "error_detection", 
-      "options": ["word1", "word2", "ERROR_WORD", "word4"],
-      "correctAnswer": "ERROR_WORD",
-      "explanation": "Explicación en español del error gramatical",
+      "options": ["Ma", "läheb", "kooli"],
+      "correctAnswer": "läheb",
+      "explanation": "Con 'Ma' (yo) el verbo debe ser 'lähen', no 'läheb'. Primera persona singular usa '-n'.",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate exactly 5 questions using corpus vocabulary. Each must have a real grammatical error that will be validated by Estonian language tools.`;
+**MANDATORY**: All explanations must be in Spanish only. Use simple Estonian sentences with common vocabulary.`;
   }
 
   getUserPrompt(): string {
@@ -53,16 +53,19 @@ Generate exactly 5 questions using corpus vocabulary. Each must have a real gram
 
 IMPORTANT: Use the provided corpus examples and error patterns to create authentic Estonian grammatical errors.
 
-Each question must have:
-- One Estonian sentence with EXACTLY ONE grammatical error (verified by corpus)
-- 3-4 word options (including the wrong word)
-- Correct answer identifies the wrong word
-- Spanish explanation of what's wrong and why
-- Vocabulary from Estonian corpus appropriate for ${this.cefrLevel} level
+MANDATORY REQUIREMENTS:
+- Use SIMPLE Estonian sentences (3-5 words max)
+- Use common vocabulary: ma, sa, ta, kool, maja, auto, töö, söön, lähen, olen
+- Each sentence has EXACTLY ONE grammatical error
+- ALL explanations in SPANISH ONLY (no Estonian words in explanations)
+- Focus on verb agreement and basic case errors
 
-Base your errors on authentic Estonian patterns and common mistakes Spanish speakers make learning Estonian grammar.
+Example of good sentence: "Ma läheb kooli" (error: läheb should be lähen)
+Example of good explanation: "Con 'Ma' el verbo debe terminar en '-n', no '-b'"
 
-Return complete JSON with all 5 questions using corpus-validated examples.`;
+NO complex sentences, NO Estonian in explanations, NO multiple errors.
+
+Return complete JSON with all 5 simple questions.`;
   }
 
   /**
@@ -152,11 +155,11 @@ Return complete JSON with all 5 questions using corpus-validated examples.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Increased for complete 5-question JSON
-      temperature: 0.4, // Increased for more variation
-      topP: 0.9,
-      frequencyPenalty: 0.1, // Reduce repetition
-      presencePenalty: 0.2 // More variety
+      maxTokens: 700, // Simple sentences need less
+      temperature: 0.2, // Lower for more consistent error patterns
+      topP: 0.8, // More focused on common errors
+      frequencyPenalty: 0.1, 
+      presencePenalty: 0.1 // Focus on clarity over creativity
     };
   }
 

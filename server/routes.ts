@@ -281,10 +281,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Save quiz results and calculate score  
       for (const answer of answers) {
-        // More flexible comparison for text answers (case insensitive, trimmed)
-        const userAnswer = answer.userAnswer.toLowerCase().trim();
-        const correctAnswer = answer.correctAnswer.toLowerCase().trim();
-        const isCorrect = userAnswer === correctAnswer;
+        // Enhanced flexible comparison for different question types
+        let isCorrect = false;
+        
+        if (answer.type === 'sentence_reordering') {
+          // For sentence reordering, normalize punctuation and spacing
+          const userAnswer = answer.userAnswer
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, ' ')      // normalize multiple spaces
+            .replace(/[.!?]+$/, '');   // remove trailing punctuation
+            
+          const correctAnswer = answer.correctAnswer
+            .toLowerCase() 
+            .trim()
+            .replace(/\s+/g, ' ')      // normalize multiple spaces
+            .replace(/[.!?]+$/, '');   // remove trailing punctuation
+            
+          isCorrect = userAnswer === correctAnswer;
+          
+          // Debug logging for sentence reordering
+          console.log(`Sentence Reordering Check:
+            User: "${answer.userAnswer}" → "${userAnswer}"
+            Correct: "${answer.correctAnswer}" → "${correctAnswer}"  
+            Match: ${isCorrect}`);
+            
+        } else {
+          // Standard comparison for other question types
+          const userAnswer = answer.userAnswer.toLowerCase().trim();
+          const correctAnswer = answer.correctAnswer.toLowerCase().trim();
+          isCorrect = userAnswer === correctAnswer;
+        }
+        
         if (isCorrect) correctCount++;
 
         await storage.createQuiz({

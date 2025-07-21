@@ -10,56 +10,58 @@ export class SentenceReorderingProfessor extends BaseProfessor {
     const corpusKnowledge = this.corpusKnowledge || "";
     const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
     
-    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level using authentic corpus data.
+    return `You are an Estonian SENTENCE STRUCTURE expert for ${this.cefrLevel} level.
 
-CORPUS-BASED SENTENCE EXAMPLES FOR ${this.cefrLevel}:
-${sentenceExamples.slice(0, 5).map(s => `"${s.text}" (${s.domain})`).join(", ")}
-
-VOCABULARY AVAILABLE FOR ${this.cefrLevel}:
-${corpusKnowledge}
-
-Create 5 sentence reordering exercises using authentic Estonian sentence patterns from the corpus.
-
-CRITICAL RULES - USE CORPUS GUIDANCE:
-1. Base sentences on corpus examples for ${this.cefrLevel} level
-2. Use vocabulary from corpus appropriate for ${this.cefrLevel}  
-3. Provide words in SCRAMBLED order in "options" array
-4. Give ONE clear correct answer (Estonian sentence)
-5. Include Spanish translation of the correct sentence
-6. Brief explanation of the Estonian word order pattern used
+CRITICAL REQUIREMENTS FOR ${this.cefrLevel} LEVEL:
+1. Create SIMPLE, UNAMBIGUOUS sentences with ONE clear correct word order
+2. Avoid complex sentences that have multiple valid arrangements  
+3. Use vocabulary appropriate for ${this.cefrLevel} level
+4. Maximum sentence length: ${this.getMaxWordsForLevel()} words
+5. Focus on CLEAR grammatical patterns, not ambiguous constructions
 
 ESTONIAN WORD ORDER PATTERNS FOR ${this.cefrLevel}:
 ${this.getWordOrderPatterns()}
 
-SENTENCE ALTERNATIVES FROM CORPUS:
-${this.getCorpusAlternatives()}
+FORBIDDEN FOR REORDERING EXERCISES:
+- Complex subordinate clauses with flexible word order
+- Poetic inversions with multiple valid arrangements  
+- Academic sentences with ambiguous adverb placement
+- Sentences where multiple word orders are grammatically correct
+
+REQUIRED SENTENCE STRUCTURE:
+- Use common Estonian words: ma, sa, ta, me, te, nad, olen, lähen, söön, töötan, õpin
+- Clear subject-verb-object patterns
+- Unambiguous time/place expressions
+- Single definitive correct answer
 
 REQUIRED JSON FORMAT:
 {
   "questions": [
     {
       "question": "Ordena las palabras para formar una oración correcta en estonio:",
-      "type": "sentence_reordering",
-      "options": ["kooli", "Ma", "lähen", "täna"],
+      "type": "sentence_reordering", 
+      "options": ["scrambled", "words", "in", "random", "order"],
       "correctAnswer": "Ma lähen täna kooli",
-      "explanation": "Patrón estonio: sujeto + verbo + tiempo + lugar. 'Voy hoy a la escuela'",
+      "explanation": "Patrón estonio básico: sujeto + verbo + tiempo + lugar. Significa 'Voy hoy a la escuela'",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-Generate exactly 5 questions based on authentic Estonian corpus patterns.`;
+Generate exactly 5 questions with SIMPLE, CLEAR Estonian sentences that have only ONE correct word order.`;
   }
 
-  private getCorpusAlternatives(): string {
-    const sentenceExamples = estonianCorpus.getSentencesByLevel(this.cefrLevel);
+  private getMaxWordsForLevel(): number {
+    const limits = {
+      A1: 4, // "Ma lähen kooli"
+      A2: 5, // "Ma lähen homme kooli"  
+      B1: 6, // "Ma lähen homme tööle bussiga"
+      B2: 7, // "Ma tahan minna homme tööle bussiga"
+      C1: 8, // "Ma plaanin minna homme hommikul tööle bussiga"
+      C2: 9  // But focus on clarity, not complexity
+    };
     
-    if (sentenceExamples.length > 0) {
-      const alternatives = estonianCorpus.getAlternatives(sentenceExamples[0].text);
-      return alternatives.length > 0 ? `Alternatives: ${alternatives.join(", ")}` : "No alternatives found in corpus";
-    }
-    
-    return "Use basic Estonian sentence patterns";
+    return limits[this.cefrLevel as keyof typeof limits] || 6;
   }
 
   getUserPrompt(): string {
@@ -78,42 +80,42 @@ Return complete JSON with all 5 questions.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 900, // Increased for complete 5-question JSON
-      temperature: 0.3, // Increased for more variation
-      topP: 0.8,
-      frequencyPenalty: 0.1, // Reduce repetition
-      presencePenalty: 0.2 // More variety in sentence patterns
+      maxTokens: 800, // Adequate for simple sentences
+      temperature: 0.2, // Lower for more consistent simple patterns
+      topP: 0.7, // More focused generation
+      frequencyPenalty: 0.15, // Reduce repetition
+      presencePenalty: 0.1 // Focus on clarity over variety
     };
   }
 
   private getWordOrderPatterns(): string {
     const patterns = {
       A1: `BÁSICOS (3-4 palabras):
-- SVO: Ma joon vett (Yo bebo agua)
-- Tiempo + SV: Täna ma õpin (Hoy yo estudio)
-- SV + Lugar: Ma lähen koju (Yo voy a casa)`,
+- SVO: Ma lähen kooli (Yo voy a la escuela)  
+- Tiempo + SV: Täna ma söön (Hoy yo como)
+- SV + Lugar: Ta elab kodus (Él/ella vive en casa)`,
       
       A2: `A1 + ADVERBIOS (4-5 palabras):
-- TSVO: Homme ma ostan leiba (Mañana yo compro pan)
-- SVO + Lugar: Ma õpin eesti keelt koolis
-- Pregunta: Kus sa elad? (¿Dónde vives?)`,
+- TSVO: Homme ma lähen tööle (Mañana yo voy al trabajo)
+- SVO + Lugar: Me õpime eesti keelt ülikoolis (Estudiamos estonio en la universidad)
+- Pregunta: Kus sa töötad? (¿Dónde trabajas?)`,
       
       B1: `A2 + OBJETOS MÚLTIPLES (5-6 palabras):
-- SVOO: Ma annan sulle raamatu (Te doy el libro)
-- Énfasis frontal: Raamatu ma loen homme
-- Subordinadas simples: Ma tean, et ta tuleb`,
+- SVOO: Ma annan talle raamatu (Le doy el libro a él/ella)
+- Énfasis frontal: Raamatu ma ostan homme (El libro lo compro mañana)
+- Subordinadas: Ma arvan, et ta tuleb (Creo que él/ella viene)`,
       
-      B2: `B1 + ESTRUCTURAS COMPLEJAS (6-8 palabras):
-- Adverbios múltiples con orden flexible
-- Oraciones subordinadas con orden interno
-- Topicalización para énfasis`,
+      B2: `B1 + ESTRUCTURAS MODERADAS (6-7 palabras):
+- Ma võin aidata sind selle tööga (Puedo ayudarte con este trabajo)
+- Nad arutavad projekti tähtsa küsimuse üle (Discuten sobre una pregunta importante del proyecto)
+- Simple academic: Professor selgitab uut grammatika reeglit (El profesor explica nueva regla gramatical)`,
       
-      C1: `B2 + VARIACIONES ESTILÍSTICAS:
-- Orden marcado para efectos pragmáticos
-- Estructuras periodísticas y académicas
-- Inversiones poéticas permitidas`,
+      C1: `B2 + ESTRUCTURAS ACADÉMICAS SIMPLES (6-8 palabras):
+- Eksperdid arutavad tähtsat majandusküsimust konverentsil (Los expertos discuten una pregunta económica importante en la conferencia)
+- Uuringu tulemused näitavad huvitavat trendi (Los resultados del estudio muestran una tendencia interesante)
+- AVOID: Complex poetic inversions that have multiple valid arrangements`,
       
-      C2: "Dominio completo de todas las variaciones"
+      C2: "Focus on clear academic patterns, not ambiguous poetic structures"
     };
     return patterns[this.cefrLevel as keyof typeof patterns] || patterns.B1;
   }
