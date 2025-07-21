@@ -8,54 +8,60 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `You are Dr. Kersti Kask, an expert Estonian grammar instructor specializing in error detection for Spanish-speaking students. You have 15 years of experience teaching Estonian to native Spanish speakers and understand exactly what mistakes they make.
+    return `You are Dr. Kersti Kask, expert at creating Estonian sentences WITH grammatical errors for ${this.cefrLevel} level students.
 
-YOUR EXPERTISE:
-- You identify the most common Estonian grammar errors Spanish speakers make
-- You create educational examples that teach specific grammar points
-- You explain errors clearly in Spanish that students can understand
-- You match error complexity to student's CEFR level
+CRITICAL TASK: Create sentences that contain REAL grammatical errors that Spanish speakers make learning Estonian.
 
-YOUR TEACHING APPROACH:
-- Focus on ONE clear grammar error per sentence
-- Use natural Estonian word order (never artificial scrambling)
-- Create errors that Spanish speakers actually make
-- Provide helpful Spanish explanations that teach the grammar rule
+EXAMPLES OF ACTUAL ERRORS FOR ${this.cefrLevel}:
+${this.getActualErrorExamples()}
 
-CEFR LEVEL: ${this.cefrLevel}
-${this.getCEFRTeachingGuidance()}
+YOUR METHOD:
+1. Start with a CORRECT Estonian sentence
+2. Change ONE word to make it grammatically WRONG
+3. The error must be a real mistake Spanish speakers make
+4. Provide 3-4 word options including the wrong word
+5. Explain in Spanish why it's wrong and what the correct form should be
 
-ERROR TYPES YOU TEACH:
-${this.getErrorTypesByLevel()}
+FORBIDDEN:
+- NEVER use correct sentences and claim they have errors
+- NEVER mark correct words as wrong
+- NEVER say "no hay error" - every sentence MUST have exactly one error
 
-JSON RESPONSE FORMAT:
+REQUIRED FORMAT:
 {
   "questions": [
     {
-      "question": "¿Qué palabra está incorrecta en: '[Estonian sentence with one error]'?",
+      "question": "¿Qué palabra está incorrecta en: 'Ma läheb kooli'?",
       "type": "error_detection",
-      "options": ["word1", "ERROR_WORD", "word3", "word4"],
-      "correctAnswer": "ERROR_WORD",
-      "explanation": "[Spanish explanation of the grammar rule]",
+      "options": ["Ma", "läheb", "kooli"],
+      "correctAnswer": "läheb",
+      "explanation": "Con 'Ma' (yo) se usa 'lähen', no 'läheb'. Primeira persona singular termina en '-n'.",
       "cefrLevel": "${this.cefrLevel}"
     }
   ]
 }
 
-You always create exactly 5 questions that teach Estonian grammar effectively.`;
+Generate exactly 5 sentences that each contain ONE real grammatical error.`;
   }
 
   getUserPrompt(): string {
-    return `Dr. Kask, please create 5 error detection questions for my ${this.cefrLevel} level Estonian class.
+    return `Dr. Kask, I need 5 Estonian sentences that contain REAL grammatical errors for ${this.cefrLevel} level.
 
-Focus on the grammar errors that Spanish speakers at ${this.cefrLevel} level typically make. Use vocabulary and sentence structures appropriate for this level.
+CRITICAL REQUIREMENTS:
+- Each sentence must have exactly ONE grammatical error
+- The error must be a word that is genuinely wrong
+- Use the examples I provided as your model
+- Never create correct sentences and claim they have errors
+- Every sentence must contain an actual mistake
 
-Each question should:
-- Have exactly ONE grammatical error in a natural Estonian sentence
-- Include 3-4 answer options with the incorrect word
-- Provide a clear Spanish explanation of the grammar rule
+Follow this pattern:
+1. Create a sentence with ONE grammatical error
+2. Identify the wrong word  
+3. Explain in Spanish why it's wrong and what's correct
 
-Please make sure the errors are realistic mistakes that help students learn Estonian grammar patterns.`;
+Example: "Ma läheb kooli" - "läheb" is wrong, should be "lähen" with "Ma"
+
+Generate 5 such sentences with real errors for ${this.cefrLevel} level.`;
   }
 
   /**
@@ -145,11 +151,11 @@ Please make sure the errors are realistic mistakes that help students learn Esto
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700, // Sufficient for 5 complete questions with explanations
-      temperature: 0.1, // Very consistent error patterns
-      topP: 0.7, // Focused on established patterns
-      frequencyPenalty: 0.05, // Slight variety in vocabulary
-      presencePenalty: 0.05 // Slight variety in error types
+      maxTokens: 800, // Sufficient for 5 complete questions with explanations
+      temperature: 0.05, // Ultra-consistent to follow examples exactly
+      topP: 0.6, // Very focused on given examples
+      frequencyPenalty: 0, // No penalty - follow examples exactly
+      presencePenalty: 0 // No penalty - stick to example patterns
     };
   }
 
@@ -182,6 +188,40 @@ Please make sure the errors are realistic mistakes that help students learn Esto
     };
     
     return guidance[this.cefrLevel as keyof typeof guidance] || guidance.A1;
+  }
+
+  private getActualErrorExamples(): string {
+    const examples = {
+      A1: `
+ERROR SENTENCE: "Ma läheb kooli" → WRONG WORD: "läheb" → CORRECT: "lähen"
+ERROR SENTENCE: "Ta lähen tööle" → WRONG WORD: "lähen" → CORRECT: "läheb"  
+ERROR SENTENCE: "Ma söön leiv" → WRONG WORD: "leiv" → CORRECT: "leiba"
+ERROR SENTENCE: "Kaks koer" → WRONG WORD: "koer" → CORRECT: "koera"`,
+
+      A2: `
+ERROR SENTENCE: "Ma elan Tallinn" → WRONG WORD: "Tallinn" → CORRECT: "Tallinnas"
+ERROR SENTENCE: "Ta lähen kool" → WRONG WORD: "kool" → CORRECT: "kooli"
+ERROR SENTENCE: "See on mina auto" → WRONG WORD: "mina" → CORRECT: "minu"
+ERROR SENTENCE: "Me tuleb koolist" → WRONG WORD: "tuleb" → CORRECT: "tuleme"`,
+
+      B1: `
+ERROR SENTENCE: "Ma panen raamat laud" → WRONG WORD: "laud" → CORRECT: "lauale"
+ERROR SENTENCE: "Ta võtab laualt raamat" → WRONG WORD: "raamat" → CORRECT: "raamatu"
+ERROR SENTENCE: "Eile ma lähen kinno" → WRONG WORD: "lähen" → CORRECT: "läksin"
+ERROR SENTENCE: "Ma näen palju inimesed" → WRONG WORD: "inimesed" → CORRECT: "inimesi"`,
+
+      B2: `
+ERROR SENTENCE: "Ma tulen ilma raha" → WRONG WORD: "raha" → CORRECT: "rahata"
+ERROR SENTENCE: "Ta ootab bussis" → WRONG WORD: "bussis" → CORRECT: "bussi"
+ERROR SENTENCE: "Ma oleks lähen, aga..." → WRONG WORD: "lähen" → CORRECT: "läinud"`,
+
+      C1: `
+ERROR SENTENCE: "Eksperdid arutavad selle küsimus üle" → WRONG WORD: "küsimus" → CORRECT: "küsimuse"
+ERROR SENTENCE: "Ta ütles, et ta tulen homme" → WRONG WORD: "tulen" → CORRECT: "tuleb"
+ERROR SENTENCE: "Professor selgitas teema huvitavalt" → WRONG WORD: "teema" → CORRECT: "teemat"`
+    };
+    
+    return examples[this.cefrLevel as keyof typeof examples] || examples.A1;
   }
 
   private getErrorTypesByLevel(): string {
