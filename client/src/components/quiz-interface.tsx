@@ -51,6 +51,7 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
   const [quizResults, setQuizResults] = useState<any>(null);
   const [showAnswerFeedback, setShowAnswerFeedback] = useState(false);
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const { toast } = useToast();
   const { user } = useCEFRTracking();
@@ -82,7 +83,6 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
       console.log("Quiz submission successful, results:", results);
       setQuizResults(results);
       setShowResults(true);
-      // Don't call onQuizComplete here to prevent premature closing
     },
     onError: () => {
       toast({
@@ -166,18 +166,9 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Quiz complete - submit answers and show results
-      console.log("Quiz completed, submitting answers:", newAnswers.length);
-      if (sessionId) {
-        const responseTimes = newAnswers.map(a => a.responseTime);
-        submitQuizMutation.mutate({
-          sessionId,
-          answers: newAnswers,
-          responseTime: responseTimes
-        });
-      } else {
-        console.error("No sessionId available for quiz submission");
-      }
+      // Quiz complete - but don't submit yet, wait for user to click "Ver Resultados"
+      console.log("Quiz completed, waiting for user to click Results button");
+      setQuizCompleted(true);
     }
   };
 
@@ -208,6 +199,18 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
     if (score >= 70) return { text: "Muy Bien", color: "bg-blue-500" };
     if (score >= 50) return { text: "Bien", color: "bg-yellow-500" };
     return { text: "Seguí Practicando", color: "bg-red-500" };
+  };
+
+  const handleShowResults = () => {
+    if (sessionId && answers.length === questions.length) {
+      console.log("Submitting quiz answers:", answers.length);
+      const responseTimes = answers.map(a => a.responseTime);
+      submitQuizMutation.mutate({
+        sessionId,
+        answers,
+        responseTime: responseTimes
+      });
+    }
   };
 
   if (generateQuizMutation.isPending) {
@@ -564,19 +567,20 @@ export function QuizInterface({ onQuizComplete, onQuizClose, category }: QuizInt
           </Button>
         ) : (
           <Button
-            onClick={handleNextQuestion}
+            onClick={quizCompleted ? handleShowResults : handleNextQuestion}
             className="w-full"
             size="lg"
+            disabled={submitQuizMutation.isPending}
           >
-            {currentQuestionIndex < questions.length - 1 ? (
+            {quizCompleted ? (
               <>
-                Siguiente Pregunta
-                <ArrowRight className="ml-2 h-4 w-4" />
+                Ver Resultados
+                <BarChart3 className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
-                Ver Resultados
-                <Award className="ml-2 h-4 w-4" />
+                Siguiente Pregunta
+                <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
