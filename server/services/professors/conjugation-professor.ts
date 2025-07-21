@@ -23,10 +23,11 @@ ${this.corpusKnowledge}
 EJEMPLOS DE CONJUGACIÓN NIVEL ${this.cefrLevel}:
 ${verbExamples.slice(0, 5).join("\n")}
 
-SISTEMA VERBAL ESTONIO:
-- Personas: ma (yo), sa (tú), ta (él/ella), me (nosotros), te (vosotros), nad (ellos)
-- NO hay conjugación por género (diferente del español)
-- Verbos clave: olema (ser/estar), minema (ir), tulema (venir), tegema (hacer)
+SISTEMA VERBAL ESTONIO CORRECTO:
+- ma olen, sa oled, ta on, me oleme, te olete, nad on
+- CONDICIONAL: ma oleksin, sa oleksid, ta oleks, me oleksime, te oleksite, nad oleksid
+- POTENCIAL CON "MEIL": meil oleks aega (tendríamos tiempo) - NUNCA "me oleks"
+- USA "MEIL" (adesivo) PARA "TENER" CONDICIONAL
 
 CONJUGACIONES PARA ${this.cefrLevel}:
 ${this.getVerbSystemForLevel()}
@@ -78,8 +79,8 @@ Genera el JSON con exactamente 5 preguntas de conjugación.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 600,
-      temperature: 0.05, // Máxima precisión para formas verbales
+      maxTokens: 700, // Increased for C1 level completeness
+      temperature: 0.05,
       topP: 0.6,
       frequencyPenalty: 0.0,
       presencePenalty: 0.0

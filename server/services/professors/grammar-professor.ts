@@ -73,11 +73,11 @@ Genera el JSON con exactamente 5 preguntas de gramática.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 700,
-      temperature: 0.15, // Muy baja para precisión gramatical
+      maxTokens: 800, // Increased for C1 level completeness
+      temperature: 0.1,
       topP: 0.75,
-      frequencyPenalty: 0.05,
-      presencePenalty: 0.15
+      frequencyPenalty: 0.0,
+      presencePenalty: 0.0
     };
   }
 

@@ -80,8 +80,8 @@ Genera el JSON con exactamente 5 ejercicios.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800, // Increased to prevent truncation
-      temperature: 0.1, // Algo de variación para diferentes patrones
+      maxTokens: 1200, // Increased to prevent JSON truncation
+      temperature: 0.1,
       topP: 0.8,
       frequencyPenalty: 0.0,
       presencePenalty: 0.1

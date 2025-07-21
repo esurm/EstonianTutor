@@ -7,75 +7,58 @@ export class ErrorDetectionProfessor extends BaseProfessor {
   }
 
   getSystemPrompt(): string {
-    return `Eres un PROFESOR DE DETECCIÓN DE ERRORES ESTONIOS especializado en errores de hispanohablantes.
+    return `GENERA ORACIONES ESTONIAS CON ERRORES EN FORMATO JSON
 
-TU ESPECIALIZACIÓN ÚNICA: CREAR ORACIONES CON ERRORES GRAMATICALES REALES
-- Creas oraciones que contienen UN ERROR que hispanohablantes cometen típicamente
-- Conoces profundamente qué errores son comunes en cada nivel CEFR
-- NUNCA creas oraciones correctas para este ejercicio
+EJEMPLOS EXACTOS nivel ${this.cefrLevel}:
+${this.getSpecificErrorExamplesForLevel()}
 
-CONOCIMIENTO DEL CORPUS ESTONIO:
-${this.corpusKnowledge}
-
-IMPORTANTE - ERRORES COMUNES POR NIVEL:
-
-${this.cefrLevel} - ERRORES TÍPICOS:
-${this.getCommonErrorsForLevel()}
-
-ESTRUCTURA JSON OBLIGATORIA:
-{
-  "questions": [
-    {
-      "question": "¿Qué palabra está mal: '[oración CON ERROR]'?",
-      "translation": "[traducción al español]",
-      "type": "error_detection",
-      "options": ["palabra1", "palabra2", "palabra3", "palabra4"],
-      "correctAnswer": "[la palabra INCORRECTA]",
-      "explanation": "[tipo error: caso/verbo/concordancia]",
-      "cefrLevel": "${this.cefrLevel}"
-    }
-  ]
-}
-
-REGLAS FUNDAMENTALES:
-1. CADA oración DEBE contener UN ERROR gramatical real
-2. El error debe ser típico de hispanohablantes en nivel ${this.cefrLevel}
-3. "options" = palabras de la oración en orden
-4. "correctAnswer" = la palabra MAL escrita/conjugada
-5. La explicación debe ser breve y clara sobre el error
-
-EJEMPLOS DE ORACIONES CON ERRORES:
-${this.getErrorExamples()}`;
+COPIA estos patrones EXACTAMENTE, solo cambia las palabras.
+Genera un JSON con 5 preguntas.`;
   }
 
   getUserPrompt(): string {
-    return `Genera EXACTAMENTE 5 oraciones estonias que contengan ERRORES GRAMATICALES típicos de hispanohablantes nivel ${this.cefrLevel}.
+    return `Genera 5 oraciones con ERRORES típicos de hispanohablantes.
 
-INSTRUCCIONES CRÍTICAS:
-1. Cada oración DEBE tener UN ERROR gramatical real
-2. Los errores deben ser los que hispanohablantes cometen frecuentemente
-3. Usa vocabulario simple apropiado para ${this.cefrLevel}
-4. En "correctAnswer" pon la palabra que está MAL
-5. En "explanation" describe brevemente el tipo de error
+EJEMPLOS OBLIGATORIOS nivel ${this.cefrLevel}:
+${this.getSpecificErrorExamplesForLevel()}
 
-TIPOS DE ERRORES PARA ${this.cefrLevel}:
-${this.getErrorTypesForLevel()}
+Usa estos patrones de error EXACTAMENTE.`;
+  }
 
-PROHIBIDO:
-- NO crees oraciones gramaticalmente correctas
-- NO inventes errores poco realistas
-- NO uses vocabulario demasiado avanzado
-
-Genera el JSON con exactamente 5 preguntas.`;
+  private getSpecificErrorExamplesForLevel(): string {
+    const examples = {
+      A1: `
+{"question": "¿Qué palabra está mal: 'Ta lähen poodi'?", "options": ["Ta", "lähen", "poodi"], "correctAnswer": "lähen", "explanation": "3ra persona: läheb"}
+{"question": "¿Qué palabra está mal: 'Mul on kaks koer'?", "options": ["Mul", "on", "kaks", "koer"], "correctAnswer": "koer", "explanation": "después de número: koera"}`,
+      
+      A2: `
+{"question": "¿Qué palabra está mal: 'Ma elan Tallinn'?", "options": ["Ma", "elan", "Tallinn"], "correctAnswer": "Tallinn", "explanation": "vivir en: Tallinnas"}
+{"question": "¿Qué palabra está mal: 'See on mina raamat'?", "options": ["See", "on", "mina", "raamat"], "correctAnswer": "mina", "explanation": "posesivo: minu"}`,
+      
+      B1: `
+{"question": "¿Qué palabra está mal: 'Ma panen raamatu laud'?", "options": ["Ma", "panen", "raamatu", "laud"], "correctAnswer": "laud", "explanation": "hacia superficie: lauale"}
+{"question": "¿Qué palabra está mal: 'Eile ma lähen kinno'?", "options": ["Eile", "ma", "lähen", "kinno"], "correctAnswer": "lähen", "explanation": "pasado: läksin"}`,
+      
+      B2: `
+{"question": "¿Qué palabra está mal: 'Ma tulen ilma raha'?", "options": ["Ma", "tulen", "ilma", "raha"], "correctAnswer": "raha", "explanation": "sin algo: rahata"}
+{"question": "¿Qué palabra está mal: 'Ta ootab bussis'?", "options": ["Ta", "ootab", "bussis"], "correctAnswer": "bussis", "explanation": "esperar algo: bussi"}`,
+      
+      C1: `
+{"question": "¿Qué palabra está mal: 'Eksperdid arutavad selle küsimus üle'?", "options": ["Eksperdid", "arutavad", "selle", "küsimus", "üle"], "correctAnswer": "küsimus", "explanation": "genitivo: küsimuse"}
+{"question": "¿Qué palabra está mal: 'Professor selgitas teema huvitavalt'?", "options": ["Professor", "selgitas", "teema", "huvitavalt"], "correctAnswer": "teema", "explanation": "objeto directo: teemat"}`,
+      
+      C2: `Nivel C2 no evaluado oficialmente en Estonia`
+    };
+    return examples[this.cefrLevel as keyof typeof examples] || examples.B1;
   }
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 800,
-      temperature: 0.2, // Algo de variación para diferentes tipos de errores
-      topP: 0.7,
-      frequencyPenalty: 0.1,
-      presencePenalty: 0.1
+      maxTokens: 500, // Optimized for speed and completeness
+      temperature: 0.05,
+      topP: 0.9,
+      frequencyPenalty: 0.0,
+      presencePenalty: 0.0
     };
   }
 

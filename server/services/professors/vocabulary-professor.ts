@@ -70,11 +70,11 @@ Genera el JSON con exactamente 5 preguntas de vocabulario.`;
 
   getSettings(): ProfessorSettings {
     return {
-      maxTokens: 650,
-      temperature: 0.4, // Algo de creatividad para variar preguntas
+      maxTokens: 600, // Balanced for complete JSON
+      temperature: 0.2,
       topP: 0.85,
-      frequencyPenalty: 0.3, // Evitar repetición de palabras
-      presencePenalty: 0.2
+      frequencyPenalty: 0.1,
+      presencePenalty: 0.1
     };
   }
 
